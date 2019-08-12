@@ -17,11 +17,14 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     var rps: MTLRenderPipelineState?
     let commandQueue: MTLCommandQueue!
     var aspectRatio: Float = 1
+    var pointOfView: GIRNode
 
     init(device: MTLDevice?) {
         self.device = device
-        nextFrameTime = 0
-        commandQueue = device?.makeCommandQueue()
+        self.nextFrameTime = 0
+        self.commandQueue = device?.makeCommandQueue()
+        self.pointOfView = GIRNode()
+        self.pointOfView.camera = GIRCamera()
         super.init()
 
         registerShaders()
@@ -86,14 +89,26 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     }
 
     func updateNodeView(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
-        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: 0))
+        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: -20))
 
         var modelMatrix = node.transform
         if let parent = parent {
             modelMatrix = parent.transform * modelMatrix
         }
 
-        let projectionMatrix = Matrix4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0, farZ: 200)
+        var projectionMatrix: float4x4 = float4x4()
+
+        if let camera = pointOfView.camera {
+            // only recalculate when camera spec changed
+            if camera.shouldUpdateProjMatrix {
+                projectionMatrix = Matrix4.perspective(fovy: Float(camera.fieldOfView).radian, aspect: aspectRatio, nearZ: camera.zNear, farZ: camera.zFar)
+                camera.projectionMatrix = projectionMatrix
+            } else {
+                projectionMatrix = camera.projectionMatrix
+            }
+        } else {
+            projectionMatrix = Matrix4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0, farZ: 200)
+        }
 
         let modelViewProjectionMatrix = simd_mul(projectionMatrix, simd_mul(viewMatrix, node.transform))
 

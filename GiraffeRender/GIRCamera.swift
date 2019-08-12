@@ -7,18 +7,41 @@
 //
 
 import Foundation
+import simd
 
 public class GIRCamera {
+    internal var shouldUpdateProjMatrix: Bool
 
-    public var fieldOfView: Float
     public var name: String?
-    public var zNear: Float
-    public var zFar: Float
-
-    init() {
-        fieldOfView = Float(60).radian
-        zNear = 1.0
-        zFar = 100.0
+    public var fieldOfView: Float {
+        didSet {
+            self.shouldUpdateProjMatrix = true
+        }
     }
 
+    public var zNear: Float {
+        didSet {
+            self.shouldUpdateProjMatrix = true
+        }
+    }
+
+    public var zFar: Float {
+        didSet {
+            self.shouldUpdateProjMatrix = true
+        }
+    }
+
+    public var projectionMatrix: float4x4 {
+        didSet {
+            self.shouldUpdateProjMatrix = false
+        }
+    }
+
+    init() {
+        self.fieldOfView = 60.0
+        self.zNear = 1.0
+        self.zFar = 100.0
+        self.shouldUpdateProjMatrix = true
+        self.projectionMatrix = float4x4()
+    }
 }
