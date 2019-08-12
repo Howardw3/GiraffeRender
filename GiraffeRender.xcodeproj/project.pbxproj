@@ -1,0 +1,576 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		230A1C4822FFED6A0025825D /* GiraffeRender.h in Headers */ = {isa = PBXBuildFile; fileRef = 230A1C4622FFED6A0025825D /* GiraffeRender.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		230A1C8A230077D20025825D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1C89230077D20025825D /* AppDelegate.swift */; };
+		230A1C8C230077D20025825D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1C8B230077D20025825D /* ViewController.swift */; };
+		230A1C8F230077D20025825D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 230A1C8D230077D20025825D /* Main.storyboard */; };
+		230A1C91230077D20025825D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 230A1C90230077D20025825D /* Assets.xcassets */; };
+		230A1C94230077D20025825D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 230A1C92230077D20025825D /* LaunchScreen.storyboard */; };
+		230A1CAF230108EB0025825D /* GIRScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA3230108EA0025825D /* GIRScene.swift */; };
+		230A1CB0230108EB0025825D /* Matrix4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA4230108EA0025825D /* Matrix4.swift */; };
+		230A1CB1230108EB0025825D /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
+		230A1CB2230108EB0025825D /* GIRExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA6230108EA0025825D /* GIRExtension.swift */; };
+		230A1CB3230108EB0025825D /* GIRUniform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA7230108EA0025825D /* GIRUniform.swift */; };
+		230A1CB4230108EB0025825D /* GIRVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA8230108EA0025825D /* GIRVertex.swift */; };
+		230A1CB5230108EB0025825D /* GIRNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA9230108EA0025825D /* GIRNode.swift */; };
+		230A1CB6230108EB0025825D /* GIRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CAA230108EB0025825D /* GIRView.swift */; };
+		230A1CB7230108EB0025825D /* GIRGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CAB230108EB0025825D /* GIRGeometry.swift */; };
+		230A1CB8230108EB0025825D /* GIRCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CAC230108EB0025825D /* GIRCamera.swift */; };
+		230A1CB9230108EB0025825D /* GIRRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CAD230108EB0025825D /* GIRRenderer.swift */; };
+		230A1CBA230108EB0025825D /* GIRCube.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CAE230108EB0025825D /* GIRCube.swift */; };
+		230A1CBB230109470025825D /* GiraffeRender.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 230A1C4322FFED6A0025825D /* GiraffeRender.framework */; };
+		230A1CBC230109470025825D /* GiraffeRender.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 230A1C4322FFED6A0025825D /* GiraffeRender.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		238597A523010B6500585F46 /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		230A1CBD230109470025825D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 230A1C3A22FFED6A0025825D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 230A1C4222FFED6A0025825D;
+			remoteInfo = GiraffeRender;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		230A1CBF230109480025825D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				230A1CBC230109470025825D /* GiraffeRender.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		230A1C4322FFED6A0025825D /* GiraffeRender.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GiraffeRender.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		230A1C4622FFED6A0025825D /* GiraffeRender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GiraffeRender.h; sourceTree = "<group>"; };
+		230A1C4722FFED6A0025825D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		230A1C87230077D20025825D /* GiraffeRenderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GiraffeRenderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		230A1C89230077D20025825D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		230A1C8B230077D20025825D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		230A1C8E230077D20025825D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		230A1C90230077D20025825D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		230A1C93230077D20025825D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		230A1C95230077D20025825D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		230A1CA3230108EA0025825D /* GIRScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRScene.swift; sourceTree = "<group>"; };
+		230A1CA4230108EA0025825D /* Matrix4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4.swift; sourceTree = "<group>"; };
+		230A1CA5230108EA0025825D /* Shader.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
+		230A1CA6230108EA0025825D /* GIRExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRExtension.swift; sourceTree = "<group>"; };
+		230A1CA7230108EA0025825D /* GIRUniform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRUniform.swift; sourceTree = "<group>"; };
+		230A1CA8230108EA0025825D /* GIRVertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRVertex.swift; sourceTree = "<group>"; };
+		230A1CA9230108EA0025825D /* GIRNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRNode.swift; sourceTree = "<group>"; };
+		230A1CAA230108EB0025825D /* GIRView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRView.swift; sourceTree = "<group>"; };
+		230A1CAB230108EB0025825D /* GIRGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRGeometry.swift; sourceTree = "<group>"; };
+		230A1CAC230108EB0025825D /* GIRCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRCamera.swift; sourceTree = "<group>"; };
+		230A1CAD230108EB0025825D /* GIRRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRRenderer.swift; sourceTree = "<group>"; };
+		230A1CAE230108EB0025825D /* GIRCube.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRCube.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		230A1C4022FFED6A0025825D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		230A1C84230077D20025825D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				230A1CBB230109470025825D /* GiraffeRender.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		230A1C3922FFED6A0025825D = {
+			isa = PBXGroup;
+			children = (
+				230A1C4522FFED6A0025825D /* GiraffeRender */,
+				230A1C88230077D20025825D /* GiraffeRenderDemo */,
+				230A1C4422FFED6A0025825D /* Products */,
+				230A1C81230005F50025825D /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		230A1C4422FFED6A0025825D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				230A1C4322FFED6A0025825D /* GiraffeRender.framework */,
+				230A1C87230077D20025825D /* GiraffeRenderDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		230A1C4522FFED6A0025825D /* GiraffeRender */ = {
+			isa = PBXGroup;
+			children = (
+				230A1C4622FFED6A0025825D /* GiraffeRender.h */,
+				230A1C4722FFED6A0025825D /* Info.plist */,
+				230A1CAE230108EB0025825D /* GIRCube.swift */,
+				230A1CAC230108EB0025825D /* GIRCamera.swift */,
+				230A1CA6230108EA0025825D /* GIRExtension.swift */,
+				230A1CAB230108EB0025825D /* GIRGeometry.swift */,
+				230A1CA9230108EA0025825D /* GIRNode.swift */,
+				230A1CAD230108EB0025825D /* GIRRenderer.swift */,
+				230A1CA3230108EA0025825D /* GIRScene.swift */,
+				230A1CA7230108EA0025825D /* GIRUniform.swift */,
+				230A1CA8230108EA0025825D /* GIRVertex.swift */,
+				230A1CAA230108EB0025825D /* GIRView.swift */,
+				230A1CA4230108EA0025825D /* Matrix4.swift */,
+				230A1CA5230108EA0025825D /* Shader.metal */,
+			);
+			path = GiraffeRender;
+			sourceTree = "<group>";
+		};
+		230A1C81230005F50025825D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		230A1C88230077D20025825D /* GiraffeRenderDemo */ = {
+			isa = PBXGroup;
+			children = (
+				230A1C89230077D20025825D /* AppDelegate.swift */,
+				230A1C8B230077D20025825D /* ViewController.swift */,
+				230A1C8D230077D20025825D /* Main.storyboard */,
+				230A1C90230077D20025825D /* Assets.xcassets */,
+				230A1C92230077D20025825D /* LaunchScreen.storyboard */,
+				230A1C95230077D20025825D /* Info.plist */,
+			);
+			path = GiraffeRenderDemo;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		230A1C3E22FFED6A0025825D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				230A1C4822FFED6A0025825D /* GiraffeRender.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		230A1C4222FFED6A0025825D /* GiraffeRender */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 230A1C4B22FFED6A0025825D /* Build configuration list for PBXNativeTarget "GiraffeRender" */;
+			buildPhases = (
+				230A1C3E22FFED6A0025825D /* Headers */,
+				230A1C3F22FFED6A0025825D /* Sources */,
+				230A1C4022FFED6A0025825D /* Frameworks */,
+				230A1C4122FFED6A0025825D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GiraffeRender;
+			productName = GiraffeRender;
+			productReference = 230A1C4322FFED6A0025825D /* GiraffeRender.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		230A1C86230077D20025825D /* GiraffeRenderDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 230A1C96230077D20025825D /* Build configuration list for PBXNativeTarget "GiraffeRenderDemo" */;
+			buildPhases = (
+				230A1C83230077D20025825D /* Sources */,
+				230A1C84230077D20025825D /* Frameworks */,
+				230A1C85230077D20025825D /* Resources */,
+				230A1CBF230109480025825D /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				230A1CBE230109470025825D /* PBXTargetDependency */,
+			);
+			name = GiraffeRenderDemo;
+			productName = GiraffeRenderDemo;
+			productReference = 230A1C87230077D20025825D /* GiraffeRenderDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		230A1C3A22FFED6A0025825D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1030;
+				LastUpgradeCheck = 1030;
+				ORGANIZATIONNAME = "Jiongzhi Wang";
+				TargetAttributes = {
+					230A1C4222FFED6A0025825D = {
+						CreatedOnToolsVersion = 10.3;
+						LastSwiftMigration = 1030;
+					};
+					230A1C86230077D20025825D = {
+						CreatedOnToolsVersion = 10.3;
+					};
+				};
+			};
+			buildConfigurationList = 230A1C3D22FFED6A0025825D /* Build configuration list for PBXProject "GiraffeRender" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 230A1C3922FFED6A0025825D;
+			productRefGroup = 230A1C4422FFED6A0025825D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				230A1C4222FFED6A0025825D /* GiraffeRender */,
+				230A1C86230077D20025825D /* GiraffeRenderDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		230A1C4122FFED6A0025825D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		230A1C85230077D20025825D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				230A1C94230077D20025825D /* LaunchScreen.storyboard in Resources */,
+				230A1C91230077D20025825D /* Assets.xcassets in Resources */,
+				230A1C8F230077D20025825D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		230A1C3F22FFED6A0025825D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				230A1CB7230108EB0025825D /* GIRGeometry.swift in Sources */,
+				230A1CB4230108EB0025825D /* GIRVertex.swift in Sources */,
+				230A1CBA230108EB0025825D /* GIRCube.swift in Sources */,
+				230A1CB2230108EB0025825D /* GIRExtension.swift in Sources */,
+				230A1CB1230108EB0025825D /* Shader.metal in Sources */,
+				230A1CB5230108EB0025825D /* GIRNode.swift in Sources */,
+				230A1CAF230108EB0025825D /* GIRScene.swift in Sources */,
+				230A1CB6230108EB0025825D /* GIRView.swift in Sources */,
+				230A1CB8230108EB0025825D /* GIRCamera.swift in Sources */,
+				230A1CB0230108EB0025825D /* Matrix4.swift in Sources */,
+				230A1CB9230108EB0025825D /* GIRRenderer.swift in Sources */,
+				230A1CB3230108EB0025825D /* GIRUniform.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		230A1C83230077D20025825D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				230A1C8C230077D20025825D /* ViewController.swift in Sources */,
+				230A1C8A230077D20025825D /* AppDelegate.swift in Sources */,
+				238597A523010B6500585F46 /* Shader.metal in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		230A1CBE230109470025825D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 230A1C4222FFED6A0025825D /* GiraffeRender */;
+			targetProxy = 230A1CBD230109470025825D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		230A1C8D230077D20025825D /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				230A1C8E230077D20025825D /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		230A1C92230077D20025825D /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				230A1C93230077D20025825D /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		230A1C4922FFED6A0025825D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		230A1C4A22FFED6A0025825D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		230A1C4C22FFED6A0025825D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 8G6FV828BP;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = GiraffeRender/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jiongzhi.GiraffeRender;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		230A1C4D22FFED6A0025825D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 8G6FV828BP;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = GiraffeRender/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jiongzhi.GiraffeRender;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		230A1C97230077D20025825D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8G6FV828BP;
+				INFOPLIST_FILE = GiraffeRenderDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jiongzhi.GiraffeRenderDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		230A1C98230077D20025825D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8G6FV828BP;
+				INFOPLIST_FILE = GiraffeRenderDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jiongzhi.GiraffeRenderDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		230A1C3D22FFED6A0025825D /* Build configuration list for PBXProject "GiraffeRender" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				230A1C4922FFED6A0025825D /* Debug */,
+				230A1C4A22FFED6A0025825D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		230A1C4B22FFED6A0025825D /* Build configuration list for PBXNativeTarget "GiraffeRender" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				230A1C4C22FFED6A0025825D /* Debug */,
+				230A1C4D22FFED6A0025825D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		230A1C96230077D20025825D /* Build configuration list for PBXNativeTarget "GiraffeRenderDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				230A1C97230077D20025825D /* Debug */,
+				230A1C98230077D20025825D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 230A1C3A22FFED6A0025825D /* Project object */;
+}
