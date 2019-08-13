@@ -35,8 +35,8 @@ open class GIRGeometry {
         vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 5)
 
         let url = Bundle.main.url(forResource: name, withExtension: ext)
-        let bobAsset = MDLAsset(url: url, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
-        let mesh = try! MTKMesh.newMeshes(asset: bobAsset, device: device!).metalKitMeshes.first!
+        let asset = MDLAsset(url: url, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
+        let mesh = try! MTKMesh.newMeshes(asset: asset, device: device!).metalKitMeshes.first!
         self.init(mesh: mesh)
     }
 
@@ -46,7 +46,7 @@ open class GIRGeometry {
                                                                scaleFactor: 1.0,
                                                                bundle: nil,
                                                                options: options)
-
+        
         materials.append(GIRMaterial(texture: baseColorTexture!))
 
     }

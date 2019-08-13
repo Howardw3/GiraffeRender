@@ -137,7 +137,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         updateNodeView(node, parent: parent, uniformBuffer: uniformBuffer)
 
         if let material = node.geometry?.materials.first {
-            commandEncoder.setFragmentTexture(material.baseColorTexture, index: 0)
+            commandEncoder.setFragmentTexture(material.albedoTexture, index: 0)
             if let samplerState = samplerState {
                 commandEncoder.setFragmentSamplerState(samplerState, index: 0)
             }

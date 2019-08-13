@@ -50,7 +50,7 @@ fragment float4 basic_fragment(VertexOut interpolated [[ stage_in ]],
 vertex Vertex cube_vertex(constant Vertex *vertices [[buffer(0)]],
                           constant Uniforms &uniforms [[buffer(1)]],
                           uint vid [[vertex_id]]){
-    float4x4 matrix = uniforms.modelViewProjectionMatrix;
+    float4x4 matrix = uniforms.modelViewProjMatrix;
     Vertex in = vertices[vid];
     Vertex out;
 

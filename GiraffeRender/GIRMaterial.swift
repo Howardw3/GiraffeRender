@@ -9,8 +9,8 @@
 import Foundation
 
 public class GIRMaterial {
-    public var baseColorTexture: MTLTexture
+    public var albedoTexture: MTLTexture
     init(texture: MTLTexture) {
-        baseColorTexture = texture
+        albedoTexture = texture
     }
 }
