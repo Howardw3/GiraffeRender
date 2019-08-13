@@ -11,16 +11,29 @@ open class GIRCube: GIRGeometry {
     let vertexLength = MemoryLayout<GIRVertex>.stride * 8
     let indexLength = MemoryLayout<UInt16>.size * 36
 
-    let vertexData = [
-        GIRVertex(pos: [-1.0, -1.0, 1.0, 1.0], col: [1.0, 0.0, 0.0, 1]),
-        GIRVertex(pos: [ 1.0, -1.0, 1.0, 1.0], col: [0.0, 1.0, 0.0, 1]),
-        GIRVertex(pos: [ 1.0, 1.0, 1.0, 1.0], col: [0.0, 0.0, 1.0, 1]),
-        GIRVertex(pos: [-1.0, 1.0, 1.0, 1.0], col: [1.0, 1.0, 1.0, 1]),
+    struct Vertex {
+        static let count = 8
+        static let size = MemoryLayout<Float>.size
+        static let length = MemoryLayout<Float>.size * 8
 
-        GIRVertex(pos: [-1.0, -1.0, -1.0, 1.0], col: [1.0, 0.0, 0.0, 1]),
-        GIRVertex(pos: [ 1.0, -1.0, -1.0, 1.0], col: [0.0, 1.0, 0.0, 1]),
-        GIRVertex(pos: [ 1.0, 1.0, -1.0, 1.0], col: [0.0, 0.0, 1.0, 1]),
-        GIRVertex(pos: [-1.0, 1.0, -1.0, 1.0], col: [1.0, 1.0, 1.0, 1])
+        var position: float4
+        var color: float4
+        init(pos: float4, col: float4) {
+            position = pos
+            color = col
+        }
+    }
+
+    let vertexData = [
+        Vertex(pos: [-1.0, -1.0, 1.0, 1.0], col: [1.0, 0.0, 0.0, 1]),
+        Vertex(pos: [ 1.0, -1.0, 1.0, 1.0], col: [0.0, 1.0, 0.0, 1]),
+        Vertex(pos: [ 1.0, 1.0, 1.0, 1.0], col: [0.0, 0.0, 1.0, 1]),
+        Vertex(pos: [-1.0, 1.0, 1.0, 1.0], col: [1.0, 1.0, 1.0, 1]),
+
+        Vertex(pos: [-1.0, -1.0, -1.0, 1.0], col: [1.0, 0.0, 0.0, 1]),
+        Vertex(pos: [ 1.0, -1.0, -1.0, 1.0], col: [0.0, 1.0, 0.0, 1]),
+        Vertex(pos: [ 1.0, 1.0, -1.0, 1.0], col: [0.0, 0.0, 1.0, 1]),
+        Vertex(pos: [-1.0, 1.0, -1.0, 1.0], col: [1.0, 1.0, 1.0, 1])
     ]
 
     let indexData: [UInt16] = [

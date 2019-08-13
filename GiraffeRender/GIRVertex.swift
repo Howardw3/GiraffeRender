@@ -9,14 +9,13 @@
 import simd
 
 struct GIRVertex {
-    static let count = 8
-    static let size = MemoryLayout<Float>.size
-    static let length = MemoryLayout<Float>.size * 8
+    static let length = MemoryLayout<Float>.size * 5
 
-    var position: float4
-    var color: float4
-    init(pos: float4, col: float4) {
+    var position: float3
+    var coordnates: float2
+
+    init(pos: float3, coord: float2) {
         position = pos
-        color = col
+        coordnates = coord
     }
 }

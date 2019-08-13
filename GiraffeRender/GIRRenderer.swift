@@ -18,6 +18,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue!
     var aspectRatio: Float = 1
     var pointOfView: GIRNode
+    var samplerState: MTLSamplerState?
 
     init(device: MTLDevice?) {
         self.device = device
@@ -28,6 +29,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         super.init()
 
         registerShaders()
+        buildSamplerState(device: device!)
     }
 
     func registerShaders() {
@@ -36,8 +38,8 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         }
 
         let rpld = MTLRenderPipelineDescriptor()
-        rpld.vertexFunction = library.makeFunction(name: "vertex_func")
-        rpld.fragmentFunction = library.makeFunction(name: "fragment_func")
+        rpld.vertexFunction = library.makeFunction(name: "basic_vertex")
+        rpld.fragmentFunction = library.makeFunction(name: "basic_fragment")
         rpld.colorAttachments[0].pixelFormat = .bgra8Unorm
 
         do {
@@ -45,6 +47,15 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         } catch let error {
             debugPrint(error)
         }
+    }
+
+    func buildSamplerState(device: MTLDevice) {
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.minFilter = .linear
+        samplerDescriptor.magFilter = .linear
+        samplerDescriptor.mipFilter = .linear
+        samplerState = device.makeSamplerState(descriptor: samplerDescriptor)!
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -84,12 +95,12 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     }
 
     func createUniformBuffer() -> MTLBuffer {
-        let uniformDataLength = MemoryLayout<matrix_float4x4>.stride
+        let uniformDataLength = MemoryLayout<matrix_float4x4>.stride * 2
         return (device?.makeBuffer(length: uniformDataLength, options: []))!
     }
 
     func updateNodeView(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
-        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: -20))
+        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: -3))
 
         var modelMatrix = node.transform
         if let parent = parent {
@@ -125,6 +136,13 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         let uniformBuffer = createUniformBuffer()
         updateNodeView(node, parent: parent, uniformBuffer: uniformBuffer)
 
+        if let material = node.geometry?.materials.first {
+            commandEncoder.setFragmentTexture(material.baseColorTexture, index: 0)
+            if let samplerState = samplerState {
+                commandEncoder.setFragmentSamplerState(samplerState, index: 0)
+            }
+        }
+
         if let mesh = node.geometry?.mesh {
             drawMesh(mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
         }
@@ -143,7 +161,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, index: 1)
 
         for submesh in mesh.submeshes {
-            commandEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: .uint16, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset)
+            commandEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset)
         }
     }
 }

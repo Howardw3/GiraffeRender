@@ -28,6 +28,8 @@
 		230A1CBB230109470025825D /* GiraffeRender.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 230A1C4322FFED6A0025825D /* GiraffeRender.framework */; };
 		230A1CBC230109470025825D /* GiraffeRender.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 230A1C4322FFED6A0025825D /* GiraffeRender.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		238597A523010B6500585F46 /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
+		238597A72302754400585F46 /* GIRMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238597A62302754400585F46 /* GIRMaterial.swift */; };
+		238597AB23028A1A00585F46 /* fish.obj in Resources */ = {isa = PBXBuildFile; fileRef = 238597AA23028A1A00585F46 /* fish.obj */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +79,8 @@
 		230A1CAC230108EB0025825D /* GIRCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRCamera.swift; sourceTree = "<group>"; };
 		230A1CAD230108EB0025825D /* GIRRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRRenderer.swift; sourceTree = "<group>"; };
 		230A1CAE230108EB0025825D /* GIRCube.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRCube.swift; sourceTree = "<group>"; };
+		238597A62302754400585F46 /* GIRMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterial.swift; sourceTree = "<group>"; };
+		238597AA23028A1A00585F46 /* fish.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fish.obj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +138,7 @@
 				230A1CAA230108EB0025825D /* GIRView.swift */,
 				230A1CA4230108EA0025825D /* Matrix4.swift */,
 				230A1CA5230108EA0025825D /* Shader.metal */,
+				238597A62302754400585F46 /* GIRMaterial.swift */,
 			);
 			path = GiraffeRender;
 			sourceTree = "<group>";
@@ -154,6 +159,7 @@
 				230A1C90230077D20025825D /* Assets.xcassets */,
 				230A1C92230077D20025825D /* LaunchScreen.storyboard */,
 				230A1C95230077D20025825D /* Info.plist */,
+				238597AA23028A1A00585F46 /* fish.obj */,
 			);
 			path = GiraffeRenderDemo;
 			sourceTree = "<group>";
@@ -261,6 +267,7 @@
 			files = (
 				230A1C94230077D20025825D /* LaunchScreen.storyboard in Resources */,
 				230A1C91230077D20025825D /* Assets.xcassets in Resources */,
+				238597AB23028A1A00585F46 /* fish.obj in Resources */,
 				230A1C8F230077D20025825D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -274,6 +281,7 @@
 			files = (
 				230A1CB7230108EB0025825D /* GIRGeometry.swift in Sources */,
 				230A1CB4230108EB0025825D /* GIRVertex.swift in Sources */,
+				238597A72302754400585F46 /* GIRMaterial.swift in Sources */,
 				230A1CBA230108EB0025825D /* GIRCube.swift in Sources */,
 				230A1CB2230108EB0025825D /* GIRExtension.swift in Sources */,
 				230A1CB1230108EB0025825D /* Shader.metal in Sources */,
