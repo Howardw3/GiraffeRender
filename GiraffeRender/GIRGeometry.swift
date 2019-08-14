@@ -46,7 +46,7 @@ open class GIRGeometry {
                                                                scaleFactor: 1.0,
                                                                bundle: nil,
                                                                options: options)
-        
+
         materials.append(GIRMaterial(texture: baseColorTexture!))
 
     }

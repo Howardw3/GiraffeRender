@@ -14,11 +14,12 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     var device: MTLDevice?
     var scene: GIRScene?
     var nextFrameTime: CFTimeInterval
-    var rps: MTLRenderPipelineState?
+    var renderPipelineState: MTLRenderPipelineState!
+    var samplerState: MTLSamplerState!
+    var depthStencilState: MTLDepthStencilState!
     let commandQueue: MTLCommandQueue!
     var aspectRatio: Float = 1
     var pointOfView: GIRNode
-    var samplerState: MTLSamplerState?
 
     init(device: MTLDevice?) {
         self.device = device
@@ -28,34 +29,9 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         self.pointOfView.camera = GIRCamera()
         super.init()
 
-        registerShaders()
-        buildSamplerState(device: device!)
-    }
-
-    func registerShaders() {
-        guard let library = device?.makeDefaultLibrary() else {
-            return
-        }
-
-        let rpld = MTLRenderPipelineDescriptor()
-        rpld.vertexFunction = library.makeFunction(name: "basic_vertex")
-        rpld.fragmentFunction = library.makeFunction(name: "basic_fragment")
-        rpld.colorAttachments[0].pixelFormat = .bgra8Unorm
-
-        do {
-            try rps = device?.makeRenderPipelineState(descriptor: rpld)
-        } catch let error {
-            debugPrint(error)
-        }
-    }
-
-    func buildSamplerState(device: MTLDevice) {
-        let samplerDescriptor = MTLSamplerDescriptor()
-        samplerDescriptor.normalizedCoordinates = true
-        samplerDescriptor.minFilter = .linear
-        samplerDescriptor.magFilter = .linear
-        samplerDescriptor.mipFilter = .linear
-        samplerState = device.makeSamplerState(descriptor: samplerDescriptor)!
+        createSamplerState()
+        createDepthStencilState()
+        createRenderPipelineState()
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -70,7 +46,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
             return
         }
         guard let passDescriptor = view.currentRenderPassDescriptor, let drawable = view.currentDrawable else {
-            debugPrint("rpd, drawable error")
+            debugPrint("currentRenderPassDescriptor, drawable error")
             return
         }
 
@@ -80,9 +56,10 @@ class GIRRenderer: NSObject, MTKViewDelegate {
             return
         }
 
-        commandEncoder.setRenderPipelineState(rps!)
-        commandEncoder.setCullMode(.front)
-
+        commandEncoder.setCullMode(.back)
+        commandEncoder.setFrontFacing(.counterClockwise)
+        commandEncoder.setDepthStencilState(depthStencilState!)
+        commandEncoder.setRenderPipelineState(renderPipelineState!)
         drawScene(commandEncoder: commandEncoder)
         commandEncoder.endEncoding()
 
@@ -163,5 +140,39 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         for submesh in mesh.submeshes {
             commandEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset)
         }
+    }
+
+    func createRenderPipelineState() {
+        guard let library = device?.makeDefaultLibrary() else {
+            return
+        }
+
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.vertexFunction = library.makeFunction(name: "basic_vertex")
+        renderPipelineDescriptor.fragmentFunction = library.makeFunction(name: "basic_fragment")
+        renderPipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+        renderPipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+
+        do {
+            try renderPipelineState = device?.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+        } catch let error {
+            debugPrint(error)
+        }
+    }
+
+    func createSamplerState() {
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.minFilter = .linear
+        samplerDescriptor.magFilter = .linear
+        samplerDescriptor.mipFilter = .linear
+        samplerState = device?.makeSamplerState(descriptor: samplerDescriptor)!
+    }
+
+    func createDepthStencilState() {
+        let depthStencilDescriptor = MTLDepthStencilDescriptor()
+        depthStencilDescriptor.isDepthWriteEnabled = true
+        depthStencilDescriptor.depthCompareFunction = .less
+        depthStencilState = device?.makeDepthStencilState(descriptor: depthStencilDescriptor)
     }
 }

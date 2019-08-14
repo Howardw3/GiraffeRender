@@ -40,6 +40,6 @@ open class GIRView: MTKView {
         self.drawableSize.height = self.frame.height
         self.drawableSize.width = self.frame.width
         self.colorPixelFormat = .bgra8Unorm
-        self.depthStencilPixelFormat = .invalid
+        self.depthStencilPixelFormat = .depth32Float
     }
 }
