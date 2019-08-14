@@ -28,6 +28,11 @@ struct VertexOut {
     float2 texCoord;
 };
 
+struct FragmentIn {
+    packed_float3 lightColor;
+    packed_float3 lightPos;
+};
+
 vertex VertexOut basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
                            constant Uniforms& uniforms [[ buffer(1) ]],
                            uint vid [[ vertex_id ]]) {
@@ -42,8 +47,11 @@ vertex VertexOut basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
 
 fragment float4 basic_fragment(VertexOut interpolated [[ stage_in ]],
                                texture2d<float> texture2D [[ texture(0) ]],
-                               sampler sampler2D [[ sampler(0) ]]) {
-    float4 color = texture2D.sample(sampler2D, interpolated.texCoord);
+                               sampler sampler2D [[ sampler(0) ]],
+                               constant FragmentIn &uniforms [[ buffer(0) ]]) {
+    float4 texture = texture2D.sample(sampler2D, interpolated.texCoord);
+//    float3 lightColor = float4(uniforms.lightColor, 1);
+    float4 color = float4(uniforms.lightColor, 1) * texture;
     return color;
 }
 

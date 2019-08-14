@@ -9,6 +9,11 @@
 import Foundation
 import MetalKit
 
+struct FragmentUniforms {
+    var lightColor = float3(1, 0, 0)
+    var lightPosition = float3(0, 0, 10)
+}
+
 class GIRRenderer: NSObject, MTKViewDelegate {
 
     var device: MTLDevice?
@@ -72,7 +77,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     }
 
     func createUniformBuffer() -> MTLBuffer {
-        let uniformDataLength = MemoryLayout<matrix_float4x4>.stride * 2
+        let uniformDataLength = MemoryLayout<matrix_float4x4>.stride
         return (device?.makeBuffer(length: uniformDataLength, options: []))!
     }
 
@@ -119,6 +124,9 @@ class GIRRenderer: NSObject, MTKViewDelegate {
                 commandEncoder.setFragmentSamplerState(samplerState, index: 0)
             }
         }
+        
+        var light = FragmentUniforms()
+        commandEncoder.setFragmentBytes(&light, length: MemoryLayout<FragmentUniforms>.size, index: 0)
 
         if let mesh = node.geometry?.mesh {
             drawMesh(mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
