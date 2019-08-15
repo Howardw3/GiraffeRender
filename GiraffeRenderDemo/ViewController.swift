@@ -17,15 +17,19 @@ class ViewController: UIViewController {
     @IBOutlet weak var giraffeView: GIRView!
 
     var fishNode: GIRNode!
+    var cubeNode: GIRNode!
+    var currNode: GIRNode!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let fish = GIRGeometry(name: "fish", ext: "obj")
-        fish.addMaterial(name: "fish_baseColor")
-        fishNode = GIRNode(geometry: fish)
         let scene = GIRScene()
-        scene.rootNode.addChild(fishNode)
-
+        createCube()
+        createFish()
+        
+//        scene.rootNode.addChild(fishNode)
+        scene.rootNode.addChild(cubeNode)
+        currNode = cubeNode
         giraffeView.scene = scene
     }
 
@@ -38,10 +42,27 @@ class ViewController: UIViewController {
         let prev = touch.previousLocation(in: view)
         let diff = CGPoint(x: curr.x - prev.x, y: curr.y - prev.y)
 
-        fishNode.rotation = float4(1, 0, 0, Float(diff.y).radian)
-        fishNode.rotation = float4(0, 1, 0, Float(diff.x).radian)
+        currNode.rotation = float4(1, 0, 0, Float(diff.y).radian)
+        currNode.rotation = float4(0, 1, 0, Float(diff.x).radian)
 
 //        boxNode.translation = float3(Float(diff.x) / 100, Float(diff.y) / 100, 0)
+    }
+    
+    func createFish() {
+        let fish = GIRGeometry(name: "fish", ext: "obj")
+        fish.addMaterial(name: "fish_baseColor")
+        fishNode = GIRNode(geometry: fish)
+    }
+    
+    func createCube() {
+        let cube = GIRGeometry(name: "cube", ext: "obj")
+        cube.addMaterial(name: "fish_baseColor")
+        cubeNode = GIRNode(geometry: cube)
+        
+//        if let material = cube.materials.first {
+//            material.ambient = float3(1, 1, 1)
+//            material.
+//        }
     }
 }
 

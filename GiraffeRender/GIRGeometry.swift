@@ -32,7 +32,11 @@ open class GIRGeometry {
                                                             format: .float2,
                                                             offset: MemoryLayout<Float>.size * 3,
                                                             bufferIndex: 0)
-        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 5)
+        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeNormal,
+                                                            format: .float3,
+                                                            offset: MemoryLayout<Float>.size * 5,
+                                                            bufferIndex: 0)
+        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 8)
 
         let url = Bundle.main.url(forResource: name, withExtension: ext)
         let asset = MDLAsset(url: url, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
@@ -42,12 +46,18 @@ open class GIRGeometry {
 
     public func addMaterial(name: String) {
         let options: [MTKTextureLoader.Option: Any] = [.generateMipmaps: true, .SRGB: true]
-        let baseColorTexture = try? textureLoader.newTexture(name: name,
-                                                               scaleFactor: 1.0,
-                                                               bundle: nil,
-                                                               options: options)
-
-        materials.append(GIRMaterial(texture: baseColorTexture!))
-
+        var texture: MTLTexture?
+        do {
+            try texture = textureLoader.newTexture(name: name,
+                                                        scaleFactor: 1.0,
+                                                        bundle: Bundle.main,
+                                                        options: options)
+        } catch let error {
+            debugPrint(error.localizedDescription)
+        }
+        
+        if let texture = texture {
+            materials.append(GIRMaterial(texture: texture))
+        }
     }
 }

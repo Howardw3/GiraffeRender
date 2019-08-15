@@ -24,16 +24,16 @@ open class GIRCube: GIRGeometry {
         }
     }
 
-    let vertexData = [
-        Vertex(pos: [-1.0, -1.0, 1.0, 1.0], col: [1.0, 0.0, 0.0, 1]),
-        Vertex(pos: [ 1.0, -1.0, 1.0, 1.0], col: [0.0, 1.0, 0.0, 1]),
-        Vertex(pos: [ 1.0, 1.0, 1.0, 1.0], col: [0.0, 0.0, 1.0, 1]),
-        Vertex(pos: [-1.0, 1.0, 1.0, 1.0], col: [1.0, 1.0, 1.0, 1]),
-
-        Vertex(pos: [-1.0, -1.0, -1.0, 1.0], col: [1.0, 0.0, 0.0, 1]),
-        Vertex(pos: [ 1.0, -1.0, -1.0, 1.0], col: [0.0, 1.0, 0.0, 1]),
-        Vertex(pos: [ 1.0, 1.0, -1.0, 1.0], col: [0.0, 0.0, 1.0, 1]),
-        Vertex(pos: [-1.0, 1.0, -1.0, 1.0], col: [1.0, 1.0, 1.0, 1])
+    let vertexData: [Vertex] = [
+//        GIRVertex(pos: [-1.0, -1.0, 1.0], coord: [0.0, 0.25]),
+//        GIRVertex(pos: [ 1.0, -1.0, 1.0], coord: [0.25, 0.5]),
+//        GIRVertex(pos: [ 1.0, 1.0, 1.0], coord: [0.25, 1.0]),
+//        GIRVertex(pos: [-1.0, 1.0, 1.0], coord: [0.25, 1.0]),
+//
+//        GIRVertex(pos: [-1.0, -1.0, -1.0], coord: [0.5, 1.0]),
+//        GIRVertex(pos: [ 1.0, -1.0, -1.0], coord: [0.5, 1.0]),
+//        GIRVertex(pos: [ 1.0, 1.0, -1.0], coord: [0.3, 1.0]),
+//        GIRVertex(pos: [-1.0, 1.0, -1.0], coord: [0.0, 1.0]),
     ]
 
     let indexData: [UInt16] = [
@@ -68,9 +68,14 @@ open class GIRCube: GIRGeometry {
         vertexBuffer.fill(Data(bytes: vertexData, count: vertexLength), offset: 0)
         let vertexDescriptor = MDLVertexDescriptor()
         vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
-                                                            format: .float4,
+                                                            format: .float3,
                                                             offset: 0,
                                                             bufferIndex: 0)
+        vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
+                                                            format: .float2,
+                                                            offset: MemoryLayout<Float>.size * 3,
+                                                            bufferIndex: 0)
+        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 5)
 
         let mesh = MDLMesh(vertexBuffer: vertexBuffer, vertexCount: vertexData.count, descriptor: vertexDescriptor, submeshes: [submesh])
         let mtkMesh = try! MTKMesh(mesh: mesh, device: device!)

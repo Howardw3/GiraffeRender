@@ -30,6 +30,7 @@
 		238597A523010B6500585F46 /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
 		238597A72302754400585F46 /* GIRMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238597A62302754400585F46 /* GIRMaterial.swift */; };
 		238597AB23028A1A00585F46 /* fish.obj in Resources */ = {isa = PBXBuildFile; fileRef = 238597AA23028A1A00585F46 /* fish.obj */; };
+		8CDD38CF2304A12600B700DE /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 8CDD38CE2304A12600B700DE /* cube.obj */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +82,7 @@
 		230A1CAE230108EB0025825D /* GIRCube.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRCube.swift; sourceTree = "<group>"; };
 		238597A62302754400585F46 /* GIRMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterial.swift; sourceTree = "<group>"; };
 		238597AA23028A1A00585F46 /* fish.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fish.obj; sourceTree = "<group>"; };
+		8CDD38CE2304A12600B700DE /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +162,7 @@
 				230A1C92230077D20025825D /* LaunchScreen.storyboard */,
 				230A1C95230077D20025825D /* Info.plist */,
 				238597AA23028A1A00585F46 /* fish.obj */,
+				8CDD38CE2304A12600B700DE /* cube.obj */,
 			);
 			path = GiraffeRenderDemo;
 			sourceTree = "<group>";
@@ -266,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				230A1C94230077D20025825D /* LaunchScreen.storyboard in Resources */,
+				8CDD38CF2304A12600B700DE /* cube.obj in Resources */,
 				230A1C91230077D20025825D /* Assets.xcassets in Resources */,
 				238597AB23028A1A00585F46 /* fish.obj in Resources */,
 				230A1C8F230077D20025825D /* Main.storyboard in Resources */,

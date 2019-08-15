@@ -9,10 +9,6 @@
 import Foundation
 import MetalKit
 
-struct FragmentUniforms {
-    var lightColor = float3(1, 0, 0)
-    var lightPosition = float3(0, 0, 10)
-}
 
 class GIRRenderer: NSObject, MTKViewDelegate {
 
@@ -82,7 +78,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     }
 
     func updateNodeView(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
-        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: -3))
+        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: -10))
 
         var modelMatrix = node.transform
         if let parent = parent {
@@ -117,16 +113,22 @@ class GIRRenderer: NSObject, MTKViewDelegate {
 
         let uniformBuffer = createUniformBuffer()
         updateNodeView(node, parent: parent, uniformBuffer: uniformBuffer)
-
+        
+        var fragmentUniforms = GIRFragmentUniforms()
+        
         if let material = node.geometry?.materials.first {
             commandEncoder.setFragmentTexture(material.albedoTexture, index: 0)
             if let samplerState = samplerState {
                 commandEncoder.setFragmentSamplerState(samplerState, index: 0)
             }
+            
+            fragmentUniforms.matAmbient = material.ambient
+            fragmentUniforms.matDiffuse = material.diffuse
+            fragmentUniforms.matSpecular = material.specular
+            fragmentUniforms.matShininess = material.shininess
         }
         
-        var light = FragmentUniforms()
-        commandEncoder.setFragmentBytes(&light, length: MemoryLayout<FragmentUniforms>.size, index: 0)
+        commandEncoder.setFragmentBytes(&fragmentUniforms, length: MemoryLayout<GIRFragmentUniforms>.size, index: 0)
 
         if let mesh = node.geometry?.mesh {
             drawMesh(mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
@@ -146,7 +148,11 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, index: 1)
 
         for submesh in mesh.submeshes {
-            commandEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset)
+            commandEncoder.drawIndexedPrimitives(type: submesh.primitiveType,
+                                                 indexCount: submesh.indexCount,
+                                                 indexType: submesh.indexType,
+                                                 indexBuffer: submesh.indexBuffer.buffer,
+                                                 indexBufferOffset: submesh.indexBuffer.offset)
         }
     }
 
