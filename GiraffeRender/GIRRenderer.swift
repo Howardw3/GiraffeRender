@@ -73,12 +73,12 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     }
 
     func createUniformBuffer() -> MTLBuffer {
-        let uniformDataLength = MemoryLayout<matrix_float4x4>.stride
+        let uniformDataLength = MemoryLayout<GIRVertexUniforms>.size
         return (device?.makeBuffer(length: uniformDataLength, options: []))!
     }
 
     func updateNodeView(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
-        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: -10))
+        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: -6))
 
         var modelMatrix = node.transform
         if let parent = parent {
@@ -99,11 +99,11 @@ class GIRRenderer: NSObject, MTKViewDelegate {
             projectionMatrix = Matrix4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0, farZ: 200)
         }
 
-        let modelViewProjectionMatrix = simd_mul(projectionMatrix, simd_mul(viewMatrix, node.transform))
+        let viewProjectionMatrix = simd_mul(projectionMatrix, viewMatrix)
 
         let bufferPointer = uniformBuffer.contents()
-        var uniforms = GIRUniforms(modelViewProjectionMatrix: modelViewProjectionMatrix)
-        memcpy(bufferPointer, &uniforms, MemoryLayout<GIRUniforms>.size)
+        var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform)
+        memcpy(bufferPointer, &uniforms, MemoryLayout<GIRVertexUniforms>.size)
     }
 
     func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?) {
@@ -125,7 +125,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
             fragmentUniforms.matAmbient = material.ambient
             fragmentUniforms.matDiffuse = material.diffuse
             fragmentUniforms.matSpecular = material.specular
-            fragmentUniforms.matShininess = material.shininess
+//            fragmentUniforms.matShininess = material.shininess
         }
         
         commandEncoder.setFragmentBytes(&fragmentUniforms, length: MemoryLayout<GIRFragmentUniforms>.size, index: 0)

@@ -8,15 +8,18 @@
 
 import simd
 
-struct GIRUniforms {
-    var modelViewProjectionMatrix: float4x4
+struct GIRVertexUniforms {
+    var viewProjectionMatrix: float4x4
+    var modelMatrix: float4x4
 }
 
 struct GIRFragmentUniforms {
-    var lightColor = float3(1, 1, 1)
-    var lightPosition = float3(0, 0, 0)
+    var lightColor = float3(1, 1, 0.5)
+    var lightPosition = float3(0, 0, 20)
     var matDiffuse = float3(1, 1, 1)
     var matSpecular = float3(1, 1, 1)
     var matAmbient = float3(1, 1, 1)
     var matShininess = float3(1, 1, 1)
+    
+    static let length = MemoryLayout<Float>.stride * 16
 }

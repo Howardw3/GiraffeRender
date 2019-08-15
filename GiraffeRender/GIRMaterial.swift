@@ -11,10 +11,10 @@ import simd
 
 public class GIRMaterial {
     public var albedoTexture: MTLTexture
-    public var diffuse: float3 = float3(1, 1, 1)
-    public var ambient: float3 = float3(1, 1, 1)
+    public var diffuse: float3 = float3(1, 0.2, 1)
+    public var ambient: float3 = float3(1, 1, 0.5)
     public var specular: float3 = float3(1, 1, 1)
-    public var shininess: float3 = float3(1, 1, 1)
+    public var shininess: Float = 32.0
     
     init(texture: MTLTexture) {
         albedoTexture = texture

@@ -30,13 +30,13 @@ open class GIRGeometry {
                                                             bufferIndex: 0)
         vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
                                                             format: .float2,
-                                                            offset: MemoryLayout<Float>.size * 3,
+                                                            offset: MemoryLayout<Float>.stride * 3,
                                                             bufferIndex: 0)
         vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeNormal,
                                                             format: .float3,
-                                                            offset: MemoryLayout<Float>.size * 5,
+                                                            offset: MemoryLayout<Float>.stride * 5,
                                                             bufferIndex: 0)
-        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 8)
+        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.stride * 8)
 
         let url = Bundle.main.url(forResource: name, withExtension: ext)
         let asset = MDLAsset(url: url, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
