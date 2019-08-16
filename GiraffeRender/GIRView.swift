@@ -15,6 +15,7 @@ open class GIRView: MTKView {
         didSet {
             if scene != nil {
                 renderer.scene = scene
+                renderer.pointOfView = scene!.pointOfView
             }
         }
     }

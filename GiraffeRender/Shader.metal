@@ -33,11 +33,12 @@ struct VertexOut {
 };
 
 struct FragmentUniforms {
-    float3 light_color;
-    float3 light_pos;
-    float3 mat_diffuse;
-    float3 mat_specular;
-    float3 mat_ambient;
+    packed_float3 camera_pos;
+    packed_float3 light_color;
+    packed_float3 light_pos;
+    packed_float3 mat_diffuse;
+    packed_float3 mat_specular;
+    packed_float3 mat_ambient;
     float mat_shininess;
 };
 
@@ -60,12 +61,13 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
                                texture2d<float> texture2D [[ texture(0) ]],
                                sampler sampler2D [[ sampler(0) ]],
                                constant FragmentUniforms &uniforms [[ buffer(0) ]]) {
-//    float4 texture = texture2D.sample(sampler2D, frag_in.tex_coord);
-    float3 color = float3(1.0f, 0.5f, 0.31f);
-    float ambient_intensity = 0.1f;
-    float diffuse_intensity = 0.1;
-    float specular_intensity = 1.0f;
+    float4 texture = texture2D.sample(sampler2D, frag_in.tex_coord);
     
+    float3 color = float3(1.0f, 0.5f, 0.31f);
+    float ambient_intensity = 0.6f;
+    float diffuse_intensity = 0.6f;
+    float specular_intensity = 1.0f;
+
     float3 norm = normalize(frag_in.frag_world_normal);
     // ambient
     float3 ambient = ambient_intensity * uniforms.light_color * uniforms.mat_ambient;
@@ -76,14 +78,14 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float3 diffuse = diffuse_factor * diffuse_intensity * uniforms.light_color * uniforms.mat_diffuse;
     
     // specular
-    float3 camera_pos = float3(0.0f, 0.0f, 10.0f);
+    float3 camera_pos = -uniforms.camera_pos;
     float3 view_dir = normalize(camera_pos - frag_in.frag_world_pos);
     float3 reflect_dir = reflect(-light_dir, norm);
-    float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), 1);
+    float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), uniforms.mat_shininess);
     float3 specular = specular_factor * specular_intensity * uniforms.light_color;
     
     color = ambient + diffuse + specular;
 //    color = float3(norm.x, norm.y, norm.z);
-    float4 final_color = float4(color, 1.0f);
+    float4 final_color = float4(color, 1.0f) * texture;
     return final_color;
 }

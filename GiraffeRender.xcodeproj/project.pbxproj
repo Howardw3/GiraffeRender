@@ -29,8 +29,8 @@
 		230A1CBC230109470025825D /* GiraffeRender.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 230A1C4322FFED6A0025825D /* GiraffeRender.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		238597A523010B6500585F46 /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
 		238597A72302754400585F46 /* GIRMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238597A62302754400585F46 /* GIRMaterial.swift */; };
-		238597AB23028A1A00585F46 /* fish.obj in Resources */ = {isa = PBXBuildFile; fileRef = 238597AA23028A1A00585F46 /* fish.obj */; };
-		8CDD38CF2304A12600B700DE /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 8CDD38CE2304A12600B700DE /* cube.obj */; };
+		23FA334D23065B22006BB484 /* cube in Resources */ = {isa = PBXBuildFile; fileRef = 23FA334C23065B22006BB484 /* cube */; };
+		23FA334F23065FA5006BB484 /* fish in Resources */ = {isa = PBXBuildFile; fileRef = 23FA334E23065FA5006BB484 /* fish */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,8 +81,8 @@
 		230A1CAD230108EB0025825D /* GIRRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRRenderer.swift; sourceTree = "<group>"; };
 		230A1CAE230108EB0025825D /* GIRCube.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRCube.swift; sourceTree = "<group>"; };
 		238597A62302754400585F46 /* GIRMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterial.swift; sourceTree = "<group>"; };
-		238597AA23028A1A00585F46 /* fish.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fish.obj; sourceTree = "<group>"; };
-		8CDD38CE2304A12600B700DE /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
+		23FA334C23065B22006BB484 /* cube */ = {isa = PBXFileReference; lastKnownFileType = folder; path = cube; sourceTree = "<group>"; };
+		23FA334E23065FA5006BB484 /* fish */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fish; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,9 +135,9 @@
 				230A1CA9230108EA0025825D /* GIRNode.swift */,
 				230A1CAD230108EB0025825D /* GIRRenderer.swift */,
 				230A1CA3230108EA0025825D /* GIRScene.swift */,
+				230A1CAA230108EB0025825D /* GIRView.swift */,
 				230A1CA7230108EA0025825D /* GIRUniform.swift */,
 				230A1CA8230108EA0025825D /* GIRVertex.swift */,
-				230A1CAA230108EB0025825D /* GIRView.swift */,
 				230A1CA4230108EA0025825D /* Matrix4.swift */,
 				230A1CA5230108EA0025825D /* Shader.metal */,
 				238597A62302754400585F46 /* GIRMaterial.swift */,
@@ -161,8 +161,8 @@
 				230A1C90230077D20025825D /* Assets.xcassets */,
 				230A1C92230077D20025825D /* LaunchScreen.storyboard */,
 				230A1C95230077D20025825D /* Info.plist */,
-				238597AA23028A1A00585F46 /* fish.obj */,
-				8CDD38CE2304A12600B700DE /* cube.obj */,
+				23FA334E23065FA5006BB484 /* fish */,
+				23FA334C23065B22006BB484 /* cube */,
 			);
 			path = GiraffeRenderDemo;
 			sourceTree = "<group>";
@@ -268,11 +268,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23FA334F23065FA5006BB484 /* fish in Resources */,
 				230A1C94230077D20025825D /* LaunchScreen.storyboard in Resources */,
-				8CDD38CF2304A12600B700DE /* cube.obj in Resources */,
 				230A1C91230077D20025825D /* Assets.xcassets in Resources */,
-				238597AB23028A1A00585F46 /* fish.obj in Resources */,
 				230A1C8F230077D20025825D /* Main.storyboard in Resources */,
+				23FA334D23065B22006BB484 /* cube in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

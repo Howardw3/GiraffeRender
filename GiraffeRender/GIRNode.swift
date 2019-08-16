@@ -9,9 +9,10 @@
 import simd
 
 public class GIRNode {
-    private var _translation: float3
+    private var _position: float3
     private var _scale: Float
     private var _rotation: float4
+    private var _eularAngles: float3
     var children: [GIRNode]
 
     public var geometry: GIRGeometry?
@@ -21,13 +22,15 @@ public class GIRNode {
         children.append(node)
     }
 
-    public var translation: float3 {
+    public var position: float3 {
         get {
-            return _translation
+            return _position
         }
         set(newVal) {
-            translate(newVal)
-            _translation = newVal
+            let delta = newVal - _position
+            translate(delta)
+            pivot += delta
+            _position = newVal
         }
     }
 
@@ -51,15 +54,31 @@ public class GIRNode {
         }
     }
 
-    private(set) var transform: float4x4
+    public var eularAngles: float3 {
+        get {
+            return _eularAngles
+        }
+        set(newVal) {
+            translate(-pivot)
+            rotate(angle: Float(newVal.x).radian, axis: float3(1.0, 0.0, 0.0))
+            rotate(angle: Float(newVal.y).radian, axis: float3(0.0, 1.0, 0.0))
+            rotate(angle: Float(newVal.z).radian, axis: float3(0.0, 0.0, 1.0))
+            translate(pivot)
+        }
+    }
+
+    public var pivot = float3()
+
+    public private(set) var transform: float4x4
 
     public init(geometry: GIRGeometry?) {
         self.geometry = geometry
         transform = matrix_identity_float4x4
-        _translation = float3()
+        _position = float3()
         _rotation = float4()
         _scale = 1.0
         children = []
+        _eularAngles = float3()
     }
 
     convenience init() {

@@ -9,7 +9,6 @@
 import Foundation
 import MetalKit
 
-
 class GIRRenderer: NSObject, MTKViewDelegate {
 
     var device: MTLDevice?
@@ -21,6 +20,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue!
     var aspectRatio: Float = 1
     var pointOfView: GIRNode
+    var shouldUpdateCamera = false
 
     init(device: MTLDevice?) {
         self.device = device
@@ -70,6 +70,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
 
     func drawScene(commandEncoder: MTLRenderCommandEncoder) {
         drawNode(scene?.rootNode, commandEncoder: commandEncoder, parent: nil)
+        shouldUpdateCamera = true
     }
 
     func createUniformBuffer() -> MTLBuffer {
@@ -78,7 +79,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     }
 
     func updateNodeView(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
-        let viewMatrix = Matrix4.translationMatrix(float3(x: 0.0, y: 0.0, z: -6))
+        let viewMatrix = pointOfView.transform
 
         var modelMatrix = node.transform
         if let parent = parent {
@@ -89,9 +90,10 @@ class GIRRenderer: NSObject, MTKViewDelegate {
 
         if let camera = pointOfView.camera {
             // only recalculate when camera spec changed
-            if camera.shouldUpdateProjMatrix {
+            if camera.shouldUpdateProjMatrix || shouldUpdateCamera {
                 projectionMatrix = Matrix4.perspective(fovy: Float(camera.fieldOfView).radian, aspect: aspectRatio, nearZ: camera.zNear, farZ: camera.zFar)
                 camera.projectionMatrix = projectionMatrix
+                shouldUpdateCamera = false
             } else {
                 projectionMatrix = camera.projectionMatrix
             }
@@ -103,7 +105,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
 
         let bufferPointer = uniformBuffer.contents()
         var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform)
-        memcpy(bufferPointer, &uniforms, MemoryLayout<GIRVertexUniforms>.size)
+        memcpy(bufferPointer, &uniforms, MemoryLayout<GIRVertexUniforms>.stride)
     }
 
     func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?) {
@@ -113,22 +115,27 @@ class GIRRenderer: NSObject, MTKViewDelegate {
 
         let uniformBuffer = createUniformBuffer()
         updateNodeView(node, parent: parent, uniformBuffer: uniformBuffer)
-        
+
         var fragmentUniforms = GIRFragmentUniforms()
-        
+        fragmentUniforms.cameraPosition = pointOfView.position
         if let material = node.geometry?.materials.first {
             commandEncoder.setFragmentTexture(material.albedoTexture, index: 0)
             if let samplerState = samplerState {
                 commandEncoder.setFragmentSamplerState(samplerState, index: 0)
             }
-            
+
             fragmentUniforms.matAmbient = material.ambient
             fragmentUniforms.matDiffuse = material.diffuse
             fragmentUniforms.matSpecular = material.specular
-//            fragmentUniforms.matShininess = material.shininess
+            fragmentUniforms.matShininess = material.shininess
         }
-        
-        commandEncoder.setFragmentBytes(&fragmentUniforms, length: MemoryLayout<GIRFragmentUniforms>.size, index: 0)
+
+        let uniformDataLength = GIRFragmentUniforms.length
+        let framgentUniformBuffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
+        var fragmentUniformsRaw = fragmentUniforms.raw
+        commandEncoder.setFragmentBuffer(framgentUniformBuffer, offset: 0, index: 0)
+        let bufferPointer = framgentUniformBuffer.contents()
+        memcpy(bufferPointer, &fragmentUniformsRaw, uniformDataLength)
 
         if let mesh = node.geometry?.mesh {
             drawMesh(mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
