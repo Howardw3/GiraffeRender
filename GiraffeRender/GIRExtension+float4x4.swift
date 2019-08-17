@@ -1,35 +1,14 @@
 //
-//  Matrix4.swift
+//  GIRExtension+float4x4.swift
 //  GiraffeRender
 //
 //  Created by Howard Wang on 8/10/19.
 //  Copyright © 2019 Jiongzhi Wang. All rights reserved.
 //
 
-import GLKit
+import simd
 
-struct Matrix4 {
-    static let count = 16
-    static let size = MemoryLayout<Float>.size
-    static let length = MemoryLayout<Float>.size * 16
-
-    private(set) var m: float4x4
-
-    static func convertGLKToSimd(_ m: GLKMatrix4) -> float4x4 {
-        return float4x4(float4(m.m00, m.m01, m.m02, m.m03),
-                        float4( m.m10, m.m11, m.m12, m.m13 ),
-                        float4( m.m20, m.m21, m.m22, m.m23 ),
-                        float4( m.m30, m.m31, m.m32, m.m33 ))
-    }
-
-    public init(m: float4x4) {
-        self.m = m
-    }
-
-    init() {
-        self.m = matrix_identity_float4x4
-    }
-
+extension float4x4 {
     static func translationMatrix(_ position: float3) -> float4x4 {
         var m = matrix_identity_float4x4
         m.columns.3.x = position.x
@@ -68,7 +47,40 @@ struct Matrix4 {
                           0.0)
 
         let colw = float4(0, 0, 0, 1)
-        return float4x4(columns: (colx, coly, colz, colw))
+        return float4x4(colx, coly, colz, colw)
+    }
+
+    static func rotationXMatrix(radians: Float) -> float4x4 {
+        let cos = cosf(radians)
+        let sin = sinf(radians)
+        let colX = float4(1.0, 0.0, 0.0, 0.0)
+        let colY = float4(0.0, cos, sin, 0.0)
+        let colZ = float4(0.0, -sin, cos, 0.0)
+        let colW = float4(0.0, 0.0, 0.0, 1.0)
+
+        return float4x4(colX, colY, colZ, colW)
+    }
+
+    static func rotationYMatrix(radians: Float) -> float4x4 {
+        let cos = cosf(radians)
+        let sin = sinf(radians)
+        let colX = float4(cos, 0.0, -sin, 0.0)
+        let colY = float4(0.0, 1.0, 0.0, 0.0)
+        let colZ = float4(sin, 0.0, cos, 0.0)
+        let colW = float4(0.0, 0.0, 0.0, 1.0)
+
+        return float4x4(colX, colY, colZ, colW)
+    }
+
+    static func rotationZMatrix(radians: Float) -> float4x4 {
+        let cos = cosf(radians)
+        let sin = sinf(radians)
+        let colX = float4(cos, sin, 0.0, 0.0)
+        let colY = float4(-sin, cos, 0.0, 0.0)
+        let colZ = float4(0.0, 0.0, 1.0, 0.0)
+        let colW = float4(0.0, 0.0, 0.0, 1.0)
+
+        return float4x4(colX, colY, colZ, colW)
     }
 
     static func perspective(fovy fovyRadians: Float, aspect: Float, nearZ: Float, farZ: Float) -> float4x4 {

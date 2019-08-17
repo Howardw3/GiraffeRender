@@ -22,13 +22,15 @@ class ViewController: UIViewController {
     var sphereNode: GIRNode!
     var scene: GIRScene!
     let cubePositions: [float3] = [
-//        float3( 2.0,  -2.0, -4.0),
-//        float3(-1.5, -2.2, -6.5),
-//        float3(0.8, -2.0, -4.3),
-//        float3( 2.4, -2.4, -4.5),
-        float3( 0.0, 2.0, 0.0)
+        float3( 2.0, -2.0, -4.0),
+        float3(-1.5, -2.2, -6.5),
+        float3(0.8, 2.0, -4.3),
+        float3(2.8, 1.0, -7.3),
+        float3( 2.4, -2.4, -4.5),
+        float3( 2.0, 1.0, 0.0)
     ]
-    var cameraPos = float3()
+    var cameraPos = float3(0, 0, -10)
+    var currNodePos = float3()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,21 +44,33 @@ class ViewController: UIViewController {
 //        currNode = fishNode
 
         currNode = cubeNode
+        currNodePos = currNode.position
 //        scene.rootNode.addChild(sphereNode)
 
         giraffeView.scene = scene
-        scene.pointOfView.position = float3(0, 0, -10)
+        scene.pointOfView.position = cameraPos
         scene.pointOfView.camera?.fieldOfView = 29
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(recognizePinch(pinch:)))
-        giraffeView.addGestureRecognizer(pinchGesture)
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(recognizePinch(_:)))
+//        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(recognizePan(_:)))
+//        giraffeView.addGestureRecognizer(pinchGesture)
+//        giraffeView.addGestureRecognizer(panGesture)
+        self.giraffeView.isMultipleTouchEnabled = true
     }
 
     @objc
-    func recognizePinch(pinch: UIPinchGestureRecognizer) {
-        cameraPos.z = 1 - Float(pinch.scale)
+    func recognizePinch(_ recognizer: UIPinchGestureRecognizer) {
+        cameraPos.z += 1 - Float(recognizer.scale)
         scene.pointOfView.position = cameraPos
-        print(scene.pointOfView.position)
     }
+
+//    @objc func recognizePan(_ recognizer: UIPanGestureRecognizer) {
+//        if recognizer.numberOfTouches == 1 {
+//            let curr = recognizer.translation(in: self.view)
+//            let velocity = recognizer.velocity(in: self.view)
+//            print(curr, velocity)
+//            currNode.eularAngles += float3(Float(curr.y / velocity.x), Float(curr.x / velocity.y), 0)
+//        }
+//    }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {
@@ -66,13 +80,11 @@ class ViewController: UIViewController {
         let curr = touch.location(in: view)
         let prev = touch.previousLocation(in: view)
         let diff = CGPoint(x: curr.x - prev.x, y: curr.y - prev.y)
-
-        currNode.eularAngles = float3(Float(diff.y), Float(diff.x), 0)
-        print(currNode.position)
-//        currNode.rotation = float4(1, 0, 0, Float(diff.y).radian)
-//        currNode.rotation = float4(0, 1, 0, Float(diff.x).radian)
-
-//        boxNode.translation = float3(Float(diff.x) / 100, Float(diff.y) / 100, 0)
+        if touches.count == 1 {
+            currNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+        } else {
+            currNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+        }
     }
 
     func createFish() -> GIRNode {
@@ -96,14 +108,8 @@ class ViewController: UIViewController {
         for i in 0..<cubePositions.count {
             cubeNode = createFish()
             cubeNode.position = cubePositions[i]
-            cubeNode.eularAngles = float3(Float(i * 20), 0, 0)
+            cubeNode.eularAngles = float3(1, 1, 1) * Float(i * 20)
             scene.rootNode.addChild(cubeNode)
         }
-    }
-}
-
-extension Float {
-    var radian: Float {
-        return self * .pi / 180
     }
 }

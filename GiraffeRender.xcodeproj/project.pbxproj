@@ -14,7 +14,7 @@
 		230A1C91230077D20025825D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 230A1C90230077D20025825D /* Assets.xcassets */; };
 		230A1C94230077D20025825D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 230A1C92230077D20025825D /* LaunchScreen.storyboard */; };
 		230A1CAF230108EB0025825D /* GIRScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA3230108EA0025825D /* GIRScene.swift */; };
-		230A1CB0230108EB0025825D /* Matrix4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA4230108EA0025825D /* Matrix4.swift */; };
+		230A1CB0230108EB0025825D /* GIRExtension+float4x4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA4230108EA0025825D /* GIRExtension+float4x4.swift */; };
 		230A1CB1230108EB0025825D /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
 		230A1CB2230108EB0025825D /* GIRExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA6230108EA0025825D /* GIRExtension.swift */; };
 		230A1CB3230108EB0025825D /* GIRUniform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA7230108EA0025825D /* GIRUniform.swift */; };
@@ -69,7 +69,7 @@
 		230A1C93230077D20025825D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		230A1C95230077D20025825D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		230A1CA3230108EA0025825D /* GIRScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRScene.swift; sourceTree = "<group>"; };
-		230A1CA4230108EA0025825D /* Matrix4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4.swift; sourceTree = "<group>"; };
+		230A1CA4230108EA0025825D /* GIRExtension+float4x4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GIRExtension+float4x4.swift"; sourceTree = "<group>"; };
 		230A1CA5230108EA0025825D /* Shader.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
 		230A1CA6230108EA0025825D /* GIRExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRExtension.swift; sourceTree = "<group>"; };
 		230A1CA7230108EA0025825D /* GIRUniform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRUniform.swift; sourceTree = "<group>"; };
@@ -131,6 +131,7 @@
 				230A1CAE230108EB0025825D /* GIRCube.swift */,
 				230A1CAC230108EB0025825D /* GIRCamera.swift */,
 				230A1CA6230108EA0025825D /* GIRExtension.swift */,
+				230A1CA4230108EA0025825D /* GIRExtension+float4x4.swift */,
 				230A1CAB230108EB0025825D /* GIRGeometry.swift */,
 				230A1CA9230108EA0025825D /* GIRNode.swift */,
 				230A1CAD230108EB0025825D /* GIRRenderer.swift */,
@@ -138,7 +139,6 @@
 				230A1CAA230108EB0025825D /* GIRView.swift */,
 				230A1CA7230108EA0025825D /* GIRUniform.swift */,
 				230A1CA8230108EA0025825D /* GIRVertex.swift */,
-				230A1CA4230108EA0025825D /* Matrix4.swift */,
 				230A1CA5230108EA0025825D /* Shader.metal */,
 				238597A62302754400585F46 /* GIRMaterial.swift */,
 			);
@@ -293,7 +293,7 @@
 				230A1CAF230108EB0025825D /* GIRScene.swift in Sources */,
 				230A1CB6230108EB0025825D /* GIRView.swift in Sources */,
 				230A1CB8230108EB0025825D /* GIRCamera.swift in Sources */,
-				230A1CB0230108EB0025825D /* Matrix4.swift in Sources */,
+				230A1CB0230108EB0025825D /* GIRExtension+float4x4.swift in Sources */,
 				230A1CB9230108EB0025825D /* GIRRenderer.swift in Sources */,
 				230A1CB3230108EB0025825D /* GIRUniform.swift in Sources */,
 			);

@@ -91,14 +91,14 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         if let camera = pointOfView.camera {
             // only recalculate when camera spec changed
             if camera.shouldUpdateProjMatrix || shouldUpdateCamera {
-                projectionMatrix = Matrix4.perspective(fovy: Float(camera.fieldOfView).radian, aspect: aspectRatio, nearZ: camera.zNear, farZ: camera.zFar)
+                projectionMatrix = float4x4.perspective(fovy: Float(camera.fieldOfView).radian, aspect: aspectRatio, nearZ: camera.zNear, farZ: camera.zFar)
                 camera.projectionMatrix = projectionMatrix
                 shouldUpdateCamera = false
             } else {
                 projectionMatrix = camera.projectionMatrix
             }
         } else {
-            projectionMatrix = Matrix4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0, farZ: 200)
+            projectionMatrix = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0, farZ: 200)
         }
 
         let viewProjectionMatrix = simd_mul(projectionMatrix, viewMatrix)

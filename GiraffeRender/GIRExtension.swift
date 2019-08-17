@@ -7,7 +7,7 @@
 //
 
 import Foundation
-extension Float {
+public extension Float {
     var radian: Float {
         return self * .pi / 180
     }
