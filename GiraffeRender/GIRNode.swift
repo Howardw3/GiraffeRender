@@ -18,8 +18,9 @@ public class GIRNode {
     var children: [GIRNode]
 
     public var geometry: GIRGeometry?
-
     public var camera: GIRCamera?
+    public var light: GIRLight?
+
     public func addChild(_ node: GIRNode) {
         children.append(node)
     }
@@ -96,7 +97,7 @@ public class GIRNode {
         _shouldUpdateTransform = false
     }
 
-    convenience init() {
+    public convenience init() {
         self.init(geometry: nil)
     }
 }

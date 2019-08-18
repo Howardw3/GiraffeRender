@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina6_1" orientation="portrait">
+    <device id="retina6_1" orientation="landscape">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -15,20 +15,50 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="GiraffeRenderDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="TVI-1I-95i" customClass="GIRView" customModule="GiraffeRender">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </mtkView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0RE-Dk-RZg">
+                                <rect key="frame" x="800" y="20" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="Wub-2v-rRJ"/>
+                                </constraints>
+                                <state key="normal" title="Object"/>
+                                <connections>
+                                    <action selector="didTapObjectButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="yxc-zl-9Ar"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YNL-gU-P3u">
+                                <rect key="frame" x="811" y="96" width="35" height="30"/>
+                                <state key="normal" title="Light"/>
+                                <connections>
+                                    <action selector="didTapLightButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cCS-yq-E5Y"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IBw-Hu-A83">
+                                <rect key="frame" x="792" y="58" width="54" height="30"/>
+                                <state key="normal" title="Camera"/>
+                                <connections>
+                                    <action selector="didTapCameraButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="TcQ-In-0h0"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="TVI-1I-95i" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="1oV-Gq-A3m"/>
                             <constraint firstAttribute="bottom" secondItem="TVI-1I-95i" secondAttribute="bottom" id="2DR-Io-4ea"/>
                             <constraint firstItem="TVI-1I-95i" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="YIN-fQ-GPV"/>
+                            <constraint firstItem="IBw-Hu-A83" firstAttribute="trailing" secondItem="0RE-Dk-RZg" secondAttribute="trailing" id="ZTc-cU-6gT"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="0RE-Dk-RZg" secondAttribute="trailing" constant="6" id="av4-Jx-Hwa"/>
+                            <constraint firstItem="YNL-gU-P3u" firstAttribute="top" secondItem="IBw-Hu-A83" secondAttribute="bottom" constant="8" id="fAB-q2-lAZ"/>
+                            <constraint firstItem="YNL-gU-P3u" firstAttribute="trailing" secondItem="IBw-Hu-A83" secondAttribute="trailing" id="fqR-nu-2Hh"/>
+                            <constraint firstItem="0RE-Dk-RZg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="iuq-b6-h3q"/>
                             <constraint firstAttribute="trailing" secondItem="TVI-1I-95i" secondAttribute="trailing" id="kmG-9c-SgQ"/>
+                            <constraint firstItem="IBw-Hu-A83" firstAttribute="top" secondItem="0RE-Dk-RZg" secondAttribute="bottom" constant="8" id="pqf-zz-Sdt"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

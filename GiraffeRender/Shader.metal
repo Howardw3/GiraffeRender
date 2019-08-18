@@ -63,8 +63,8 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
                                constant FragmentUniforms &uniforms [[ buffer(0) ]]) {
     float4 texture = texture2D.sample(sampler2D, frag_in.tex_coord);
     
-    float3 color = float3(1.0f, 0.5f, 0.31f);
-    float ambient_intensity = 0.6f;
+    float3 color = float3();
+    float ambient_intensity = 0.99f;
     float diffuse_intensity = 0.6f;
     float specular_intensity = 1.0f;
 

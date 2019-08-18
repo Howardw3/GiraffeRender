@@ -13,12 +13,19 @@ import simd
 //import SceneKit
 
 class ViewController: UIViewController {
-
+    enum GestureControl {
+        case camera
+        case light
+        case object
+    }
+    
     @IBOutlet weak var giraffeView: GIRView!
 
     var fishNode: GIRNode!
     var cubeNode: GIRNode!
     var currNode: GIRNode!
+    var currCameraNode: GIRNode!
+    var currLightNode: GIRNode!
     var sphereNode: GIRNode!
     var scene: GIRScene!
     let cubePositions: [float3] = [
@@ -30,61 +37,72 @@ class ViewController: UIViewController {
         float3( 2.0, 1.0, 0.0)
     ]
     var cameraPos = float3(0, 0, -10)
-    var currNodePos = float3()
-
+    var currGestureControl: GestureControl = .object
+    var prevPos = CGPoint.zero
     override func viewDidLoad() {
         super.viewDidLoad()
 
         scene = GIRScene()
         createCubes()
-//        createCube()
-//        createFish()
-//        createSphere()
-//        scene.rootNode.addChild(fishNode)
-//        currNode = fishNode
 
         currNode = cubeNode
-        currNodePos = currNode.position
-//        scene.rootNode.addChild(sphereNode)
-
+        currLightNode = createLightNode()
+        currCameraNode = scene.pointOfView
         giraffeView.scene = scene
         scene.pointOfView.position = cameraPos
         scene.pointOfView.camera?.fieldOfView = 29
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(recognizePinch(_:)))
-//        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(recognizePan(_:)))
-//        giraffeView.addGestureRecognizer(pinchGesture)
-//        giraffeView.addGestureRecognizer(panGesture)
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(recognizePan(_:)))
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(recognizeDoubleTap))
+        doubleTapGesture.numberOfTapsRequired = 2
+        giraffeView.addGestureRecognizer(doubleTapGesture)
+        giraffeView.addGestureRecognizer(pinchGesture)
+        giraffeView.addGestureRecognizer(panGesture)
         self.giraffeView.isMultipleTouchEnabled = true
     }
-
-    @objc
-    func recognizePinch(_ recognizer: UIPinchGestureRecognizer) {
-        cameraPos.z += 1 - Float(recognizer.scale)
-        scene.pointOfView.position = cameraPos
+    
+    @objc func recognizePan(_ recognizer: UIPanGestureRecognizer) {
+        let curr = recognizer.translation(in: self.view)
+        let diff = CGPoint(x: curr.x - prevPos.x, y: curr.y - prevPos.y)
+        prevPos = curr
+        
+        switch currGestureControl {
+        case .camera:
+            if recognizer.numberOfTouches == 1 {
+                currCameraNode.pivot = float3(0, 0, 0)
+                currCameraNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+            } else if recognizer.numberOfTouches == 2 {
+                currNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+            }
+        case .light:
+            if recognizer.numberOfTouches == 1 {
+                currLightNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+            } else if recognizer.numberOfTouches == 2 {
+                currLightNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+            }
+        case .object:
+            if recognizer.numberOfTouches == 1 {
+                currNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+            } else if recognizer.numberOfTouches == 2 {
+                currNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+            }
+        }
     }
-
-//    @objc func recognizePan(_ recognizer: UIPanGestureRecognizer) {
-//        if recognizer.numberOfTouches == 1 {
-//            let curr = recognizer.translation(in: self.view)
-//            let velocity = recognizer.velocity(in: self.view)
-//            print(curr, velocity)
-//            currNode.eularAngles += float3(Float(curr.y / velocity.x), Float(curr.x / velocity.y), 0)
-//        }
-//    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else {
-            return
+    
+    @objc func recognizePinch(_ recognizer: UIPinchGestureRecognizer) {
+        let scale = Float(recognizer.scale) - 1
+        switch currGestureControl {
+        case .camera:
+            currCameraNode.position.z += scale
+        case .light:
+            currLightNode.position.z += scale
+        case .object:
+            currNode.position.z += scale
         }
-
-        let curr = touch.location(in: view)
-        let prev = touch.previousLocation(in: view)
-        let diff = CGPoint(x: curr.x - prev.x, y: curr.y - prev.y)
-        if touches.count == 1 {
-            currNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
-        } else {
-            currNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
-        }
+    }
+    
+    @objc func recognizeDoubleTap() {
+        
     }
 
     func createFish() -> GIRNode {
@@ -93,9 +111,9 @@ class ViewController: UIViewController {
         return GIRNode(geometry: fish)
     }
 
-    func createCube() -> GIRNode {
-        let cube = GIRGeometry(name: "cube/RubixCube", ext: "obj")
-        cube.addMaterial(name: "Diffuse_Normal")
+    func createTexturedCube() -> GIRNode {
+        let cube = GIRGeometry(name: "textured_cube/textured_cube", ext: "obj")
+        cube.addMaterial(name: "textured_cube_alb")
         return GIRNode(geometry: cube)
 
 //        if let material = cube.materials.first {
@@ -103,13 +121,47 @@ class ViewController: UIViewController {
 //            material.
 //        }
     }
-
+    
+    func createCube() -> GIRNode {
+        let cube = GIRGeometry(name: "cube/cube", ext: "obj")
+        cube.addMaterial(name: "cube_alb")
+        return GIRNode(geometry: cube)
+    }
+    
+    func createLightNode() -> GIRNode {
+        let light = GIRLight(type: .ambient)
+        light.color = UIColor.white.cgColor
+        let lightNode = createCube()
+        lightNode.light = light
+        return lightNode
+    }
+    
     func createCubes() {
         for i in 0..<cubePositions.count {
-            cubeNode = createFish()
+            cubeNode = createTexturedCube()
             cubeNode.position = cubePositions[i]
+            cubeNode.scale = 1.0
             cubeNode.eularAngles = float3(1, 1, 1) * Float(i * 20)
             scene.rootNode.addChild(cubeNode)
         }
+    }
+    @IBAction func didTapObjectButton(_ sender: Any) {
+        currGestureControl = .object
+    }
+    
+    @IBAction func didTapCameraButton(_ sender: Any) {
+        currGestureControl = .camera
+    }
+    
+    @IBAction func didTapLightButton(_ sender: Any) {
+        currGestureControl = .light
+    }
+}
+
+extension ViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_: UIGestureRecognizer,  shouldRecognizeSimultaneouslyWith: UIGestureRecognizer) -> Bool
+    {
+        return true
+        
     }
 }

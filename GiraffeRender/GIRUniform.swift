@@ -15,8 +15,8 @@ struct GIRVertexUniforms {
 
 struct GIRFragmentUniforms {
     var cameraPosition = float3(0, 0, 0)
-    var lightColor = float3(1, 1, 0.5)
-    var lightPosition = float3(0, 0, 20)
+    var lightColor = float3(1, 0.0, 0.0)
+    var lightPosition = float3(0, 0, 2)
     var matDiffuse = float3(1, 1, 1)
     var matSpecular = float3(1, 1, 1)
     var matAmbient = float3(1, 1, 1)
@@ -27,4 +27,6 @@ struct GIRFragmentUniforms {
         let array = [cameraPosition.x, cameraPosition.y, cameraPosition.z, lightColor.x, lightColor.y, lightColor.z, lightPosition.x, lightPosition.y, lightPosition.z, matDiffuse.x, matDiffuse.y, matDiffuse.z, matSpecular.x, matSpecular.y, matSpecular.z, matAmbient.x, matAmbient.y, matAmbient.z, matShininess]
         return array
     }
+    
+    
 }

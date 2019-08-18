@@ -129,6 +129,10 @@ class GIRRenderer: NSObject, MTKViewDelegate {
             fragmentUniforms.matSpecular = material.specular
             fragmentUniforms.matShininess = material.shininess
         }
+        
+        if let light = node.light {
+//            fragmentUniforms.ma
+        }
 
         let uniformDataLength = GIRFragmentUniforms.length
         let framgentUniformBuffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
