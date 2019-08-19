@@ -143,9 +143,9 @@
 				230A1CAA230108EB0025825D /* GIRView.swift */,
 				230A1CA7230108EA0025825D /* GIRUniform.swift */,
 				230A1CA8230108EA0025825D /* GIRVertex.swift */,
-				230A1CA5230108EA0025825D /* Shader.metal */,
 				238597A62302754400585F46 /* GIRMaterial.swift */,
 				8C2D53302308D68F0063F9BB /* GIRLight.swift */,
+				230A1CA5230108EA0025825D /* Shader.metal */,
 			);
 			path = GiraffeRender;
 			sourceTree = "<group>";

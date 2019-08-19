@@ -43,14 +43,16 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         scene = GIRScene()
-        createCubes()
-
-        currNode = cubeNode
         currLightNode = createLightNode()
+        scene.rootNode.addChild(currLightNode)
+        createCubes()
+        currNode = cubeNode
+        
         currCameraNode = scene.pointOfView
         giraffeView.scene = scene
         scene.pointOfView.position = cameraPos
         scene.pointOfView.camera?.fieldOfView = 29
+        
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(recognizePinch(_:)))
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(recognizePan(_:)))
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(recognizeDoubleTap))
@@ -68,14 +70,14 @@ class ViewController: UIViewController {
         
         switch currGestureControl {
         case .camera:
-            if recognizer.numberOfTouches == 1 {
+            if recognizer.numberOfTouches == 1 && 1 == 2 { // disable now
                 currCameraNode.pivot = float3(0, 0, 0)
                 currCameraNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
             } else if recognizer.numberOfTouches == 2 {
-                currNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+                currCameraNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
             }
         case .light:
-            if recognizer.numberOfTouches == 1 {
+            if recognizer.numberOfTouches == 1 && 1 == 2 { // disable now
                 currLightNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
             } else if recognizer.numberOfTouches == 2 {
                 currLightNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
@@ -130,8 +132,10 @@ class ViewController: UIViewController {
     
     func createLightNode() -> GIRNode {
         let light = GIRLight(type: .ambient)
-        light.color = UIColor.white.cgColor
+        light.color = UIColor.red.cgColor
         let lightNode = createCube()
+        lightNode.position = float3(2.0, 0.0, 2.0)
+        lightNode.scale = 0.2
         lightNode.light = light
         return lightNode
     }
@@ -159,9 +163,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_: UIGestureRecognizer,  shouldRecognizeSimultaneouslyWith: UIGestureRecognizer) -> Bool
-    {
+    func gestureRecognizer(_: UIGestureRecognizer,  shouldRecognizeSimultaneouslyWith: UIGestureRecognizer) -> Bool {
         return true
-        
     }
 }

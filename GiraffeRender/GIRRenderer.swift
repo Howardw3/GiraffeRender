@@ -21,7 +21,8 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     var aspectRatio: Float = 1
     var pointOfView: GIRNode
     var shouldUpdateCamera = false
-
+    var lightsInScene: [String: GIRLight.LightRaw] = [:]
+    
     init(device: MTLDevice?) {
         self.device = device
         self.nextFrameTime = 0
@@ -78,7 +79,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         return (device?.makeBuffer(length: uniformDataLength, options: []))!
     }
 
-    func updateNodeView(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
+    func updateModelViewProj(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
         let viewMatrix = pointOfView.transform
 
         var modelMatrix = node.transform
@@ -102,10 +103,8 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         }
 
         let viewProjectionMatrix = simd_mul(projectionMatrix, viewMatrix)
-
-        let bufferPointer = uniformBuffer.contents()
         var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform)
-        memcpy(bufferPointer, &uniforms, MemoryLayout<GIRVertexUniforms>.stride)
+        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.stride)
     }
 
     func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?) {
@@ -114,32 +113,9 @@ class GIRRenderer: NSObject, MTKViewDelegate {
         }
 
         let uniformBuffer = createUniformBuffer()
-        updateNodeView(node, parent: parent, uniformBuffer: uniformBuffer)
-
-        var fragmentUniforms = GIRFragmentUniforms()
-        fragmentUniforms.cameraPosition = pointOfView.position
-        if let material = node.geometry?.materials.first {
-            commandEncoder.setFragmentTexture(material.albedoTexture, index: 0)
-            if let samplerState = samplerState {
-                commandEncoder.setFragmentSamplerState(samplerState, index: 0)
-            }
-
-            fragmentUniforms.matAmbient = material.ambient
-            fragmentUniforms.matDiffuse = material.diffuse
-            fragmentUniforms.matSpecular = material.specular
-            fragmentUniforms.matShininess = material.shininess
-        }
-        
-        if let light = node.light {
-//            fragmentUniforms.ma
-        }
-
-        let uniformDataLength = GIRFragmentUniforms.length
-        let framgentUniformBuffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
-        var fragmentUniformsRaw = fragmentUniforms.raw
-        commandEncoder.setFragmentBuffer(framgentUniformBuffer, offset: 0, index: 0)
-        let bufferPointer = framgentUniformBuffer.contents()
-        memcpy(bufferPointer, &fragmentUniformsRaw, uniformDataLength)
+        updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
+        copyMaterialMemory(node: node, commandEncoder: commandEncoder)
+        copyLightMemory(node: node, commandEncoder: commandEncoder)
 
         if let mesh = node.geometry?.mesh {
             drawMesh(mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
@@ -149,7 +125,50 @@ class GIRRenderer: NSObject, MTKViewDelegate {
             drawNode(child, commandEncoder: commandEncoder, parent: node)
         }
     }
-
+    
+    // the first frame will skip lighting
+    func copyLightMemory(node: GIRNode, commandEncoder: MTLRenderCommandEncoder) {
+        // TODO: should use buffer pool
+        let lightBuffer = (device?.makeBuffer(length: GIRLight.LightRaw.length, options: []))!
+        commandEncoder.setFragmentBuffer(lightBuffer, offset: 0, index: 1)
+        if let light = node.light {
+            lightsInScene[light.name] = GIRLight.LightRaw(position: node.position, direction: float3(node.rotation.x, node.rotation.y, node.rotation.z), color: light.convertedColor)
+        }
+        
+        if lightsInScene.isEmpty {
+            var lightRaw = GIRLight.LightRaw()
+            memcpy(lightBuffer.contents(), &lightRaw, GIRLight.LightRaw.length)
+            return
+        }
+        
+        for (_, light) in lightsInScene {
+            var light = light
+            memcpy(lightBuffer.contents(), &light, GIRLight.LightRaw.length)
+        }
+    }
+    
+    func copyMaterialMemory(node: GIRNode, commandEncoder: MTLRenderCommandEncoder) {
+        var fragmentUniforms = GIRFragmentUniforms()
+        fragmentUniforms.cameraPosition = pointOfView.position
+        if let material = node.geometry?.materials.first {
+            commandEncoder.setFragmentTexture(material.albedoTexture, index: 0)
+            if let samplerState = samplerState {
+                commandEncoder.setFragmentSamplerState(samplerState, index: 0)
+            }
+            
+            fragmentUniforms.matAmbient = material.ambient
+            fragmentUniforms.matDiffuse = material.diffuse
+            fragmentUniforms.matSpecular = material.specular
+            fragmentUniforms.matShininess = material.shininess
+        }
+        
+        let framgentUniformBuffer = (device?.makeBuffer(length: GIRFragmentUniforms.length, options: []))!
+        var fragmentUniformsRaw = fragmentUniforms.raw
+        commandEncoder.setFragmentBuffer(framgentUniformBuffer, offset: 0, index: 0)
+        let bufferPointer = framgentUniformBuffer.contents()
+        memcpy(bufferPointer, &fragmentUniformsRaw, GIRFragmentUniforms.length)
+    }
+    
     func drawMesh(_ mesh: MTKMesh, commandEncoder: MTLRenderCommandEncoder, uniformBuffer: MTLBuffer) {
         guard let vertexBuffer = mesh.vertexBuffers.first else {
             return
