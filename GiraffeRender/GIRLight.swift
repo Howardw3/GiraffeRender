@@ -29,7 +29,7 @@ public class GIRLight {
         self.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [1, 1, 1, 1])!
         self.name = "Light_" + UUID().uuidString
         self.intensity = 1.0
-        self.direction = float3(0, 0, -1)
+        self.direction = float3(0, 1, 0)
         self.spotInnerAngle = 30.0
         self.spotOuterAngle = 40.0
     }
@@ -48,14 +48,15 @@ public class GIRLight {
 }
 
 extension GIRLight {
-    public enum LightType {
+    public enum LightType: Int {
         case ambient
         case directional
-        case omini
+        case omni
         case spot
     }
 
     struct LightRaw {
+        var type: UInt = 0
         var positionX: Float = 0.0
         var positionY: Float = 0.0
         var positionZ: Float = 0.0
@@ -69,9 +70,13 @@ extension GIRLight {
         var spotInnerRadian: Float = Float(10).radian
         var spotOuterRadian: Float = Float(17).radian
 
-        static let length = MemoryLayout<LightRaw>.stride
+        static let length = MemoryLayout<LightRaw>.size
 
-        init(position: float3, direction: float3, color: float3) {
+        init(type: Int, position: float3, direction: float3, color: float3,
+             intensity: Float = 1.0,
+             spotInnerRadian: Float = Float(10).radian,
+             spotOuterRadian: Float = Float(17).radian) {
+            self.type = UInt(type)
             self.positionX = position.x
             self.positionY = position.y
             self.positionZ = position.z
@@ -81,6 +86,9 @@ extension GIRLight {
             self.colorR = color.x
             self.colorG = color.y
             self.colorB = color.z
+            self.intensity = intensity
+            self.spotInnerRadian = spotInnerRadian
+            self.spotOuterRadian = spotOuterRadian
         }
 
         init() {

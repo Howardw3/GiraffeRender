@@ -9,6 +9,11 @@
 #include <metal_stdlib>
 using namespace metal;
 
+constant int LIGHT_TYPE_AMBIENT = 0;
+constant int LIGHT_TYPE_DIRECTIONAL = 1;
+constant int LIGHT_TYPE_OMNI = 2;
+constant int LIGHT_TYPE_SPOT = 3;
+
 struct Vertex {
     float4 position [[position]];
     float4 color;
@@ -41,6 +46,7 @@ struct FragmentUniforms {
 };
 
 struct Light {
+    int2 type;
     packed_float3 position;
     packed_float3 direction;
     packed_float3 color;
@@ -72,7 +78,7 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float4 texture = texture2D.sample(sampler2D, frag_in.tex_coord);
     float3 light_dir = normalize(light.position - frag_in.frag_world_pos);
     
-    // point light
+    // omni light
     float light_dist = length(light.position - frag_in.frag_world_pos);
     float light_const = 1.0f;
     float light_liner = 0.09f;
@@ -93,7 +99,10 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float3 norm = normalize(frag_in.frag_world_normal);
     // ambient
     float3 ambient = ambient_intensity * light.color * uniforms.mat_ambient;
-    
+
+    if (light.type.x == LIGHT_TYPE_DIRECTIONAL) {
+        light_dir = light_direction_neg;
+    }
     // diffuse
     float diffuse_factor = max(dot(norm, light_dir), 0.0f);
     float3 diffuse = diffuse_factor * diffuse_intensity * light.color * uniforms.mat_diffuse;
@@ -105,7 +114,16 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), uniforms.mat_shininess);
     float3 specular = specular_factor * specular_intensity * light.color;
     
-    color = ambient + diffuse * spot_intensity + specular * spot_intensity;
+    if (light.type.x == LIGHT_TYPE_OMNI) {
+        ambient *= attenuation;
+        diffuse *= attenuation;
+        specular *= attenuation;
+    } else if (light.type.x == LIGHT_TYPE_SPOT) {
+        ambient = 0;
+        diffuse *= spot_intensity;
+        specular *= spot_intensity;
+    }
+    color = ambient + diffuse + specular;
 //    color = float3(norm.x, norm.y, norm.z);
     float4 final_color = float4(color, 1.0f) * texture * 4;
     return final_color;

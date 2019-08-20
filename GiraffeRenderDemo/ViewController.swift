@@ -20,6 +20,9 @@ class ViewController: UIViewController {
     }
 
     @IBOutlet weak var giraffeView: GIRView!
+    @IBOutlet weak var objectButton: UIButton!
+    @IBOutlet weak var cameraButton: UIButton!
+    @IBOutlet weak var lightButton: UIButton!
 
     var fishNode: GIRNode!
     var cubeNode: GIRNode!
@@ -38,6 +41,7 @@ class ViewController: UIViewController {
     ]
     var cameraPos = float3(0, 0, -10)
     var currGestureControl: GestureControl = .object
+    let feedbackGenerator = UIImpactFeedbackGenerator()
     var prevPos = CGPoint.zero
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,10 +60,12 @@ class ViewController: UIViewController {
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(recognizePinch(_:)))
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(recognizePan(_:)))
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(recognizeDoubleTap))
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(recognizeLongPress(_:)))
         doubleTapGesture.numberOfTapsRequired = 2
         giraffeView.addGestureRecognizer(doubleTapGesture)
         giraffeView.addGestureRecognizer(pinchGesture)
         giraffeView.addGestureRecognizer(panGesture)
+        giraffeView.addGestureRecognizer(longPressGesture)
         self.giraffeView.isMultipleTouchEnabled = true
     }
 
@@ -67,26 +73,30 @@ class ViewController: UIViewController {
         let curr = recognizer.translation(in: self.view)
         let diff = CGPoint(x: curr.x - prevPos.x, y: curr.y - prevPos.y)
         prevPos = curr
-
-        switch currGestureControl {
-        case .camera:
-            if recognizer.numberOfTouches == 1 && 1 == 2 { // disable now
-                currCameraNode.pivot = float3(0, 0, 0)
-                currCameraNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
-            } else if recognizer.numberOfTouches == 2 {
-                currCameraNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
-            }
-        case .light:
-            if recognizer.numberOfTouches == 1 { // disable now
-                currLightNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
-            } else if recognizer.numberOfTouches == 2 {
-                currLightNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
-            }
-        case .object:
-            if recognizer.numberOfTouches == 1 {
-                currNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
-            } else if recognizer.numberOfTouches == 2 {
-                currNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+        if recognizer.state == .began {
+            
+        } else if recognizer.state == .changed {
+            
+            switch currGestureControl {
+            case .camera:
+                if recognizer.numberOfTouches == 1 { // disable now
+    //                currCameraNode.pivot = float3(0, 0, 0)
+                    currCameraNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+                } else if recognizer.numberOfTouches == 2 {
+                    currCameraNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+                }
+            case .light:
+                if recognizer.numberOfTouches == 1 { // disable now
+                    currLightNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+                } else if recognizer.numberOfTouches == 2 {
+                    currLightNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+                }
+            case .object:
+                if recognizer.numberOfTouches == 1 {
+                    currNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+                } else if recognizer.numberOfTouches == 2 {
+                    currNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+                }
             }
         }
     }
@@ -102,7 +112,11 @@ class ViewController: UIViewController {
             currNode.position.z += scale
         }
     }
-
+    
+    @objc func recognizeLongPress(_ recognizer: UILongPressGestureRecognizer) {
+        let touch = recognizer.location(in: recognizer.view)
+    }
+    
     @objc func recognizeDoubleTap() {
 
     }
@@ -129,11 +143,17 @@ class ViewController: UIViewController {
         cube.addMaterial(name: "cube_alb")
         return GIRNode(geometry: cube)
     }
-
+    
+    func createCone() -> GIRNode {
+        let cone = GIRGeometry(name: "BasicGeo/cone", ext: "obj")
+        cone.addMaterial(name: "cube_alb")
+        return GIRNode(geometry: cone)
+    }
+    
     func createLightNode() -> GIRNode {
-        let light = GIRLight(type: .ambient)
+        let light = GIRLight(type: .spot)
         light.color = UIColor.red.cgColor
-        let lightNode = createCube()
+        let lightNode = createCone()
         lightNode.position = float3(2.0, 0.0, 2.0)
         lightNode.scale = 0.2
         lightNode.light = light
@@ -149,16 +169,29 @@ class ViewController: UIViewController {
             scene.rootNode.addChild(cubeNode)
         }
     }
-    @IBAction func didTapObjectButton(_ sender: Any) {
+
+    @IBAction func didTapObjectButton(_ sender: UIButton) {
         currGestureControl = .object
+        feedbackGenerator.impactOccurred()
+        sender.backgroundColor = .white
+        cameraButton.backgroundColor = .clear
+        lightButton.backgroundColor = .clear
     }
 
-    @IBAction func didTapCameraButton(_ sender: Any) {
+    @IBAction func didTapCameraButton(_ sender: UIButton) {
         currGestureControl = .camera
+        feedbackGenerator.impactOccurred()
+        sender.backgroundColor = .white
+        objectButton.backgroundColor = .clear
+        lightButton.backgroundColor = .clear
     }
 
-    @IBAction func didTapLightButton(_ sender: Any) {
+    @IBAction func didTapLightButton(_ sender: UIButton) {
         currGestureControl = .light
+        feedbackGenerator.impactOccurred()
+        sender.backgroundColor = .white
+        cameraButton.backgroundColor = .clear
+        objectButton.backgroundColor = .clear
     }
 }
 
