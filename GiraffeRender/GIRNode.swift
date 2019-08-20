@@ -81,7 +81,7 @@ public class GIRNode {
                 _transform = translatePivotMatrix * scaleMatrix * rotationMatrix * translateNegPivotMatrix * translationMatrix
                 _shouldUpdateTransform = false
             }
-            
+
             return _transform
         }
     }

@@ -25,6 +25,5 @@ struct GIRFragmentUniforms {
         let array = [cameraPosition.x, cameraPosition.y, cameraPosition.z, matDiffuse.x, matDiffuse.y, matDiffuse.z, matSpecular.x, matSpecular.y, matSpecular.z, matAmbient.x, matAmbient.y, matAmbient.z, matShininess]
         return array
     }
-    
-    
+
 }

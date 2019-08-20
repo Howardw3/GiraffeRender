@@ -9,13 +9,13 @@
 import simd
 
 public class GIRLight {
-    
-    
     public var type: LightType
     public var color: CGColor
     public var name: String
     public var intensity: Float
-
+    public var spotInnerAngle: Float
+    public var spotOuterAngle: Float
+    var direction: float3
     var convertedColor: float3 {
         var ret = float3(1.0, 1.0, 1.0)
         if let arr = color.components, arr.count > 2 {
@@ -23,16 +23,27 @@ public class GIRLight {
         }
         return ret
     }
-    
+
     public init(type: LightType) {
         self.type = type
         self.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [1, 1, 1, 1])!
         self.name = "Light_" + UUID().uuidString
         self.intensity = 1.0
+        self.direction = float3(0, 0, -1)
+        self.spotInnerAngle = 30.0
+        self.spotOuterAngle = 40.0
     }
-    
+
     public convenience init() {
         self.init(type: .ambient)
+    }
+
+    func updateDirection(pitch: Float, yaw: Float) {
+        var tmpDir = float3()
+        tmpDir.x = cos(pitch) * cos(yaw)
+        tmpDir.y = sin(pitch)
+        tmpDir.z = sin(yaw) * cos(pitch)
+        self.direction = tmpDir
     }
 }
 
@@ -43,7 +54,7 @@ extension GIRLight {
         case omini
         case spot
     }
-    
+
     struct LightRaw {
         var positionX: Float = 0.0
         var positionY: Float = 0.0
@@ -55,9 +66,11 @@ extension GIRLight {
         var colorG: Float = 1.0
         var colorB: Float = 1.0
         var intensity: Float = 1.0
-        
+        var spotInnerRadian: Float = Float(10).radian
+        var spotOuterRadian: Float = Float(17).radian
+
         static let length = MemoryLayout<LightRaw>.stride
-        
+
         init(position: float3, direction: float3, color: float3) {
             self.positionX = position.x
             self.positionY = position.y
@@ -69,7 +82,7 @@ extension GIRLight {
             self.colorG = color.y
             self.colorB = color.z
         }
-        
+
         init() {
         }
     }

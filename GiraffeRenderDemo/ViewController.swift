@@ -18,7 +18,7 @@ class ViewController: UIViewController {
         case light
         case object
     }
-    
+
     @IBOutlet weak var giraffeView: GIRView!
 
     var fishNode: GIRNode!
@@ -47,12 +47,12 @@ class ViewController: UIViewController {
         scene.rootNode.addChild(currLightNode)
         createCubes()
         currNode = cubeNode
-        
+
         currCameraNode = scene.pointOfView
         giraffeView.scene = scene
         scene.pointOfView.position = cameraPos
         scene.pointOfView.camera?.fieldOfView = 29
-        
+
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(recognizePinch(_:)))
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(recognizePan(_:)))
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(recognizeDoubleTap))
@@ -62,12 +62,12 @@ class ViewController: UIViewController {
         giraffeView.addGestureRecognizer(panGesture)
         self.giraffeView.isMultipleTouchEnabled = true
     }
-    
+
     @objc func recognizePan(_ recognizer: UIPanGestureRecognizer) {
         let curr = recognizer.translation(in: self.view)
         let diff = CGPoint(x: curr.x - prevPos.x, y: curr.y - prevPos.y)
         prevPos = curr
-        
+
         switch currGestureControl {
         case .camera:
             if recognizer.numberOfTouches == 1 && 1 == 2 { // disable now
@@ -77,7 +77,7 @@ class ViewController: UIViewController {
                 currCameraNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
             }
         case .light:
-            if recognizer.numberOfTouches == 1 && 1 == 2 { // disable now
+            if recognizer.numberOfTouches == 1 { // disable now
                 currLightNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
             } else if recognizer.numberOfTouches == 2 {
                 currLightNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
@@ -90,7 +90,7 @@ class ViewController: UIViewController {
             }
         }
     }
-    
+
     @objc func recognizePinch(_ recognizer: UIPinchGestureRecognizer) {
         let scale = Float(recognizer.scale) - 1
         switch currGestureControl {
@@ -102,9 +102,9 @@ class ViewController: UIViewController {
             currNode.position.z += scale
         }
     }
-    
+
     @objc func recognizeDoubleTap() {
-        
+
     }
 
     func createFish() -> GIRNode {
@@ -123,13 +123,13 @@ class ViewController: UIViewController {
 //            material.
 //        }
     }
-    
+
     func createCube() -> GIRNode {
         let cube = GIRGeometry(name: "cube/cube", ext: "obj")
         cube.addMaterial(name: "cube_alb")
         return GIRNode(geometry: cube)
     }
-    
+
     func createLightNode() -> GIRNode {
         let light = GIRLight(type: .ambient)
         light.color = UIColor.red.cgColor
@@ -139,7 +139,7 @@ class ViewController: UIViewController {
         lightNode.light = light
         return lightNode
     }
-    
+
     func createCubes() {
         for i in 0..<cubePositions.count {
             cubeNode = createTexturedCube()
@@ -152,18 +152,18 @@ class ViewController: UIViewController {
     @IBAction func didTapObjectButton(_ sender: Any) {
         currGestureControl = .object
     }
-    
+
     @IBAction func didTapCameraButton(_ sender: Any) {
         currGestureControl = .camera
     }
-    
+
     @IBAction func didTapLightButton(_ sender: Any) {
         currGestureControl = .light
     }
 }
 
 extension ViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_: UIGestureRecognizer,  shouldRecognizeSimultaneouslyWith: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(_: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith: UIGestureRecognizer) -> Bool {
         return true
     }
 }

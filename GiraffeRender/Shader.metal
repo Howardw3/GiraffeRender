@@ -45,6 +45,8 @@ struct Light {
     packed_float3 direction;
     packed_float3 color;
     float intensity;
+    float spot_inner_radian;
+    float spot_outer_radian;
 };
 
 vertex VertexOut basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
@@ -68,6 +70,7 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
                                constant FragmentUniforms &uniforms [[ buffer(0) ]],
                                constant Light &light [[ buffer(1) ]]) {
     float4 texture = texture2D.sample(sampler2D, frag_in.tex_coord);
+    float3 light_dir = normalize(light.position - frag_in.frag_world_pos);
     
     // point light
     float light_dist = length(light.position - frag_in.frag_world_pos);
@@ -75,9 +78,15 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float light_liner = 0.09f;
     float light_quad = 0.032f;
     float attenuation = 1.0 / (light_const + light_liner * light_dist + light_quad * light_dist * light_dist);
+
+    // spotlight
+    float3 light_direction_neg = normalize(-light.direction);
+    float theta = dot(light_dir, light_direction_neg);
+    float epsilon = light.spot_inner_radian - light.spot_outer_radian;
+    float spot_intensity = clamp((theta - light.spot_outer_radian) / epsilon, 0.0, 1.0);
     
     float3 color = float3();
-    float ambient_intensity = 0.99f;
+    float ambient_intensity = 0.09f;
     float diffuse_intensity = 0.99f;
     float specular_intensity = 1.0f;
 
@@ -86,7 +95,6 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float3 ambient = ambient_intensity * light.color * uniforms.mat_ambient;
     
     // diffuse
-    float3 light_dir = normalize(light.position - frag_in.frag_world_pos);
     float diffuse_factor = max(dot(norm, light_dir), 0.0f);
     float3 diffuse = diffuse_factor * diffuse_intensity * light.color * uniforms.mat_diffuse;
     
@@ -97,8 +105,8 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), uniforms.mat_shininess);
     float3 specular = specular_factor * specular_intensity * light.color;
     
-    color = ambient + diffuse + specular;
+    color = ambient + diffuse * spot_intensity + specular * spot_intensity;
 //    color = float3(norm.x, norm.y, norm.z);
-    float4 final_color = float4(color, 1.0f) * texture * attenuation * 4;
+    float4 final_color = float4(color, 1.0f) * texture * 4;
     return final_color;
 }
