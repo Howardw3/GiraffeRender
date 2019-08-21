@@ -19,15 +19,15 @@ A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
 + Triple buffer
 
 ### Lighting
-+ Ambient
-+ Omini
-+ Spot
-+ Directional
++ Ambient :heavy_check_mark:
++ Omni :heavy_check_mark:
++ Spot :heavy_check_mark:
++ Directional :heavy_check_mark:
 + Light maps
   + Specular
   + Diffuse
   + Normal
-  + Albedo
+  + Albedo :heavy_check_mark:
   + Roughness
 + Multiple lights
 + Advanced
@@ -52,8 +52,24 @@ A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
   + EulerAngles :heavy_check_mark:
   + Quaternion
   + Rotation matrix
-+ Scale
++ Scale  :heavy_check_mark:
 + Transform :heavy_check_mark:
 + World Transform
 + Pivot(vector) :heavy_check_mark:
 + Pivot(matrix)
+
+### Geometry
++ Basic geo(MDLMesh) :heavy_check_mark:
+  + Box
+  + Sphere
+  + Hemisphere
+  + Cylinder
+  + Capsule
+  + Cone
+  + Plane
+
+## References
++ OpenGL Tutorial: https://learnopengl.com
++ Metal Shader: https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf
++ Metal Official: https://developer.apple.com/documentation/metal
++ Metal Examples: http://metalbyexample.com
