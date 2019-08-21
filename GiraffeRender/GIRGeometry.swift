@@ -13,11 +13,16 @@ open class GIRGeometry {
     public var mesh: MTKMesh
     public var materials: [GIRMaterial]
     var textureLoader: MTKTextureLoader
+    let device: MTLDevice? = MTLCreateSystemDefaultDevice()
 
     public init(mesh: MTKMesh) {
         self.mesh = mesh
         self.materials = []
-        textureLoader = MTKTextureLoader(device: MTLCreateSystemDefaultDevice()!)
+        textureLoader = MTKTextureLoader(device: device!)
+    }
+
+    convenience public init(basic: Basic) {
+        self.init(mesh: basic.mesh!)
     }
 
     convenience public init(name: String, ext: String) {
@@ -108,5 +113,51 @@ open class GIRGeometry {
         }
 
         return texture
+    }
+}
+
+extension GIRGeometry {
+    public enum Basic {
+        case box(size: float3, segments: vector_uint3)
+        case sphere(size: float3, segments: vector_uint2)
+        case hemisphere(size: float3, segments: vector_uint2, cap: Bool)
+        case cylinder(size: float3, segments: vector_uint2,topCap: Bool, bottomCap: Bool)
+        case capsule(size: float3, cylinderSegments: vector_uint2, hemisphereSegments: Int32)
+        case cone(size: float3, segments: vector_uint2, cap: Bool)
+        case plane(size: float3, segments: vector_uint2)
+
+
+        var mesh: MTKMesh? {
+            guard let device = MTLCreateSystemDefaultDevice() else {
+                return nil
+            }
+            let bufferAllocator = MTKMeshBufferAllocator(device: device)
+            switch self {
+
+            case .box(let size, let segments):
+                return try? MTKMesh(mesh: MDLMesh(boxWithExtent: size, segments: segments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator), device: device)
+
+            case .sphere(let size, let segments):
+                return try? MTKMesh(mesh: MDLMesh(sphereWithExtent: size, segments: segments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator), device: device)
+
+            case .hemisphere(let size, let segments, let cap):
+                return try? MTKMesh(mesh: MDLMesh(hemisphereWithExtent: size, segments: segments, inwardNormals: false, cap: cap, geometryType: .triangles, allocator: bufferAllocator), device: device)
+
+            case .cylinder(let size, let segments, let topCap, let bottomCap):
+                return try? MTKMesh(mesh: MDLMesh(cylinderWithExtent: size, segments: segments, inwardNormals: false, topCap: topCap, bottomCap: bottomCap, geometryType: .triangles, allocator: bufferAllocator), device: device)
+
+            case .capsule(let size, let cylinderSegments, let hemisphereSegments):
+                return try? MTKMesh(mesh: MDLMesh(capsuleWithExtent: size, cylinderSegments: cylinderSegments, hemisphereSegments: hemisphereSegments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator), device: device)
+
+            case .cone(let size, let segments, let cap):
+                return try? MTKMesh(mesh: MDLMesh(coneWithExtent: size, segments: segments, inwardNormals: false, cap: cap, geometryType: .triangles, allocator: bufferAllocator), device: device)
+
+            case .plane(let size, let segments):
+                return try? MTKMesh(mesh: MDLMesh(planeWithExtent: size, segments: segments, geometryType: .triangles, allocator: bufferAllocator), device: device)
+
+            @unknown default:
+                break
+            }
+        }
     }
 }

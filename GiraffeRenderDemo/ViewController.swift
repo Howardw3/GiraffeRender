@@ -140,7 +140,7 @@ class ViewController: UIViewController {
     }
 
     func createCube() -> GIRNode {
-        let cube = GIRGeometry(name: "cube/cube", ext: "obj")
+        let cube = GIRGeometry(basic: .box(size: float3(1, 1, 1), segments: [1, 1, 1]))
         cube.addMaterial(name: "cube_alb")
         return GIRNode(geometry: cube)
     }
@@ -163,7 +163,7 @@ class ViewController: UIViewController {
 
     func createCubes() {
         for i in 0..<cubePositions.count {
-            cubeNode = createTexturedCube()
+            cubeNode = createCube()
             cubeNode.position = cubePositions[i]
             cubeNode.scale = 1.0
             cubeNode.eularAngles = float3(1, 1, 1) * Float(i * 20)
