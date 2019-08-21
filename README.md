@@ -1,4 +1,4 @@
-# GiraffeRender
+# GiraffeRender -- A Metal Render
 A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
 
 ## Goal
