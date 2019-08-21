@@ -39,7 +39,7 @@ class ViewController: UIViewController {
         float3( 2.4, -2.4, -4.5),
         float3( 2.0, 1.0, 0.0)
     ]
-    var cameraPos = float3(0, 0, -10)
+    var cameraPos = float3(0, 0, 10)
     var currGestureControl: GestureControl = .object
     let feedbackGenerator = UIImpactFeedbackGenerator()
     var prevPos = CGPoint.zero
@@ -106,6 +106,7 @@ class ViewController: UIViewController {
         switch currGestureControl {
         case .camera:
             currCameraNode.position.z += scale
+//            print(currCameraNode.position)
         case .light:
             currLightNode.position.z += scale
         case .object:

@@ -72,6 +72,9 @@ public class GIRNode {
     public var transform: float4x4 {
         get {
             if _shouldUpdateTransform {
+                if let _ = camera  {
+                    pivot = float3()
+                }
                 let translationMatrix = float4x4.translationMatrix(_position)
                 let scaleMatrix = float4x4.scaleMatrix(_scale)
                 let translatePivotMatrix = float4x4.translationMatrix(pivot)

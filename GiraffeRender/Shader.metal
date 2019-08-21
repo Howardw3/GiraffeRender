@@ -108,8 +108,7 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float3 diffuse = diffuse_factor * diffuse_intensity * light.color * uniforms.mat_diffuse;
     
     // specular
-    float3 camera_pos = -uniforms.camera_pos;
-    float3 view_dir = normalize(camera_pos - frag_in.frag_world_pos);
+    float3 view_dir = normalize(uniforms.camera_pos - frag_in.frag_world_pos);
     float3 reflect_dir = reflect(-light_dir, norm);
     float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), uniforms.mat_shininess);
     float3 specular = specular_factor * specular_intensity * light.color;

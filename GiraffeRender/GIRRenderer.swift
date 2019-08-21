@@ -80,7 +80,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
     }
 
     func updateModelViewProj(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
-        let viewMatrix = pointOfView.transform
+        let viewMatrix = pointOfView.transform.inverse
 
         var modelMatrix = node.transform
         if let parent = parent {
@@ -102,7 +102,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
             projectionMatrix = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0, farZ: 200)
         }
 
-        let viewProjectionMatrix = simd_mul(projectionMatrix, viewMatrix)
+        let viewProjectionMatrix = projectionMatrix * viewMatrix
         var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform)
         memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.stride)
     }
