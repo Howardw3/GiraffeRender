@@ -49,14 +49,19 @@ class ViewController: UIViewController {
         scene = GIRScene()
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
-        createCubes()
+//        createCubes()
+        let floorNode = createPlaneNode()
+        floorNode.position = float3(0, -3, 0)
+        floorNode.eularAngles.x = 90.0
+        floorNode.scale = 5.0
+        scene.rootNode.addChild(floorNode)
         currNode = cubeNode
 
         currCameraNode = scene.pointOfView
         giraffeView.scene = scene
         scene.pointOfView.position = cameraPos
         scene.pointOfView.camera?.fieldOfView = 29
-
+        didTapCameraButton(UIButton())
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(recognizePinch(_:)))
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(recognizePan(_:)))
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(recognizeDoubleTap))
@@ -146,19 +151,26 @@ class ViewController: UIViewController {
     }
     
     func createCone() -> GIRNode {
-        let cone = GIRGeometry(name: "BasicGeo/cone", ext: "obj")
+//        let cone = GIRGeometry(name: "BasicGeo/cone", ext: "obj")
+        let cone = GIRGeometry(basic: .cone(size: float3(2, 2, -6), segments: [3, 3], cap: false))
         cone.addMaterial(name: "cube_alb")
         return GIRNode(geometry: cone)
     }
     
     func createLightNode() -> GIRNode {
-        let light = GIRLight(type: .spot)
+        let light = GIRLight(type: .omni)
         light.color = UIColor.red.cgColor
         let lightNode = createCone()
         lightNode.position = float3(2.0, 0.0, 2.0)
         lightNode.scale = 0.2
         lightNode.light = light
         return lightNode
+    }
+
+    func createPlaneNode() -> GIRNode {
+        let plane = GIRGeometry(basic: .plane(size: float3(10, 10, 1), segments: [1, 1]))
+        plane.addMaterial(name: "cube_alb")
+        return GIRNode(geometry: plane)
     }
 
     func createCubes() {

@@ -154,9 +154,6 @@ extension GIRGeometry {
 
             case .plane(let size, let segments):
                 return try? MTKMesh(mesh: MDLMesh(planeWithExtent: size, segments: segments, geometryType: .triangles, allocator: bufferAllocator), device: device)
-
-            @unknown default:
-                break
             }
         }
     }
