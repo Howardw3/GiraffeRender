@@ -158,7 +158,7 @@ class ViewController: UIViewController {
     }
     
     func createLightNode() -> GIRNode {
-        let light = GIRLight(type: .omni)
+        let light = GIRLight(type: .ambient)
         light.color = UIColor.red.cgColor
         let lightNode = createCone()
         lightNode.position = float3(2.0, 0.0, 2.0)

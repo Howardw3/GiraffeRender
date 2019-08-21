@@ -92,13 +92,16 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
     float spot_intensity = clamp((theta - light.spot_outer_radian) / epsilon, 0.0, 1.0);
     
     float3 color = float3();
-    float ambient_intensity = 0.09f;
+    float ambient_intensity = 0.59f;
     float diffuse_intensity = 0.99f;
     float specular_intensity = 1.0f;
 
     float3 norm = normalize(frag_in.frag_world_normal);
     // ambient
     float3 ambient = ambient_intensity * light.color * uniforms.mat_ambient;
+    if (light.type.x == LIGHT_TYPE_AMBIENT) {
+        return float4(ambient, 1.0) * texture;
+    }
 
     if (light.type.x == LIGHT_TYPE_DIRECTIONAL) {
         light_dir = light_direction_neg;
