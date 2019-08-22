@@ -55,9 +55,10 @@ struct Light {
     float spot_outer_radian;
 };
 
-vertex VertexOut basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
-                           constant VertexUniforms& uniforms [[ buffer(1) ]],
-                           uint vid [[ vertex_id ]]) {
+vertex VertexOut
+basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
+             constant VertexUniforms& uniforms [[ buffer(1) ]],
+             uint vid [[ vertex_id ]]) {
     VertexIn vertex_in = vertex_array[vid];
     
     float4 model_world_pos = uniforms.model_matrix * float4(vertex_in.position, 1);
@@ -70,11 +71,12 @@ vertex VertexOut basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
     return vertex_out;
 }
 
-fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
-                               texture2d<float> texture2D [[ texture(0) ]],
-                               sampler sampler2D [[ sampler(0) ]],
-                               constant FragmentUniforms &uniforms [[ buffer(0) ]],
-                               constant Light &light [[ buffer(1) ]]) {
+fragment float4
+basic_fragment(VertexOut frag_in [[ stage_in ]],
+               texture2d<float> texture2D [[ texture(0) ]],
+               sampler sampler2D [[ sampler(0) ]],
+               constant FragmentUniforms &uniforms [[ buffer(0) ]],
+               constant Light &light [[ buffer(1) ]]) {
     float4 texture = texture2D.sample(sampler2D, frag_in.tex_coord);
     float3 frag_light_dir = normalize(light.position - frag_in.frag_world_pos);
 

@@ -10,13 +10,38 @@ import Foundation
 import simd
 
 public class GIRMaterial {
-    public var albedoTexture: MTLTexture
-    public var diffuse: float3 = float3(1, 1, 1)
-    public var ambient: float3 = float3(1, 1, 1)
-    public var specular: float3 = float3(1, 1, 1)
-    public var shininess: Float = 1.0
+//    enum MType: String {
+//        case albedo
+//        case diffuse
+//        case ambient
+//        case specular
+//    }
+//    var dict: [MType: Content] = [:]
+//
+//    func get(type: MType) -> Any? {
+//
+//    }
+//    public var albedo: GIRMaterialProperty {
+//        get {
+//            return getDict(type: .albedo)
+//        }
+//        set(newVal) {
+//            if let val = newVal {
+//
+//            }
+//        }
+//    }
+    public var albedo: GIRMaterialProperty
+    public var diffuse: GIRMaterialProperty
+    public var ambient: GIRMaterialProperty
+    public var specular: GIRMaterialProperty
+    public var shininess: Float
 
-    init(texture: MTLTexture) {
-        albedoTexture = texture
+    init() {
+        albedo = GIRMaterialProperty()
+        diffuse = GIRMaterialProperty()
+        ambient = GIRMaterialProperty()
+        specular = GIRMaterialProperty()
+        shininess = 1.0
     }
 }

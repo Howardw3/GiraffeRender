@@ -28,10 +28,9 @@
 		230A1CBC230109470025825D /* GiraffeRender.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 230A1C4322FFED6A0025825D /* GiraffeRender.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		238597A523010B6500585F46 /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
 		238597A72302754400585F46 /* GIRMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238597A62302754400585F46 /* GIRMaterial.swift */; };
-		23FA334F23065FA5006BB484 /* fish in Resources */ = {isa = PBXBuildFile; fileRef = 23FA334E23065FA5006BB484 /* fish */; };
-		23FA3353230BA501006BB484 /* BasicGeo in Resources */ = {isa = PBXBuildFile; fileRef = 23FA3352230BA501006BB484 /* BasicGeo */; };
+		23FA335B230E6784006BB484 /* GIRMaterialProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */; };
+		23FA335D230E6BE1006BB484 /* Art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 23FA335C230E6BE1006BB484 /* Art.scnassets */; };
 		8C2D53312308D68F0063F9BB /* GIRLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2D53302308D68F0063F9BB /* GIRLight.swift */; };
-		8C2D53552308DAAD0063F9BB /* textured_cube in Resources */ = {isa = PBXBuildFile; fileRef = 8C2D53542308DAAD0063F9BB /* textured_cube */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,10 +80,9 @@
 		230A1CAC230108EB0025825D /* GIRCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRCamera.swift; sourceTree = "<group>"; };
 		230A1CAD230108EB0025825D /* GIRRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRRenderer.swift; sourceTree = "<group>"; };
 		238597A62302754400585F46 /* GIRMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterial.swift; sourceTree = "<group>"; };
-		23FA334E23065FA5006BB484 /* fish */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fish; sourceTree = "<group>"; };
-		23FA3352230BA501006BB484 /* BasicGeo */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BasicGeo; sourceTree = "<group>"; };
+		23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterialProperty.swift; sourceTree = "<group>"; };
+		23FA335C230E6BE1006BB484 /* Art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Art.scnassets; sourceTree = "<group>"; };
 		8C2D53302308D68F0063F9BB /* GIRLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRLight.swift; sourceTree = "<group>"; };
-		8C2D53542308DAAD0063F9BB /* textured_cube */ = {isa = PBXFileReference; lastKnownFileType = folder; path = textured_cube; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +139,7 @@
 				230A1CA7230108EA0025825D /* GIRUniform.swift */,
 				230A1CA8230108EA0025825D /* GIRVertex.swift */,
 				238597A62302754400585F46 /* GIRMaterial.swift */,
+				23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */,
 				8C2D53302308D68F0063F9BB /* GIRLight.swift */,
 				230A1CA5230108EA0025825D /* Shader.metal */,
 			);
@@ -163,9 +162,7 @@
 				230A1C90230077D20025825D /* Assets.xcassets */,
 				230A1C92230077D20025825D /* LaunchScreen.storyboard */,
 				230A1C95230077D20025825D /* Info.plist */,
-				23FA3352230BA501006BB484 /* BasicGeo */,
-				8C2D53542308DAAD0063F9BB /* textured_cube */,
-				23FA334E23065FA5006BB484 /* fish */,
+				23FA335C230E6BE1006BB484 /* Art.scnassets */,
 			);
 			path = GiraffeRenderDemo;
 			sourceTree = "<group>";
@@ -271,9 +268,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				23FA334F23065FA5006BB484 /* fish in Resources */,
-				8C2D53552308DAAD0063F9BB /* textured_cube in Resources */,
-				23FA3353230BA501006BB484 /* BasicGeo in Resources */,
+				23FA335D230E6BE1006BB484 /* Art.scnassets in Resources */,
 				230A1C94230077D20025825D /* LaunchScreen.storyboard in Resources */,
 				230A1C91230077D20025825D /* Assets.xcassets in Resources */,
 				230A1C8F230077D20025825D /* Main.storyboard in Resources */,
@@ -289,6 +284,7 @@
 			files = (
 				230A1CB7230108EB0025825D /* GIRGeometry.swift in Sources */,
 				230A1CB4230108EB0025825D /* GIRVertex.swift in Sources */,
+				23FA335B230E6784006BB484 /* GIRMaterialProperty.swift in Sources */,
 				238597A72302754400585F46 /* GIRMaterial.swift in Sources */,
 				230A1CB2230108EB0025825D /* GIRExtension.swift in Sources */,
 				230A1CB1230108EB0025825D /* Shader.metal in Sources */,

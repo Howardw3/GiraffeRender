@@ -51,8 +51,8 @@ class ViewController: UIViewController {
         scene.rootNode.addChild(currLightNode)
         createCubes()
         let floorNode = createPlaneNode()
-        floorNode.position = float3(0, -3, 0)
         floorNode.eularAngles.x = 90.0
+        floorNode.position = float3(0, -3, 0)
         floorNode.scale = 5.0
         scene.rootNode.addChild(floorNode)
         currNode = cubeNode
