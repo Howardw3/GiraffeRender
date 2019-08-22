@@ -58,7 +58,7 @@ class GIRRenderer: NSObject, MTKViewDelegate {
             return
         }
 
-        commandEncoder.setCullMode(.none)
+        commandEncoder.setCullMode(.back)
         commandEncoder.setFrontFacing(.counterClockwise)
         commandEncoder.setDepthStencilState(depthStencilState!)
         commandEncoder.setRenderPipelineState(renderPipelineState!)

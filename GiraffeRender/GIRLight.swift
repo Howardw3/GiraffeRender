@@ -67,15 +67,15 @@ extension GIRLight {
         var colorG: Float = 1.0
         var colorB: Float = 1.0
         var intensity: Float = 1.0
-        var spotInnerRadian: Float = Float(10).radian
-        var spotOuterRadian: Float = Float(17).radian
+        var spotInnerRadian: Float = cos(Float(10).radian)
+        var spotOuterRadian: Float = cos(Float(17).radian)
 
         static let length = MemoryLayout<LightRaw>.size
 
         init(type: Int, position: float3, direction: float3, color: float3,
              intensity: Float = 1.0,
-             spotInnerRadian: Float = Float(10).radian,
-             spotOuterRadian: Float = Float(17).radian) {
+             spotInnerRadian: Float = cos(Float(10).radian),
+             spotOuterRadian: Float = cos(Float(17).radian)) {
             self.type = UInt(type)
             self.positionX = position.x
             self.positionY = position.y

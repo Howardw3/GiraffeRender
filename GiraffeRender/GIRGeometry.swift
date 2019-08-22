@@ -33,13 +33,13 @@ open class GIRGeometry {
                                                             format: .float3,
                                                             offset: 0,
                                                             bufferIndex: 0)
-        vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
-                                                            format: .float2,
+        vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeNormal,
+                                                            format: .float3,
                                                             offset: MemoryLayout<Float>.stride * 3,
                                                             bufferIndex: 0)
-        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeNormal,
-                                                            format: .float3,
-                                                            offset: MemoryLayout<Float>.stride * 5,
+        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
+                                                            format: .float2,
+                                                            offset: MemoryLayout<Float>.stride * 6,
                                                             bufferIndex: 0)
         vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.stride * 8)
 
