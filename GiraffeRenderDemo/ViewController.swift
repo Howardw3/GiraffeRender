@@ -49,7 +49,7 @@ class ViewController: UIViewController {
         scene = GIRScene()
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
-        createCubes()
+//        createCubes()
         let floorNode = createPlaneNode()
         floorNode.eularAngles.x = 90.0
         floorNode.position = float3(0, -3, 0)
@@ -129,13 +129,17 @@ class ViewController: UIViewController {
 
     func createFish() -> GIRNode {
         let fish = GIRGeometry(name: "fish/fish", ext: "obj")
-        fish.addMaterial(name: "fish_alb")
+        let material = GIRMaterial()
+        material.albedo.content = "fish_alb"
+        fish.material = material
         return GIRNode(geometry: fish)
     }
 
     func createTexturedCube() -> GIRNode {
         let cube = GIRGeometry(name: "textured_cube/textured_cube", ext: "obj")
-        cube.addMaterial(name: "textured_cube_alb")
+        let material = GIRMaterial()
+        material.albedo.content = "textured_cube_alb"
+        cube.material = material
         return GIRNode(geometry: cube)
 
 //        if let material = cube.materials.first {
@@ -146,20 +150,24 @@ class ViewController: UIViewController {
 
     func createCube() -> GIRNode {
         let cube = GIRGeometry(basic: .box(size: float3(1, 1, 1), segments: [1, 1, 1]))
-        cube.addMaterial(name: "cube_alb")
+        let material = GIRMaterial()
+        material.albedo.content = "cube_alb"
+        cube.material = material
         return GIRNode(geometry: cube)
     }
     
     func createCone() -> GIRNode {
         let cone = GIRGeometry(basic: .cone(size: float3(2, 5, 2), segments: [3, 3], cap: false))
-        cone.addMaterial(name: "cube_alb")
+        let material = GIRMaterial()
+        material.albedo.content = "cube_alb"
+        cone.material = material
         return GIRNode(geometry: cone)
     }
     
     func createLightNode() -> GIRNode {
-        let light = GIRLight(type: .spot)
+        let light = GIRLight(type: .ambient)
         light.intensity = 1.0
-        light.color = UIColor.yellow.cgColor
+        light.color = UIColor.white.cgColor
         let lightNode = createCone()
         lightNode.position = float3(0.0, 0.0, 3.0)
         lightNode.scale = 0.2
@@ -169,7 +177,11 @@ class ViewController: UIViewController {
 
     func createPlaneNode() -> GIRNode {
         let plane = GIRGeometry(basic: .plane(size: float3(4, 4, 1), segments: [1, 1]))
-        plane.addMaterial(name: "textured_cube")
+        let material = GIRMaterial()
+        material.albedo.content = "textured_cube_alb"
+        material.specular.content = "textured_cube_specular"
+        material.normal.content = "textured_cube_normal"
+        plane.material = material
         return GIRNode(geometry: plane)
     }
 

@@ -33,14 +33,26 @@ open class GIRGeometry {
                                                             format: .float3,
                                                             offset: MemoryLayout<Float>.stride * 3,
                                                             bufferIndex: 0)
-        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
-                                                            format: .float2,
+        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTangent,
+                                                            format: .float3,
                                                             offset: MemoryLayout<Float>.stride * 6,
                                                             bufferIndex: 0)
-        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.stride * 8)
+        vertexDescriptor.attributes[3] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
+                                                            format: .float2,
+                                                            offset: MemoryLayout<Float>.stride * 9,
+                                                            bufferIndex: 0)
+        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.stride * 11)
 
         let url = Bundle.main.url(forResource: name, withExtension: ext)
         let asset = MDLAsset(url: url, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
+        asset.loadTextures()
+        for sourceMesh in asset.childObjects(of: MDLMesh.self) as! [MDLMesh] {
+            sourceMesh.addOrthTanBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
+                                       normalAttributeNamed: MDLVertexAttributeNormal,
+                                       tangentAttributeNamed: MDLVertexAttributeTangent)
+            sourceMesh.vertexDescriptor = vertexDescriptor
+        }
+
         let mesh = try! MTKMesh.newMeshes(asset: asset, device: device!).metalKitMeshes.first!
         self.init(mesh: mesh)
     }
