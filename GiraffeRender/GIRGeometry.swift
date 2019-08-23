@@ -12,18 +12,7 @@ import MetalKit
 open class GIRGeometry {
     public var mesh: MTKMesh
     public var material: GIRMaterial?
-
-    public init(mesh: MTKMesh) {
-        self.mesh = mesh
-    }
-
-    convenience public init(basic: Basic) {
-        self.init(mesh: basic.mesh!)
-    }
-
-    convenience public init(name: String, ext: String) {
-        let device = MTLCreateSystemDefaultDevice()
-        let bufferAllocator = MTKMeshBufferAllocator(device: device!)
+    static var vertexDescriptor: MDLVertexDescriptor {
         let vertexDescriptor = MDLVertexDescriptor()
         vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
                                                             format: .float3,
@@ -42,14 +31,29 @@ open class GIRGeometry {
                                                             offset: MemoryLayout<Float>.stride * 9,
                                                             bufferIndex: 0)
         vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.stride * 11)
+        return vertexDescriptor
+    }
+
+    public init(mesh: MTKMesh) {
+        self.mesh = mesh
+    }
+
+    convenience public init(basic: Basic) {
+        self.init(mesh: basic.mesh!)
+    }
+
+    convenience public init(name: String, ext: String) {
+        let device = MTLCreateSystemDefaultDevice()
+        let bufferAllocator = MTKMeshBufferAllocator(device: device!)
+
 
         let url = Bundle.main.url(forResource: name, withExtension: ext)
-        let asset = MDLAsset(url: url, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
+        let asset = MDLAsset(url: url, vertexDescriptor: GIRGeometry.vertexDescriptor, bufferAllocator: bufferAllocator)
         asset.loadTextures()
 //        asset
         for sourceMesh in asset.childObjects(of: MDLMesh.self) as! [MDLMesh] {
             sourceMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate, normalAttributeNamed: MDLVertexAttributeNormal, tangentAttributeNamed: MDLVertexAttributeTangent)
-            sourceMesh.vertexDescriptor = vertexDescriptor
+            sourceMesh.vertexDescriptor = GIRGeometry.vertexDescriptor
         }
 
         let mesh = try! MTKMesh.newMeshes(asset: asset, device: device!).metalKitMeshes.first!
@@ -67,37 +71,40 @@ extension GIRGeometry {
         case cone(size: float3, segments: vector_uint2, cap: Bool)
         case plane(size: float3, segments: vector_uint2)
 
-
         var mesh: MTKMesh? {
             guard let device = MTLCreateSystemDefaultDevice() else {
                 return nil
             }
-            let bufferAllocator = MTKMeshBufferAllocator(device: device)
-            switch self {
 
+            let bufferAllocator = MTKMeshBufferAllocator(device: device)
+            var mdlMesh: MDLMesh!
+
+            switch self {
             case .box(let size, let segments):
-                return try? MTKMesh(mesh: MDLMesh(boxWithExtent: size, segments: segments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator), device: device)
+                mdlMesh = MDLMesh(boxWithExtent: size, segments: segments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator)
 
             case .sphere(let size, let segments):
-                return try? MTKMesh(mesh: MDLMesh(sphereWithExtent: size, segments: segments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator), device: device)
+                mdlMesh = MDLMesh(sphereWithExtent: size, segments: segments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator)
 
             case .hemisphere(let size, let segments, let cap):
-                return try? MTKMesh(mesh: MDLMesh(hemisphereWithExtent: size, segments: segments, inwardNormals: false, cap: cap, geometryType: .triangles, allocator: bufferAllocator), device: device)
+                mdlMesh = MDLMesh(hemisphereWithExtent: size, segments: segments, inwardNormals: false, cap: cap, geometryType: .triangles, allocator: bufferAllocator)
 
             case .cylinder(let size, let segments, let topCap, let bottomCap):
-                return try? MTKMesh(mesh: MDLMesh(cylinderWithExtent: size, segments: segments, inwardNormals: false, topCap: topCap, bottomCap: bottomCap, geometryType: .triangles, allocator: bufferAllocator), device: device)
+                mdlMesh = MDLMesh(cylinderWithExtent: size, segments: segments, inwardNormals: false, topCap: topCap, bottomCap: bottomCap, geometryType: .triangles, allocator: bufferAllocator)
 
             case .capsule(let size, let cylinderSegments, let hemisphereSegments):
-                return try? MTKMesh(mesh: MDLMesh(capsuleWithExtent: size, cylinderSegments: cylinderSegments, hemisphereSegments: hemisphereSegments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator), device: device)
+                mdlMesh = MDLMesh(capsuleWithExtent: size, cylinderSegments: cylinderSegments, hemisphereSegments: hemisphereSegments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator)
 
             case .cone(let size, let segments, let cap):
-                return try? MTKMesh(mesh: MDLMesh(coneWithExtent: size, segments: segments, inwardNormals: false, cap: cap, geometryType: .triangles, allocator: bufferAllocator), device: device)
+                mdlMesh = MDLMesh(coneWithExtent: size, segments: segments, inwardNormals: false, cap: cap, geometryType: .triangles, allocator: bufferAllocator)
 
             case .plane(let size, let segments):
-                let mdl = MDLMesh(planeWithExtent: size, segments: segments, geometryType: .triangles, allocator: bufferAllocator)
-                mdl.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate, normalAttributeNamed: MDLVertexAttributeNormal, tangentAttributeNamed: MDLVertexAttributeTangent)
-                return try? MTKMesh(mesh: mdl, device: device)
+                mdlMesh = MDLMesh(planeWithExtent: size, segments: segments, geometryType: .triangles, allocator: bufferAllocator)
             }
+
+            mdlMesh.vertexDescriptor = GIRGeometry.vertexDescriptor
+            mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate, normalAttributeNamed: MDLVertexAttributeNormal, tangentAttributeNamed: MDLVertexAttributeTangent)
+            return try? MTKMesh(mesh: mdlMesh, device: device)
         }
     }
 }

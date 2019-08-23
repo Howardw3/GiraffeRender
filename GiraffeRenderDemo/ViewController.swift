@@ -50,11 +50,11 @@ class ViewController: UIViewController {
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
         createCubes()
-//        let floorNode = createPlaneNode()
-//        floorNode.eularAngles.x = 90.0
-//        floorNode.position = float3(0, -3, 0)
-//        floorNode.scale = 5.0
-//        scene.rootNode.addChild(floorNode)
+        let floorNode = createPlaneNode()
+        floorNode.eularAngles.x = 90.0
+        floorNode.position = float3(0, -3, 0)
+        floorNode.scale = 5.0
+        scene.rootNode.addChild(floorNode)
         currNode = cubeNode
 
         currCameraNode = scene.pointOfView
@@ -167,9 +167,10 @@ class ViewController: UIViewController {
     }
     
     func createLightNode() -> GIRNode {
-        let light = GIRLight(type: .spot)
-        light.intensity = 1.0
-        light.color = UIColor.white.cgColor
+        let light = GIRLight(type: .omni)
+        light.intensity = 4.0
+        light.color = UIColor.red.cgColor
+//        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
         lightNode.position = float3(0.0, 0.0, 3.0)
         lightNode.scale = 0.2
