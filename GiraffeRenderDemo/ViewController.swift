@@ -49,12 +49,12 @@ class ViewController: UIViewController {
         scene = GIRScene()
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
-//        createCubes()
-        let floorNode = createPlaneNode()
-        floorNode.eularAngles.x = 90.0
-        floorNode.position = float3(0, -3, 0)
-        floorNode.scale = 5.0
-        scene.rootNode.addChild(floorNode)
+        createCubes()
+//        let floorNode = createPlaneNode()
+//        floorNode.eularAngles.x = 90.0
+//        floorNode.position = float3(0, -3, 0)
+//        floorNode.scale = 5.0
+//        scene.rootNode.addChild(floorNode)
         currNode = cubeNode
 
         currCameraNode = scene.pointOfView
@@ -136,9 +136,11 @@ class ViewController: UIViewController {
     }
 
     func createTexturedCube() -> GIRNode {
-        let cube = GIRGeometry(name: "textured_cube/textured_cube", ext: "obj")
+        let cube = GIRGeometry(name: "Art.scnassets/textured_cube/textured_cube", ext: "obj")
         let material = GIRMaterial()
         material.albedo.content = "textured_cube_alb"
+        material.specular.content = "textured_cube_specular"
+        material.normal.content = "textured_cube_normal"
         cube.material = material
         return GIRNode(geometry: cube)
 
@@ -165,7 +167,7 @@ class ViewController: UIViewController {
     }
     
     func createLightNode() -> GIRNode {
-        let light = GIRLight(type: .ambient)
+        let light = GIRLight(type: .spot)
         light.intensity = 1.0
         light.color = UIColor.white.cgColor
         let lightNode = createCone()
@@ -187,7 +189,7 @@ class ViewController: UIViewController {
 
     func createCubes() {
         for i in 0..<cubePositions.count {
-            cubeNode = createCube()
+            cubeNode = createTexturedCube()
             cubeNode.position = cubePositions[i]
             cubeNode.scale = 1.0
             cubeNode.eularAngles = float3(1, 1, 1) * Float(i * 20)

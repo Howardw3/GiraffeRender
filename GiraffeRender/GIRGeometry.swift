@@ -46,10 +46,9 @@ open class GIRGeometry {
         let url = Bundle.main.url(forResource: name, withExtension: ext)
         let asset = MDLAsset(url: url, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
         asset.loadTextures()
+//        asset
         for sourceMesh in asset.childObjects(of: MDLMesh.self) as! [MDLMesh] {
-            sourceMesh.addOrthTanBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
-                                       normalAttributeNamed: MDLVertexAttributeNormal,
-                                       tangentAttributeNamed: MDLVertexAttributeTangent)
+            sourceMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate, normalAttributeNamed: MDLVertexAttributeNormal, tangentAttributeNamed: MDLVertexAttributeTangent)
             sourceMesh.vertexDescriptor = vertexDescriptor
         }
 
@@ -95,7 +94,9 @@ extension GIRGeometry {
                 return try? MTKMesh(mesh: MDLMesh(coneWithExtent: size, segments: segments, inwardNormals: false, cap: cap, geometryType: .triangles, allocator: bufferAllocator), device: device)
 
             case .plane(let size, let segments):
-                return try? MTKMesh(mesh: MDLMesh(planeWithExtent: size, segments: segments, geometryType: .triangles, allocator: bufferAllocator), device: device)
+                let mdl = MDLMesh(planeWithExtent: size, segments: segments, geometryType: .triangles, allocator: bufferAllocator)
+                mdl.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate, normalAttributeNamed: MDLVertexAttributeNormal, tangentAttributeNamed: MDLVertexAttributeTangent)
+                return try? MTKMesh(mesh: mdl, device: device)
             }
         }
     }

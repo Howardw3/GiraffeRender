@@ -73,7 +73,7 @@ extension GIRRenderer: MTKViewDelegate {
         let viewProjectionMatrix = projectionMatrix * viewMatrix
         let normalMatirx = float3x3(modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz).transpose.inverse
         var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform, normalMatrix: normalMatirx)
-        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.stride)
+        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.size)
     }
 
     func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?) {
