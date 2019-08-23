@@ -102,7 +102,7 @@ extension GIRRenderer: MTKViewDelegate {
         commandEncoder.setFragmentBuffer(lightBuffer, offset: 0, index: 1)
         if let light = node.light {
             light.updateDirection(pitch: node.eularAngles.x.radian, yaw: node.eularAngles.y.radian)
-            lightsInScene[light.name] = GIRLight.LightRaw(type: light.type.rawValue, position: node.position, direction: light.direction, color: light.convertedColor)
+            lightsInScene[light.name] = GIRLight.LightRaw(type: light.type.rawValue, position: node.position, direction: light.direction, color: light.convertedColor, intensity: light.intensity)
         }
 
         if lightsInScene.isEmpty {

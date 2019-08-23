@@ -95,8 +95,8 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
                constant Light &light [[ buffer(1) ]]) {
     constexpr sampler normalSampler(filter::nearest);
     float4 albedo_map = texture2D[0].sample(sampler2D, frag_in.tex_coord);
-    float4 specular_map = texture2D[1].sample(sampler2D, frag_in.tex_coord);
-    float3 normal_map = texture2D[2].sample(normalSampler, frag_in.tex_coord).rgb * 2.0f - 1.0f;
+//    float4 specular_map = texture2D[1].sample(sampler2D, frag_in.tex_coord);
+    float3 normal_map = texture2D[1].sample(normalSampler, frag_in.tex_coord).rgb * 2.0f - 1.0f;
 
     float3x3 tbn_matrix(frag_in.tangent, frag_in.bitangent, frag_in.normal);
 
@@ -157,7 +157,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     float4 color = float4();
     color += float4(ambient, 1.0f) * albedo_map;
     color += float4(diffuse, 1.0f) * albedo_map;
-    color += float4(specular, 1.0f) * specular_map;
-    float4 final_color = color * 4.0;
+    color += float4(specular, 1.0f);
+    float4 final_color = color * light.intensity;
     return final_color;
 }

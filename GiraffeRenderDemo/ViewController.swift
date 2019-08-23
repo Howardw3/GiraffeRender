@@ -141,6 +141,7 @@ class ViewController: UIViewController {
         material.albedo.content = "textured_cube_alb"
         material.specular.content = "textured_cube_specular"
         material.normal.content = "textured_cube_normal"
+        material.shininess = 1.0
         cube.material = material
         return GIRNode(geometry: cube)
 
@@ -169,8 +170,8 @@ class ViewController: UIViewController {
     func createLightNode() -> GIRNode {
         let light = GIRLight(type: .omni)
         light.intensity = 4.0
-        light.color = UIColor.red.cgColor
-//        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
+//        light.color = UIColor.white.cgColor
+        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
         lightNode.position = float3(0.0, 0.0, 3.0)
         lightNode.scale = 0.2
@@ -181,9 +182,8 @@ class ViewController: UIViewController {
     func createPlaneNode() -> GIRNode {
         let plane = GIRGeometry(basic: .plane(size: float3(4, 4, 1), segments: [1, 1]))
         let material = GIRMaterial()
-        material.albedo.content = "textured_cube_alb"
-        material.specular.content = "textured_cube_specular"
-        material.normal.content = "textured_cube_normal"
+        material.albedo.content = "brickwall_diffuse"
+        material.normal.content = "brickwall_normal"
         plane.material = material
         return GIRNode(geometry: plane)
     }
