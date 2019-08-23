@@ -9,10 +9,16 @@
 #include <metal_stdlib>
 using namespace metal;
 
+// Light const
 constant int LIGHT_TYPE_AMBIENT = 0;
 constant int LIGHT_TYPE_DIRECTIONAL = 1;
 constant int LIGHT_TYPE_OMNI = 2;
 constant int LIGHT_TYPE_SPOT = 3;
+
+// Basic material type
+enum BasicMaterial {
+    albedo, diffuse, ambient, specular, normal
+};
 
 struct Vertex {
     float4 position [[position]];
@@ -22,11 +28,13 @@ struct Vertex {
 struct VertexUniforms {
     float4x4 view_proj_matrix;
     float4x4 model_matrix;
+    float3x3 normal_matrix;
 };
 
 struct VertexIn {
     packed_float3 position;
     packed_float3 normal;
+    packed_float3 tangent;
     packed_float2 tex_coord;
 };
 
@@ -35,6 +43,9 @@ struct VertexOut {
     float2 tex_coord;
     float3 frag_world_normal;
     float3 frag_world_pos;
+    float3 tangent;
+    float3 bitangent;
+    float3 normal;
 };
 
 struct FragmentUniforms {
@@ -55,54 +66,74 @@ struct Light {
     float spot_outer_radian;
 };
 
-vertex VertexOut basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
-                           constant VertexUniforms& uniforms [[ buffer(1) ]],
-                           uint vid [[ vertex_id ]]) {
+vertex VertexOut
+basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
+             constant VertexUniforms& uniforms [[ buffer(1) ]],
+             uint vid [[ vertex_id ]]) {
+
     VertexIn vertex_in = vertex_array[vid];
-    
+
     float4 model_world_pos = uniforms.model_matrix * float4(vertex_in.position, 1);
     VertexOut vertex_out;
     vertex_out.position = uniforms.view_proj_matrix * model_world_pos;
     vertex_out.frag_world_pos = model_world_pos.xyz;
     vertex_out.tex_coord = vertex_in.tex_coord;
     vertex_out.frag_world_normal = (uniforms.model_matrix * float4(vertex_in.normal, 1.0)).xyz;
-    
+
+    vertex_out.tangent = normalize(uniforms.normal_matrix * vertex_in.tangent.xyz);
+    vertex_out.normal = normalize(uniforms.normal_matrix * vertex_in.normal.xyz);
+    vertex_out.tangent = normalize(vertex_out.tangent - dot(vertex_out.tangent, vertex_out.normal) * vertex_out.normal);
+    vertex_out.bitangent = cross(vertex_out.normal, vertex_out.tangent);
     return vertex_out;
 }
 
-fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
-                               texture2d<float> texture2D [[ texture(0) ]],
-                               sampler sampler2D [[ sampler(0) ]],
-                               constant FragmentUniforms &uniforms [[ buffer(0) ]],
-                               constant Light &light [[ buffer(1) ]]) {
-    float4 texture = texture2D.sample(sampler2D, frag_in.tex_coord);
-    float3 frag_light_dir = normalize(light.position - frag_in.frag_world_pos);
+fragment float4
+basic_fragment(VertexOut frag_in [[ stage_in ]],
+               array<texture2d<float>, 5> texture2D [[ texture(0) ]],
+               sampler sampler2D [[ sampler(0) ]],
+               constant FragmentUniforms &uniforms [[ buffer(0) ]],
+               constant Light &light [[ buffer(1) ]]) {
+    constexpr sampler normalSampler(filter::nearest);
+    float4 albedo_map = texture2D[0].sample(sampler2D, frag_in.tex_coord);
+//    float4 specular_map = texture2D[1].sample(sampler2D, frag_in.tex_coord);
+    float3 normal_map = texture2D[1].sample(normalSampler, frag_in.tex_coord).rgb * 2.0f - 1.0f;
 
-    float3 color = float3();
-    float ambient_intensity = 0.5f;
+    float3x3 tbn_matrix(frag_in.tangent, frag_in.bitangent, frag_in.normal);
+
+    float3 tangent_light_pos = tbn_matrix * float3(light.position);
+    float3 tangent_view_pos  = tbn_matrix * float3(uniforms.camera_pos);
+    float3 tangent_frag_pos  = tbn_matrix * frag_in.frag_world_pos;
+
+    float3 normal = normalize(tbn_matrix * normal_map);
+    float3 frag_light_dir = normalize(tangent_light_pos - tangent_frag_pos);
+
+    float ambient_intensity = 0.99f;
     float diffuse_intensity = 0.99f;
     float specular_intensity = 1.0f;
 
-    float3 normal = normalize(frag_in.frag_world_normal);
     // ambient
     float3 ambient = ambient_intensity * light.color * uniforms.mat_ambient;
     if (light.type.x == LIGHT_TYPE_AMBIENT) {
-        return float4(ambient, 1.0f) * texture;
+        return float4(ambient, 1.0f) * albedo_map;
     }
 
 //    if (light.type.x == LIGHT_TYPE_DIRECTIONAL) {
 //        frag_light_dir = light_direction_neg;
 //    }
+
     // diffuse
-    float diffuse_factor = max(dot(normal, frag_light_dir), 0.0f);
+    float diffuse_factor = max(dot(frag_light_dir, normal), 0.0f);
     float3 diffuse = diffuse_factor * diffuse_intensity * light.color * uniforms.mat_diffuse;
 
-    // specular
-    float3 view_dir = normalize(uniforms.camera_pos - frag_in.frag_world_pos);
-    float3 reflect_dir = reflect(-frag_light_dir, normal);
-    float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), uniforms.mat_shininess);
+    // specular (Blinn - Phong)
+    float3 view_dir = normalize(tangent_view_pos - tangent_frag_pos);
+    float3 halfwayDir = normalize(frag_light_dir + view_dir);
+    float specular_factor = pow(max(dot(normal, halfwayDir), 0.0), uniforms.mat_shininess);
+    // Phong
+//    float3 reflect_dir = reflect(-frag_light_dir, normal);
+//    float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), uniforms.mat_shininess);
     float3 specular = specular_factor * specular_intensity * light.color;
-//
+
     if (light.type.x == LIGHT_TYPE_OMNI) {
         float light_dist = length(light.position - frag_in.frag_world_pos);
         float light_const = 1.0f;
@@ -123,7 +154,11 @@ fragment float4 basic_fragment(VertexOut frag_in [[ stage_in ]],
         diffuse *= spot_intensity;
         specular *= spot_intensity;
     }
-    color = ambient + diffuse + specular;
-    float4 final_color = float4(color, 1.0f) * texture * 4;
+
+    float4 color = float4();
+    color += float4(ambient, 1.0f) * albedo_map;
+    color += float4(diffuse, 1.0f) * albedo_map;
+    color += float4(specular, 1.0f);
+    float4 final_color = color * light.intensity;
     return final_color;
 }

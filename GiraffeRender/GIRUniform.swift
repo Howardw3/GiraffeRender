@@ -11,6 +11,7 @@ import simd
 struct GIRVertexUniforms {
     var viewProjectionMatrix: float4x4
     var modelMatrix: float4x4
+    var normalMatrix: float3x3
 }
 
 struct GIRFragmentUniforms {

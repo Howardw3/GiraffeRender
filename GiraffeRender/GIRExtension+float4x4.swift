@@ -94,3 +94,9 @@ extension float4x4 {
         return float4x4(colx, coly, colz, colw)
     }
 }
+
+extension float4 {
+    var xyz: float3 {
+        return float3(x, y, z)
+    }
+}
