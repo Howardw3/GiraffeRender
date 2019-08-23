@@ -24,9 +24,9 @@ A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
 + Spot :heavy_check_mark:
 + Directional :heavy_check_mark:
 + Light maps
-  + Specular
-  + Diffuse
-  + Normal
+  + Specular :heavy_check_mark:
+  + Diffuse :heavy_check_mark:
+  + Normal :heavy_check_mark:
   + Albedo :heavy_check_mark:
   + Roughness
 + Multiple lights
