@@ -125,10 +125,11 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     float diffuse_factor = max(dot(frag_light_dir, normal), 0.0f);
     float3 diffuse = diffuse_factor * diffuse_intensity * light.color * uniforms.mat_diffuse;
 
-    // specular
+    // specular (Blinn - Phong)
     float3 view_dir = normalize(tangent_view_pos - tangent_frag_pos);
     float3 halfwayDir = normalize(frag_light_dir + view_dir);
     float specular_factor = pow(max(dot(normal, halfwayDir), 0.0), uniforms.mat_shininess);
+    // Phong
 //    float3 reflect_dir = reflect(-frag_light_dir, normal);
 //    float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), uniforms.mat_shininess);
     float3 specular = specular_factor * specular_intensity * light.color;
