@@ -19,12 +19,6 @@ extension GIRRenderer: MTKViewDelegate {
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             return
         }
-        guard let passDescriptor = view.currentRenderPassDescriptor, let drawable = view.currentDrawable else {
-            debugPrint("currentRenderPassDescriptor, drawable error")
-            return
-        }
-
-        passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0)
 
         guard let shadowCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadowPassDescriptor) else {
             debugPrint("shadow pass failed")
@@ -34,6 +28,15 @@ extension GIRRenderer: MTKViewDelegate {
         shadowCommandEncoder.setFrontFacing(.counterClockwise)
         shadowCommandEncoder.setRenderPipelineState(shadowPipelineState)
         shadowCommandEncoder.setDepthStencilState(depthStencilState)
+        drawScene(commandEncoder: shadowCommandEncoder, isShadowMode: true)
+        shadowCommandEncoder.endEncoding()
+
+        guard let passDescriptor = view.currentRenderPassDescriptor, let drawable = view.currentDrawable else {
+            debugPrint("currentRenderPassDescriptor, drawable error")
+            return
+        }
+
+        passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0)
 
         guard let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: passDescriptor) else {
             return
@@ -50,8 +53,8 @@ extension GIRRenderer: MTKViewDelegate {
         commandBuffer.commit()
     }
 
-    func drawScene(commandEncoder: MTLRenderCommandEncoder) {
-        drawNode(scene?.rootNode, commandEncoder: commandEncoder, parent: nil)
+    func drawScene(commandEncoder: MTLRenderCommandEncoder, isShadowMode: Bool = false) {
+        drawNode(scene?.rootNode, commandEncoder: commandEncoder, parent: nil, isShadowMode: isShadowMode)
         shouldUpdateCamera = true
     }
     
@@ -96,7 +99,7 @@ extension GIRRenderer: MTKViewDelegate {
             copyMaterialMemory(node: node, commandEncoder: commandEncoder)
             copyLightMemory(node: node, commandEncoder: commandEncoder)
         } else {
-            uniformBuffer = createShadowUniformsBuffer()
+            uniformBuffer = createShadowUniformsBuffer(node: node)
         }
 
         if let mesh = node.geometry?.mesh {
@@ -108,12 +111,15 @@ extension GIRRenderer: MTKViewDelegate {
         }
     }
 
-    func createShadowUniformsBuffer() -> MTLBuffer {
-        let uniformDataLength = MemoryLayout<GIRVertexUniforms>.size
+    func createShadowUniformsBuffer(node: GIRNode) -> MTLBuffer {
+        let uniformDataLength = MemoryLayout<GIRShadowUniforms>.size
         let buffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
         for light in lightsInScene {
-            var lightRaw = light.value
-            memcpy(buffer.contents(), &lightRaw, GIRLight.LightRaw.length)
+            let lightProjection = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 1.0, farZ: 50.0)
+            let lookatMatrix = float4x4.lookat(eye: <#T##float3#>, center: <#T##float3#>, up: <#T##float3#>)
+            let lightSpaceMatirx =
+            var shadowUniform = GIRShadowUniforms(modelMatrix: node.worldTransform, lightSpaceMatrix: lightSpaceMatirx)
+            memcpy(buffer.contents(), &shadowUniform, uniformDataLength)
             break
         }
         return buffer

@@ -93,6 +93,20 @@ extension float4x4 {
 
         return float4x4(colx, coly, colz, colw)
     }
+
+    static func lookatMatrix(eye: float3, center: float3, up: float3) ->float4x4 {
+
+        let n = normalize(eye + -center)
+        let u = normalize(cross(up, n))
+        let v = cross(n, u)
+
+        let colx = float4(u.x, v.x, n.x, 0.0)
+        let coly = float4(u.y, v.y, n.y, 0.0)
+        let colz = float4(u.z, v.z, n.z, 0.0)
+        let colw = float4(dot(-u, eye), dot(-v, eye), dot(-n, eye), 1.0)
+
+        return float4x4(colx, coly, colz, colw)
+    }
 }
 
 extension float4 {

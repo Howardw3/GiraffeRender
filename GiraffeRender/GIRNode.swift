@@ -15,15 +15,20 @@ public class GIRNode {
     private var _eularAngles: float3
     private var _transform: float4x4
     private var _shouldUpdateTransform: Bool
+    private var _localRight: float3
+    private var _localUp: float3
+    private var _localFront: float3
+    private var _worldRight: float3
+    private var _worldUp: float3
+    private var _worldFront: float3
+
     var children: [GIRNode]
+    var parent: GIRNode?
+    let identifier = UUID()
 
     public var geometry: GIRGeometry?
     public var camera: GIRCamera?
     public var light: GIRLight?
-
-    public func addChild(_ node: GIRNode) {
-        children.append(node)
-    }
 
     public var position: float3 {
         get {
@@ -69,6 +74,14 @@ public class GIRNode {
 
     public var pivot = float3()
 
+    public var worldTransform: float4x4 {
+        if let parent = parent {
+            return parent.worldTransform * transform
+        }
+
+        return transform
+    }
+
     public var transform: float4x4 {
         get {
             if _shouldUpdateTransform {
@@ -84,6 +97,12 @@ public class GIRNode {
                 _transform = translatePivotMatrix * scaleMatrix * rotationMatrix * translateNegPivotMatrix * translationMatrix
                 _shouldUpdateTransform = false
             }
+
+            var tmpDir = float3()
+            tmpDir.x = cos(_rotation.x.radian) * cos(_rotation.y.radian)
+            tmpDir.y = sin(_rotation.x.radian)
+            tmpDir.z = sin(_rotation.y.radian) * cos(_rotation.x.radian)
+
 
             return _transform
         }
@@ -102,5 +121,44 @@ public class GIRNode {
 
     public convenience init() {
         self.init(geometry: nil)
+    }
+}
+
+extension GIRNode {
+    var localRight: float3 {
+        get {
+
+        }
+        set {
+
+        }
+    }
+}
+
+extension GIRNode {
+    public func addChild(_ node: GIRNode) {
+        if let parent = node.parent {
+            if parent == self {
+                return
+            }
+            removeFromParent(node, parent)
+        }
+        children.append(node)
+        node.parent = self
+    }
+
+    func removeFromParent(_ node: GIRNode, _ parent: GIRNode) {
+        for i in 0..<parent.children.count {
+            if parent.children[i] == node {
+                parent.children.remove(at: i)
+                break
+            }
+        }
+    }
+}
+
+extension GIRNode {
+    static func ==(lhs: GIRNode, rhs: GIRNode) -> Bool {
+        return lhs.identifier == rhs.identifier
     }
 }
