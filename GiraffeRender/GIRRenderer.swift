@@ -15,6 +15,10 @@ class GIRRenderer: NSObject {
     var scene: GIRScene?
     var nextFrameTime: CFTimeInterval
     var renderPipelineState: MTLRenderPipelineState!
+    var shadowPipelineState: MTLRenderPipelineState!
+    var shadowTexture: MTLTexture!
+    var shadowPassDescriptor: MTLRenderPassDescriptor!
+    var defaultLibrary: MTLLibrary!
     var samplerState: MTLSamplerState!
     var depthStencilState: MTLDepthStencilState!
     let commandQueue: MTLCommandQueue!
@@ -31,9 +35,13 @@ class GIRRenderer: NSObject {
         self.pointOfView.camera = GIRCamera()
         super.init()
 
+        self.defaultLibrary = device?.makeDefaultLibrary()
         createSamplerState()
         createDepthStencilState()
         createRenderPipelineState()
+        createShadowTexture()
+        createShadowPipelineState()
+        createShadowPassDescriptor()
     }
 
     func createUniformBuffer() -> MTLBuffer {
@@ -42,13 +50,9 @@ class GIRRenderer: NSObject {
     }
 
     func createRenderPipelineState() {
-        guard let library = device?.makeDefaultLibrary() else {
-            return
-        }
-
         let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
-        renderPipelineDescriptor.vertexFunction = library.makeFunction(name: "basic_vertex")
-        renderPipelineDescriptor.fragmentFunction = library.makeFunction(name: "basic_fragment")
+        renderPipelineDescriptor.vertexFunction = defaultLibrary.makeFunction(name: "basic_vertex")
+        renderPipelineDescriptor.fragmentFunction = defaultLibrary.makeFunction(name: "basic_fragment")
         renderPipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         renderPipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
 
@@ -57,6 +61,38 @@ class GIRRenderer: NSObject {
         } catch let error {
             debugPrint(error)
         }
+    }
+
+    func createShadowPipelineState() {
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.vertexFunction = defaultLibrary.makeFunction(name: "shadow_vertex")
+        renderPipelineDescriptor.fragmentFunction = nil
+        renderPipelineDescriptor.colorAttachments[0].pixelFormat = .invalid
+        renderPipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+
+        do {
+            try shadowPipelineState = device?.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+        } catch let error {
+            debugPrint(error)
+        }
+    }
+
+    func createShadowTexture() {
+        let shadowTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float, width: 1024, height: 1024, mipmapped: false)
+        shadowTextureDescriptor.usage = [.shaderRead, .renderTarget]
+        shadowTexture = device?.makeTexture(descriptor: shadowTextureDescriptor)
+    }
+
+    func createShadowPassDescriptor() {
+        shadowPassDescriptor = MTLRenderPassDescriptor()
+        guard let _ = shadowPassDescriptor else {
+            return
+        }
+
+        shadowPassDescriptor.depthAttachment.texture = shadowTexture
+        shadowPassDescriptor.depthAttachment.loadAction = .clear
+        shadowPassDescriptor.depthAttachment.storeAction = .store
+        shadowPassDescriptor.depthAttachment.clearDepth = 1.0
     }
 
     func createSamplerState() {

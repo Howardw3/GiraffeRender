@@ -10,7 +10,6 @@ import simd
 import MetalKit
 extension GIRRenderer: MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-
         aspectRatio = Float(size.width / size.height)
     }
 
@@ -26,6 +25,15 @@ extension GIRRenderer: MTKViewDelegate {
         }
 
         passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0)
+
+        guard let shadowCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadowPassDescriptor) else {
+            debugPrint("shadow pass failed")
+            return
+        }
+        shadowCommandEncoder.setCullMode(.back)
+        shadowCommandEncoder.setFrontFacing(.counterClockwise)
+        shadowCommandEncoder.setRenderPipelineState(shadowPipelineState)
+        shadowCommandEncoder.setDepthStencilState(depthStencilState)
 
         guard let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: passDescriptor) else {
             return
@@ -76,15 +84,20 @@ extension GIRRenderer: MTKViewDelegate {
         memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.size)
     }
 
-    func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?) {
+    func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?, isShadowMode: Bool = false) {
         guard let node = node else {
             return
         }
 
-        let uniformBuffer = createUniformBuffer()
-        updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
-        copyMaterialMemory(node: node, commandEncoder: commandEncoder)
-        copyLightMemory(node: node, commandEncoder: commandEncoder)
+        var uniformBuffer: MTLBuffer!
+        if !isShadowMode {
+            uniformBuffer = createUniformBuffer()
+            updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
+            copyMaterialMemory(node: node, commandEncoder: commandEncoder)
+            copyLightMemory(node: node, commandEncoder: commandEncoder)
+        } else {
+            uniformBuffer = createShadowUniformsBuffer()
+        }
 
         if let mesh = node.geometry?.mesh {
             drawMesh(mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
@@ -93,6 +106,17 @@ extension GIRRenderer: MTKViewDelegate {
         for child in node.children {
             drawNode(child, commandEncoder: commandEncoder, parent: node)
         }
+    }
+
+    func createShadowUniformsBuffer() -> MTLBuffer {
+        let uniformDataLength = MemoryLayout<GIRVertexUniforms>.size
+        let buffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
+        for light in lightsInScene {
+            var lightRaw = light.value
+            memcpy(buffer.contents(), &lightRaw, GIRLight.LightRaw.length)
+            break
+        }
+        return buffer
     }
 
     // the first frame will skip lighting
