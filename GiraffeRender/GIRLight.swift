@@ -15,7 +15,7 @@ public class GIRLight {
     public var intensity: Float
     public var spotInnerAngle: Float
     public var spotOuterAngle: Float
-    var direction: float3
+
     var convertedColor: float3 {
         var ret = float3(1.0, 1.0, 1.0)
         if let arr = color.components, arr.count > 2 {
@@ -29,21 +29,12 @@ public class GIRLight {
         self.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [1, 1, 1, 1])!
         self.name = "Light_" + UUID().uuidString
         self.intensity = 1.0
-        self.direction = float3(0, 1, 0)
         self.spotInnerAngle = 30.0
         self.spotOuterAngle = 40.0
     }
 
     public convenience init() {
         self.init(type: .ambient)
-    }
-
-    func updateDirection(pitch: Float, yaw: Float) {
-        var tmpDir = float3()
-        tmpDir.x = cos(pitch) * cos(yaw)
-        tmpDir.y = sin(pitch)
-        tmpDir.z = sin(yaw) * cos(pitch)
-        self.direction = tmpDir
     }
 }
 
@@ -72,6 +63,14 @@ extension GIRLight {
 
         static let length = MemoryLayout<LightRaw>.size
 
+        var position: float3 {
+            return float3(positionX, positionY, positionZ)
+        }
+
+        var front: float3 {
+            return float3(directionX, directionY, directionZ)
+        }
+        
         init(type: Int, position: float3, direction: float3, color: float3,
              intensity: Float = 1.0,
              spotInnerRadian: Float = cos(Float(10).radian),

@@ -29,6 +29,7 @@ struct VertexUniforms {
     float4x4 view_proj_matrix;
     float4x4 model_matrix;
     float3x3 normal_matrix;
+    float4x4 light_space_matrix;
 };
 
 struct VertexIn {
@@ -43,6 +44,7 @@ struct VertexOut {
     float2 tex_coord;
     float3 frag_world_normal;
     float3 frag_world_pos;
+    float4 frag_shadow_pos;
     float3 tangent;
     float3 bitangent;
     float3 normal;
@@ -69,10 +71,21 @@ struct Light {
 struct ShadowUniform {
     float4x4 model_matrix;
     float4x4 light_space_matrix;
+};
+
+static float
+calculate_shadow(float4 frag_shadow_pos, texture2d<float> shadow_texture2D) {
+    float3 proj_coords = frag_shadow_pos.xyz / frag_shadow_pos.w;
+    proj_coords = proj_coords  * 0.5f + 0.5f;
+    constexpr sampler shadow_sampler(coord::normalized, filter::linear, address::clamp_to_edge, compare_func::less);
+    float closest_depth = shadow_texture2D.sample(shadow_sampler, proj_coords.xy).r;
+    float curr_depth = proj_coords.z;
+    float shadow = curr_depth > closest_depth ? 1.0f : 0.0f;
+    return shadow;
 }
 
 vertex float4
-light_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
+shadow_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
              constant ShadowUniform& uniforms [[ buffer(1) ]],
              uint vid [[ vertex_id ]])
 {
@@ -87,12 +100,13 @@ basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
 
     VertexIn vertex_in = vertex_array[vid];
 
-    float4 model_world_pos = uniforms.model_matrix * float4(vertex_in.position, 1);
+    float4 model_world_pos = uniforms.model_matrix * float4(vertex_in.position, 1.0f);
     VertexOut vertex_out;
     vertex_out.position = uniforms.view_proj_matrix * model_world_pos;
     vertex_out.frag_world_pos = model_world_pos.xyz;
     vertex_out.tex_coord = vertex_in.tex_coord;
-    vertex_out.frag_world_normal = (uniforms.model_matrix * float4(vertex_in.normal, 1.0)).xyz;
+    vertex_out.frag_world_normal = (uniforms.model_matrix * float4(vertex_in.normal, 1.0f)).xyz;
+    vertex_out.frag_shadow_pos = uniforms.light_space_matrix * float4(vertex_in.position, 1.0f);
 
     vertex_out.tangent = normalize(uniforms.normal_matrix * vertex_in.tangent.xyz);
     vertex_out.normal = normalize(uniforms.normal_matrix * vertex_in.normal.xyz);
@@ -103,7 +117,8 @@ basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
 
 fragment float4
 basic_fragment(VertexOut frag_in [[ stage_in ]],
-               array<texture2d<float>, 5> texture2D [[ texture(0) ]],
+               array<texture2d<float>, 2> texture2D [[ texture(1) ]],
+               texture2d<float> shadow_texture2D [[ texture(0) ]],
                sampler sampler2D [[ sampler(0) ]],
                constant FragmentUniforms &uniforms [[ buffer(0) ]],
                constant Light &light [[ buffer(1) ]]) {
@@ -164,15 +179,21 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
         float epsilon = light.spot_inner_radian - light.spot_outer_radian;
         float spot_intensity = clamp((theta - light.spot_outer_radian) / epsilon, 0.0, 1.0);
 
-        ambient = 0;
+//        ambient = 0;
         diffuse *= spot_intensity;
         specular *= spot_intensity;
     }
 
-    float4 color = float4();
-    color += float4(ambient, 1.0f) * albedo_map;
-    color += float4(diffuse, 1.0f) * albedo_map;
-    color += float4(specular, 1.0f);
+    float shadow = calculate_shadow(frag_in.frag_shadow_pos, shadow_texture2D);
+    float shadow_final = 1.0;
+
+    float4 final_ambient = float4(ambient, 1.0f) * albedo_map;
+    float4 final_diffuse = float4(diffuse, 1.0f) * albedo_map * shadow_final;
+    float4 final_specular = float4(specular, 1.0f) * shadow_final;
+
+    float4 color = final_ambient + final_diffuse + final_specular;
     float4 final_color = color * light.intensity;
     return final_color;
 }
+
+

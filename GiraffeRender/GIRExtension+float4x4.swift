@@ -114,3 +114,9 @@ extension float4 {
         return float3(x, y, z)
     }
 }
+
+extension float3 {
+    var string: String {
+        return "(\(self.x), \(self.y), \(self.z))"
+    }
+}

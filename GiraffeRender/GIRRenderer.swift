@@ -25,7 +25,7 @@ class GIRRenderer: NSObject {
     var aspectRatio: Float = 1
     var pointOfView: GIRNode
     var shouldUpdateCamera = false
-    var lightsInScene: [String: GIRLight.LightRaw] = [:]
+    var lightsInScene: [String: LightInfo] = [:]
 
     init(device: MTLDevice?) {
         self.device = device
@@ -109,5 +109,12 @@ class GIRRenderer: NSObject {
         depthStencilDescriptor.isDepthWriteEnabled = true
         depthStencilDescriptor.depthCompareFunction = .less
         depthStencilState = device?.makeDepthStencilState(descriptor: depthStencilDescriptor)
+    }
+}
+
+extension GIRRenderer {
+    struct LightInfo {
+        let raw: GIRLight.LightRaw
+        let up: float3
     }
 }

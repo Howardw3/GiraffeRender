@@ -83,7 +83,7 @@ extension GIRRenderer: MTKViewDelegate {
 
         let viewProjectionMatrix = projectionMatrix * viewMatrix
         let normalMatirx = float3x3(modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz).transpose.inverse
-        var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform, normalMatrix: normalMatirx)
+        var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform, normalMatrix: normalMatirx, lightSpaceMatrix: calculateLightSpaceMatrix(node: node))
         memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.size)
     }
 
@@ -91,13 +91,15 @@ extension GIRRenderer: MTKViewDelegate {
         guard let node = node else {
             return
         }
-
+        updateLightsInScene(node: node)
+        
         var uniformBuffer: MTLBuffer!
         if !isShadowMode {
             uniformBuffer = createUniformBuffer()
             updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
             copyMaterialMemory(node: node, commandEncoder: commandEncoder)
             copyLightMemory(node: node, commandEncoder: commandEncoder)
+            setShadowTexture(commandEncoder: commandEncoder)
         } else {
             uniformBuffer = createShadowUniformsBuffer(node: node)
         }
@@ -111,18 +113,36 @@ extension GIRRenderer: MTKViewDelegate {
         }
     }
 
+    func setShadowTexture(commandEncoder: MTLRenderCommandEncoder) {
+        commandEncoder.setFragmentTexture(shadowTexture, index: 0)
+    }
+
     func createShadowUniformsBuffer(node: GIRNode) -> MTLBuffer {
         let uniformDataLength = MemoryLayout<GIRShadowUniforms>.size
         let buffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
-        for light in lightsInScene {
-            let lightProjection = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 1.0, farZ: 50.0)
-            let lookatMatrix = float4x4.lookat(eye: <#T##float3#>, center: <#T##float3#>, up: <#T##float3#>)
-            let lightSpaceMatirx =
-            var shadowUniform = GIRShadowUniforms(modelMatrix: node.worldTransform, lightSpaceMatrix: lightSpaceMatirx)
-            memcpy(buffer.contents(), &shadowUniform, uniformDataLength)
-            break
-        }
+        let lightSpaceMatrix = calculateLightSpaceMatrix(node: node)
+        var shadowUniform = GIRShadowUniforms(modelMatrix: node.worldTransform, lightSpaceMatrix: lightSpaceMatrix)
+        memcpy(buffer.contents(), &shadowUniform, uniformDataLength)
         return buffer
+    }
+
+    // only support one light for now
+    func calculateLightSpaceMatrix(node: GIRNode) -> float4x4 {
+        if let light = lightsInScene.first {
+            let lightProjection = float4x4.perspective(fovy: Float(50).radian, aspect: aspectRatio, nearZ: 1.0, farZ: 200.0)
+            let lookatMatrix = float4x4.lookatMatrix(eye: -light.value.raw.position, center:-light.value.raw.position, up: light.value.up)
+            let lightSpaceMatirx = lightProjection * lookatMatrix
+            return lightSpaceMatirx
+        }
+        return float4x4()
+    }
+
+    func updateLightsInScene(node: GIRNode?) {
+        guard let node = node, let light = node.light else {
+            return
+        }
+
+        lightsInScene[light.name] = LightInfo(raw: GIRLight.LightRaw(type: light.type.rawValue, position: node.position, direction: node.localFront, color: light.convertedColor, intensity: light.intensity), up: node.localUp)
     }
 
     // the first frame will skip lighting
@@ -130,10 +150,6 @@ extension GIRRenderer: MTKViewDelegate {
         // TODO: should use buffer pool
         let lightBuffer = (device?.makeBuffer(length: GIRLight.LightRaw.length, options: []))!
         commandEncoder.setFragmentBuffer(lightBuffer, offset: 0, index: 1)
-        if let light = node.light {
-            light.updateDirection(pitch: node.eularAngles.x.radian, yaw: node.eularAngles.y.radian)
-            lightsInScene[light.name] = GIRLight.LightRaw(type: light.type.rawValue, position: node.position, direction: light.direction, color: light.convertedColor, intensity: light.intensity)
-        }
 
         if lightsInScene.isEmpty {
             var lightRaw = GIRLight.LightRaw()
@@ -153,7 +169,7 @@ extension GIRRenderer: MTKViewDelegate {
         if let material = node.geometry?.material {
 
 //            commandEncoder.setFragmentTexture(material.data.textures, index: 0)
-            commandEncoder.setFragmentTextures(material.data.textures, range: 0..<material.data.textures.count)
+            commandEncoder.setFragmentTextures(material.data.textures, range: 1..<material.data.textures.count + 1)
             if let samplerState = samplerState {
                 commandEncoder.setFragmentSamplerState(samplerState, index: 0)
             }
