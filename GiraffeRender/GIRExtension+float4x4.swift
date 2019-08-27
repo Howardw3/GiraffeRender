@@ -94,6 +94,23 @@ extension float4x4 {
         return float4x4(colx, coly, colz, colw)
     }
 
+    static func orthoMatrix(left: Float, right: Float, bottom: Float, top: Float, nearZ: Float, farZ: Float) -> float4x4 {
+        let ral = right + left
+        let rsl = right - left
+        let tab = top + bottom
+        let tsb = top - bottom
+        let fan = farZ + nearZ
+        let fsn = farZ - nearZ
+
+        let colx = float4(2.0 / rsl, 0.0, 0.0, 0.0)
+        let coly = float4(0.0, 2.0 / tsb, 0.0, 0.0)
+        let colz = float4(0.0, 0.0, -2.0 / fsn, 0.0)
+        let colw = float4(-ral / rsl, -tab / tsb, -fan / fsn, 1.0)
+
+
+        return float4x4(colx, coly, colz, colw)
+    }
+
     static func lookatMatrix(eye: float3, center: float3, up: float3) ->float4x4 {
 
         let n = normalize(eye - center)

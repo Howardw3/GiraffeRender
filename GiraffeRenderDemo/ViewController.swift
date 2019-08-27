@@ -32,11 +32,11 @@ class ViewController: UIViewController {
     var sphereNode: GIRNode!
     var scene: GIRScene!
     let cubePositions: [float3] = [
-        float3( 2.0, -2.0, -4.0),
-        float3(-1.5, -2.2, -6.5),
-        float3(0.8, 2.0, -4.3),
+        float3( 2.0, 5.0, -9.7),
+        float3(-1.5, -4.2, -6.5),
+//        float3(0.8, 2.0, -4.3),
         float3(0, 0.0, 0),
-        float3( 2.4, -2.4, -4.5),
+//        float3( 2.4, -2.4, -4.5),
         float3( 2.0, 1.0, 0.0)
     ]
     var cameraPos = float3(0, 0, 50)
@@ -107,8 +107,8 @@ class ViewController: UIViewController {
     }
     
     func createLightNode() -> GIRNode {
-        let light = GIRLight(type: .directional)
-        light.intensity = 1
+        let light = GIRLight(type: .omni)
+        light.intensity = 4
 //        light.color = UIColor.white.cgColor
         light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
@@ -196,7 +196,7 @@ extension ViewController: UIGestureRecognizerDelegate {
             case .light:
                 if recognizer.numberOfTouches == 1 {
                     currLightNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
-                    currLightNode.debugPrintLocalAxis()
+//                    currLightNode.debugPrintLocalAxis()
                 } else if recognizer.numberOfTouches == 2 {
                     currLightNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
                 }
