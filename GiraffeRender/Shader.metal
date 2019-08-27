@@ -146,6 +146,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
         return float4(ambient, 1.0f) * albedo_map;
     }
 
+    float3 light_direction_neg = normalize(-light.direction);
 //    if (light.type.x == LIGHT_TYPE_DIRECTIONAL) {
 //        frag_light_dir = light_direction_neg;
 //    }
@@ -174,7 +175,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
         diffuse *= attenuation;
         specular *= attenuation;
     } else if (light.type.x == LIGHT_TYPE_SPOT) {
-        float3 light_direction_neg = normalize(-light.direction);
+
         float theta = dot(frag_light_dir, light_direction_neg);
         float epsilon = light.spot_inner_radian - light.spot_outer_radian;
         float spot_intensity = clamp((theta - light.spot_outer_radian) / epsilon, 0.0, 1.0);
@@ -185,7 +186,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     }
 
     float shadow = calculate_shadow(frag_in.frag_shadow_pos, shadow_texture2D);
-    float shadow_final = 1.0;
+    float shadow_final = 1.0f - shadow;
 
     float4 final_ambient = float4(ambient, 1.0f) * albedo_map;
     float4 final_diffuse = float4(diffuse, 1.0f) * albedo_map * shadow_final;

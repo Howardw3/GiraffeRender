@@ -39,7 +39,7 @@ class GIRRenderer: NSObject {
         createSamplerState()
         createDepthStencilState()
         createRenderPipelineState()
-        createShadowTexture()
+        createShadowTexture(width: 1330, height: 700)
         createShadowPipelineState()
         createShadowPassDescriptor()
     }
@@ -77,8 +77,8 @@ class GIRRenderer: NSObject {
         }
     }
 
-    func createShadowTexture() {
-        let shadowTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float, width: 1024, height: 1024, mipmapped: false)
+    func createShadowTexture(width: Int, height: Int) {
+        let shadowTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float, width: width, height: height, mipmapped: false)
         shadowTextureDescriptor.usage = [.shaderRead, .renderTarget]
         shadowTexture = device?.makeTexture(descriptor: shadowTextureDescriptor)
     }

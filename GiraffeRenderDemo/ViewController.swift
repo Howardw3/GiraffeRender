@@ -35,11 +35,11 @@ class ViewController: UIViewController {
         float3( 2.0, -2.0, -4.0),
         float3(-1.5, -2.2, -6.5),
         float3(0.8, 2.0, -4.3),
-        float3(2.8, 1.0, -7.3),
+        float3(0, 0.0, 0),
         float3( 2.4, -2.4, -4.5),
         float3( 2.0, 1.0, 0.0)
     ]
-    var cameraPos = float3(0, 0, 20)
+    var cameraPos = float3(0, 0, 50)
     var currGestureControl: GestureControl = .object
     let feedbackGenerator = UIImpactFeedbackGenerator()
     var prevPos = CGPoint.zero
@@ -51,8 +51,9 @@ class ViewController: UIViewController {
         scene.rootNode.addChild(currLightNode)
         createCubes()
         let floorNode = createPlaneNode()
-        floorNode.eularAngles.x = 90.0
-        floorNode.position = float3(0, -3, 0)
+        floorNode.eularAngles.y = 180.0
+        floorNode.eularAngles.z = 180.0
+        floorNode.position = float3(0, 0, -10)
         floorNode.scale = 5.0
         scene.rootNode.addChild(floorNode)
         currNode = cubeNode
@@ -106,13 +107,13 @@ class ViewController: UIViewController {
     }
     
     func createLightNode() -> GIRNode {
-        let light = GIRLight(type: .spot)
-        light.intensity = 4.0
+        let light = GIRLight(type: .directional)
+        light.intensity = 1
 //        light.color = UIColor.white.cgColor
         light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
-        lightNode.position = float3(0.0, 0.0, 3.0)
-        lightNode.scale = 0.2
+        lightNode.position = float3(0.0, 0.0, 8.0)
+        lightNode.scale = 0.4
         lightNode.light = light
         return lightNode
     }

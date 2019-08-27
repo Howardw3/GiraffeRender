@@ -95,7 +95,9 @@ public class GIRNode {
                 let translationMatrix = float4x4.translationMatrix(_position)
                 let scaleMatrix = float4x4.scaleMatrix(_scale)
                 let translatePivotMatrix = float4x4.translationMatrix(pivot)
-                let rotationMatrix = float4x4.rotationXMatrix(radians: Float(_rotation.x).radian) * float4x4.rotationYMatrix(radians: Float(_rotation.y).radian) * float4x4.rotationZMatrix(radians: Float(_rotation.z).radian)
+                let rotationMatrix = float4x4.rotationXMatrix(radians: Float(_rotation.x).radian)
+                                   * float4x4.rotationYMatrix(radians: Float(_rotation.y).radian)
+                                   * float4x4.rotationZMatrix(radians: Float(_rotation.z).radian)
                 let translateNegPivotMatrix = float4x4.translationMatrix(-pivot)
 
                 _transform = translatePivotMatrix * scaleMatrix * rotationMatrix * translateNegPivotMatrix * translationMatrix
@@ -171,8 +173,8 @@ extension GIRNode {
     func updateLocalAxis() {
         var front = float3()
         front.x = cos(_rotation.x.radian) * cos(_rotation.y.radian)
-        front.y = sin(_rotation.x.radian)
-        front.z = sin(_rotation.y.radian) * cos(_rotation.x.radian)
+        front.y = sin((_rotation.x).radian)
+        front.z = cos(_rotation.x.radian) * sin(_rotation.y.radian)
 
         _localFront = normalize(front)
         _localRight = normalize(cross(_localFront, worldUp))

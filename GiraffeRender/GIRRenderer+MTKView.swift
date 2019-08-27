@@ -11,6 +11,10 @@ import MetalKit
 extension GIRRenderer: MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         aspectRatio = Float(size.width / size.height)
+
+        createShadowTexture(width: Int(size.width), height: Int(size.height))
+        createShadowPipelineState()
+        createShadowPassDescriptor()
     }
 
     func draw(in view: MTKView) {
@@ -24,6 +28,8 @@ extension GIRRenderer: MTKViewDelegate {
             debugPrint("shadow pass failed")
             return
         }
+
+        shadowCommandEncoder.label = "shadow encoder"
         shadowCommandEncoder.setCullMode(.back)
         shadowCommandEncoder.setFrontFacing(.counterClockwise)
         shadowCommandEncoder.setRenderPipelineState(shadowPipelineState)
@@ -78,7 +84,7 @@ extension GIRRenderer: MTKViewDelegate {
                 projectionMatrix = camera.projectionMatrix
             }
         } else {
-            projectionMatrix = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0, farZ: 200)
+            projectionMatrix = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 1, farZ: 200)
         }
 
         let viewProjectionMatrix = projectionMatrix * viewMatrix
@@ -109,7 +115,7 @@ extension GIRRenderer: MTKViewDelegate {
         }
 
         for child in node.children {
-            drawNode(child, commandEncoder: commandEncoder, parent: node)
+            drawNode(child, commandEncoder: commandEncoder, parent: node, isShadowMode: isShadowMode)
         }
     }
 
@@ -129,8 +135,8 @@ extension GIRRenderer: MTKViewDelegate {
     // only support one light for now
     func calculateLightSpaceMatrix(node: GIRNode) -> float4x4 {
         if let light = lightsInScene.first {
-            let lightProjection = float4x4.perspective(fovy: Float(50).radian, aspect: aspectRatio, nearZ: 1.0, farZ: 200.0)
-            let lookatMatrix = float4x4.lookatMatrix(eye: -light.value.raw.position, center:-light.value.raw.position, up: light.value.up)
+            let lightProjection = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0.1, farZ: 100.0)
+            let lookatMatrix = float4x4.lookatMatrix(eye: light.value.raw.position, center:-light.value.raw.position, up: float3(0, 1, 0))
             let lightSpaceMatirx = lightProjection * lookatMatrix
             return lightSpaceMatirx
         }

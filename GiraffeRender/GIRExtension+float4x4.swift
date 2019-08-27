@@ -96,7 +96,7 @@ extension float4x4 {
 
     static func lookatMatrix(eye: float3, center: float3, up: float3) ->float4x4 {
 
-        let n = normalize(eye + -center)
+        let n = normalize(eye - center)
         let u = normalize(cross(up, n))
         let v = cross(n, u)
 
