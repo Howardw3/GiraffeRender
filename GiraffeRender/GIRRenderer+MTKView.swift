@@ -174,8 +174,6 @@ extension GIRRenderer: MTKViewDelegate {
         var fragmentUniforms = GIRFragmentUniforms()
         fragmentUniforms.cameraPosition = pointOfView.position
         if let material = node.geometry?.material {
-
-//            commandEncoder.setFragmentTexture(material.data.textures, index: 0)
             commandEncoder.setFragmentTextures(material.data.textures, range: 1..<material.data.textures.count + 1)
             if let samplerState = samplerState {
                 commandEncoder.setFragmentSamplerState(samplerState, index: 0)

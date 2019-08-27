@@ -20,11 +20,6 @@ enum BasicMaterial {
     albedo, diffuse, ambient, specular, normal
 };
 
-struct Vertex {
-    float4 position [[position]];
-    float4 color;
-};
-
 struct VertexUniforms {
     float4x4 view_proj_matrix;
     float4x4 model_matrix;
@@ -68,11 +63,6 @@ struct Light {
     float spot_outer_radian;
 };
 
-struct ShadowUniform {
-    float4x4 model_matrix;
-    float4x4 light_space_matrix;
-};
-
 static float
 calculate_shadow(float4 frag_shadow_pos, texture2d<float> shadow_texture2D) {
     float3 proj_coords = frag_shadow_pos.xyz / frag_shadow_pos.w;
@@ -82,15 +72,6 @@ calculate_shadow(float4 frag_shadow_pos, texture2d<float> shadow_texture2D) {
     float curr_depth = proj_coords.z;
     float shadow = curr_depth > closest_depth ? 1.0f : 0.0f;
     return shadow;
-}
-
-vertex float4
-shadow_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
-             constant ShadowUniform& uniforms [[ buffer(1) ]],
-             uint vid [[ vertex_id ]])
-{
-    VertexIn vertex_in = vertex_array[vid];
-    return uniforms.light_space_matrix * uniforms.model_matrix * float4(vertex_in.position, 1.0f);
 }
 
 vertex VertexOut
@@ -180,7 +161,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
         float epsilon = light.spot_inner_radian - light.spot_outer_radian;
         float spot_intensity = clamp((theta - light.spot_outer_radian) / epsilon, 0.0, 1.0);
 
-//        ambient = 0;
+        ambient = 0;
         diffuse *= spot_intensity;
         specular *= spot_intensity;
     }

@@ -35,7 +35,7 @@ class ViewController: UIViewController {
         float3( 2.0, 5.0, -9.7),
         float3(-1.5, -4.2, -6.5),
 //        float3(0.8, 2.0, -4.3),
-        float3(0, 0.0, 0),
+        float3(-1.0, 0.0, 0),
 //        float3( 2.4, -2.4, -4.5),
         float3( 2.0, 1.0, 0.0)
     ]
