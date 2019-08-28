@@ -75,6 +75,4 @@ public class GIRMaterialProperty {
             self.texture = texture
         }
     }
-
-
 }

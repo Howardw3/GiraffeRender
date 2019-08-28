@@ -29,6 +29,8 @@
 		238597A72302754400585F46 /* GIRMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238597A62302754400585F46 /* GIRMaterial.swift */; };
 		23FA335B230E6784006BB484 /* GIRMaterialProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */; };
 		23FA335D230E6BE1006BB484 /* Art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 23FA335C230E6BE1006BB484 /* Art.scnassets */; };
+		23FA335F2314FF26006BB484 /* Shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23FA335E2314FF26006BB484 /* Shadow.metal */; };
+		23FA3360231500E0006BB484 /* Shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23FA335E2314FF26006BB484 /* Shadow.metal */; };
 		8C2D53312308D68F0063F9BB /* GIRLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2D53302308D68F0063F9BB /* GIRLight.swift */; };
 		8CFB9A7A230EF5AD006A3ACD /* GIRRenderer+MTKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFB9A79230EF5AD006A3ACD /* GIRRenderer+MTKView.swift */; };
 /* End PBXBuildFile section */
@@ -81,6 +83,7 @@
 		238597A62302754400585F46 /* GIRMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterial.swift; sourceTree = "<group>"; };
 		23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterialProperty.swift; sourceTree = "<group>"; };
 		23FA335C230E6BE1006BB484 /* Art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Art.scnassets; sourceTree = "<group>"; };
+		23FA335E2314FF26006BB484 /* Shadow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shadow.metal; sourceTree = "<group>"; };
 		8C2D53302308D68F0063F9BB /* GIRLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRLight.swift; sourceTree = "<group>"; };
 		8CFB9A79230EF5AD006A3ACD /* GIRRenderer+MTKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GIRRenderer+MTKView.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -142,6 +145,7 @@
 				23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */,
 				8C2D53302308D68F0063F9BB /* GIRLight.swift */,
 				230A1CA5230108EA0025825D /* Shader.metal */,
+				23FA335E2314FF26006BB484 /* Shadow.metal */,
 			);
 			path = GiraffeRender;
 			sourceTree = "<group>";
@@ -283,6 +287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				230A1CB7230108EB0025825D /* GIRGeometry.swift in Sources */,
+				23FA335F2314FF26006BB484 /* Shadow.metal in Sources */,
 				23FA335B230E6784006BB484 /* GIRMaterialProperty.swift in Sources */,
 				238597A72302754400585F46 /* GIRMaterial.swift in Sources */,
 				230A1CB2230108EB0025825D /* GIRExtension.swift in Sources */,
@@ -303,6 +308,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23FA3360231500E0006BB484 /* Shadow.metal in Sources */,
 				230A1C8C230077D20025825D /* ViewController.swift in Sources */,
 				230A1C8A230077D20025825D /* AppDelegate.swift in Sources */,
 				238597A523010B6500585F46 /* Shader.metal in Sources */,

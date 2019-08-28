@@ -10,8 +10,11 @@ import simd
 import MetalKit
 extension GIRRenderer: MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-
         aspectRatio = Float(size.width / size.height)
+
+        createShadowTexture(width: Int(size.width), height: Int(size.height))
+        createShadowPipelineState()
+        createShadowPassDescriptor()
     }
 
     func draw(in view: MTKView) {
@@ -20,6 +23,20 @@ extension GIRRenderer: MTKViewDelegate {
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             return
         }
+
+        guard let shadowCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadowPassDescriptor) else {
+            debugPrint("shadow pass failed")
+            return
+        }
+
+        shadowCommandEncoder.label = "shadow encoder"
+        shadowCommandEncoder.setCullMode(.front)
+        shadowCommandEncoder.setFrontFacing(.counterClockwise)
+        shadowCommandEncoder.setRenderPipelineState(shadowPipelineState)
+        shadowCommandEncoder.setDepthStencilState(depthStencilState)
+        drawScene(commandEncoder: shadowCommandEncoder, isShadowMode: true)
+        shadowCommandEncoder.endEncoding()
+
         guard let passDescriptor = view.currentRenderPassDescriptor, let drawable = view.currentDrawable else {
             debugPrint("currentRenderPassDescriptor, drawable error")
             return
@@ -42,8 +59,8 @@ extension GIRRenderer: MTKViewDelegate {
         commandBuffer.commit()
     }
 
-    func drawScene(commandEncoder: MTLRenderCommandEncoder) {
-        drawNode(scene?.rootNode, commandEncoder: commandEncoder, parent: nil)
+    func drawScene(commandEncoder: MTLRenderCommandEncoder, isShadowMode: Bool = false) {
+        drawNode(scene?.rootNode, commandEncoder: commandEncoder, parent: nil, isShadowMode: isShadowMode)
         shouldUpdateCamera = true
     }
     
@@ -67,32 +84,72 @@ extension GIRRenderer: MTKViewDelegate {
                 projectionMatrix = camera.projectionMatrix
             }
         } else {
-            projectionMatrix = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0, farZ: 200)
+            projectionMatrix = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 1, farZ: 200)
         }
 
         let viewProjectionMatrix = projectionMatrix * viewMatrix
         let normalMatirx = float3x3(modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz).transpose.inverse
-        var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform, normalMatrix: normalMatirx)
+        var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform, normalMatrix: normalMatirx, lightSpaceMatrix: calculateLightSpaceMatrix(node: node))
         memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.size)
     }
 
-    func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?) {
+    func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?, isShadowMode: Bool = false) {
         guard let node = node else {
             return
         }
-
-        let uniformBuffer = createUniformBuffer()
-        updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
-        copyMaterialMemory(node: node, commandEncoder: commandEncoder)
-        copyLightMemory(node: node, commandEncoder: commandEncoder)
+        updateLightsInScene(node: node)
+        
+        var uniformBuffer: MTLBuffer!
+        if !isShadowMode {
+            uniformBuffer = createUniformBuffer()
+            updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
+            copyMaterialMemory(node: node, commandEncoder: commandEncoder)
+            copyLightMemory(node: node, commandEncoder: commandEncoder)
+            setShadowTexture(commandEncoder: commandEncoder)
+        } else {
+            uniformBuffer = createShadowUniformsBuffer(node: node)
+        }
 
         if let mesh = node.geometry?.mesh {
             drawMesh(mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
         }
 
         for child in node.children {
-            drawNode(child, commandEncoder: commandEncoder, parent: node)
+            drawNode(child, commandEncoder: commandEncoder, parent: node, isShadowMode: isShadowMode)
         }
+    }
+
+    func setShadowTexture(commandEncoder: MTLRenderCommandEncoder) {
+        commandEncoder.setFragmentTexture(shadowTexture, index: 0)
+    }
+
+    func createShadowUniformsBuffer(node: GIRNode) -> MTLBuffer {
+        let uniformDataLength = MemoryLayout<GIRShadowUniforms>.size
+        let buffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
+        let lightSpaceMatrix = calculateLightSpaceMatrix(node: node)
+        var shadowUniform = GIRShadowUniforms(modelMatrix: node.transform, lightSpaceMatrix: lightSpaceMatrix)
+        memcpy(buffer.contents(), &shadowUniform, uniformDataLength)
+        return buffer
+    }
+
+    // only support one light for now
+    func calculateLightSpaceMatrix(node: GIRNode) -> float4x4 {
+        if let light = lightsInScene.first {
+//            let lightProjection = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0.1, farZ: 100.0)
+            let lightProjection = float4x4.orthoMatrix(left: -10, right: 10, bottom: -10, top: 10, nearZ: -40, farZ: 40)
+            let lookatMatrix = float4x4.lookatMatrix(eye: light.value.raw.position, center:float3(0, 0, -10), up: float3(0, 1, 0))
+            let lightSpaceMatirx = lightProjection * lookatMatrix
+            return lightSpaceMatirx
+        }
+        return float4x4()
+    }
+
+    func updateLightsInScene(node: GIRNode?) {
+        guard let node = node, let light = node.light else {
+            return
+        }
+
+        lightsInScene[light.name] = LightInfo(raw: GIRLight.LightRaw(type: light.type.rawValue, position: node.position, direction: node.localFront, color: light.convertedColor, intensity: light.intensity), up: node.localUp)
     }
 
     // the first frame will skip lighting
@@ -100,10 +157,6 @@ extension GIRRenderer: MTKViewDelegate {
         // TODO: should use buffer pool
         let lightBuffer = (device?.makeBuffer(length: GIRLight.LightRaw.length, options: []))!
         commandEncoder.setFragmentBuffer(lightBuffer, offset: 0, index: 1)
-        if let light = node.light {
-            light.updateDirection(pitch: node.eularAngles.x.radian, yaw: node.eularAngles.y.radian)
-            lightsInScene[light.name] = GIRLight.LightRaw(type: light.type.rawValue, position: node.position, direction: light.direction, color: light.convertedColor, intensity: light.intensity)
-        }
 
         if lightsInScene.isEmpty {
             var lightRaw = GIRLight.LightRaw()
@@ -121,9 +174,7 @@ extension GIRRenderer: MTKViewDelegate {
         var fragmentUniforms = GIRFragmentUniforms()
         fragmentUniforms.cameraPosition = pointOfView.position
         if let material = node.geometry?.material {
-
-//            commandEncoder.setFragmentTexture(material.data.textures, index: 0)
-            commandEncoder.setFragmentTextures(material.data.textures, range: 0..<material.data.textures.count)
+            commandEncoder.setFragmentTextures(material.data.textures, range: 1..<material.data.textures.count + 1)
             if let samplerState = samplerState {
                 commandEncoder.setFragmentSamplerState(samplerState, index: 0)
             }
