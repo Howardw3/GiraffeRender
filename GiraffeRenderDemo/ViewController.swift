@@ -54,7 +54,7 @@ class ViewController: UIViewController {
         floorNode.eularAngles.y = 180.0
         floorNode.eularAngles.z = 180.0
         floorNode.position = float3(0, 0, -10)
-        floorNode.scale = 5.0
+        floorNode.scale = 10.0
         scene.rootNode.addChild(floorNode)
         currNode = cubeNode
 
@@ -91,7 +91,7 @@ class ViewController: UIViewController {
     }
 
     func createCube() -> GIRNode {
-        let cube = GIRGeometry(basic: .box(size: float3(1, 1, 1), segments: [1, 1, 1]))
+        let cube = GIRGeometry(basic: .box(size: float3(1, 1, 1), segments: [10, 10, 10]))
         let material = GIRMaterial()
         material.albedo.content = "cube_alb"
         cube.material = material
@@ -130,6 +130,7 @@ class ViewController: UIViewController {
     func createCubes() {
         for i in 0..<cubePositions.count {
             cubeNode = createTexturedCube()
+//            cubeNode = createCube()
             cubeNode.position = cubePositions[i]
             cubeNode.scale = 1.0
             cubeNode.eularAngles = float3(1, 1, 1) * Float(i * 20)

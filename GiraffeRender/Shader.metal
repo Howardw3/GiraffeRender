@@ -64,13 +64,14 @@ struct Light {
 };
 
 static float
-calculate_shadow(float4 frag_shadow_pos, texture2d<float> shadow_texture2D) {
+calculate_shadow(float4 frag_shadow_pos, texture2d<float> shadow_texture2D, float3 normal, float3 light_dir) {
     float3 proj_coords = frag_shadow_pos.xyz / frag_shadow_pos.w;
     proj_coords = proj_coords  * 0.5f + 0.5f;
     constexpr sampler shadow_sampler(coord::normalized, filter::linear, address::clamp_to_edge, compare_func::less);
     float closest_depth = shadow_texture2D.sample(shadow_sampler, proj_coords.xy).r;
     float curr_depth = proj_coords.z;
-    float shadow = curr_depth > closest_depth ? 1.0f : 0.0f;
+    float bias = max(0.05 * (1.0 - dot(normal, light_dir)), 0.005);
+    float shadow = curr_depth - bias > closest_depth ? 1.0f : 0.0f;
     return shadow;
 }
 
@@ -87,7 +88,7 @@ basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
     vertex_out.frag_world_pos = model_world_pos.xyz;
     vertex_out.tex_coord = vertex_in.tex_coord;
     vertex_out.frag_world_normal = (uniforms.model_matrix * float4(vertex_in.normal, 1.0f)).xyz;
-    vertex_out.frag_shadow_pos = uniforms.light_space_matrix * float4(vertex_in.position, 1.0f);
+    vertex_out.frag_shadow_pos = uniforms.light_space_matrix * model_world_pos;
 
     vertex_out.tangent = normalize(uniforms.normal_matrix * vertex_in.tangent.xyz);
     vertex_out.normal = normalize(uniforms.normal_matrix * vertex_in.normal.xyz);
@@ -115,6 +116,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     float3 tangent_frag_pos  = tbn_matrix * frag_in.frag_world_pos;
 
     float3 normal = normalize(tbn_matrix * normal_map);
+//    float3 normal = normalize(frag_in.frag_world_normal);
     float3 frag_light_dir = normalize(tangent_light_pos - tangent_frag_pos);
 
     float ambient_intensity = 0.99f;
@@ -166,7 +168,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
         specular *= spot_intensity;
     }
 
-    float shadow = calculate_shadow(frag_in.frag_shadow_pos, shadow_texture2D);
+    float shadow = calculate_shadow(frag_in.frag_shadow_pos, shadow_texture2D, normal, frag_light_dir);
     float shadow_final = 1.0f - shadow;
 
     float4 final_ambient = float4(ambient, 1.0f) * albedo_map;

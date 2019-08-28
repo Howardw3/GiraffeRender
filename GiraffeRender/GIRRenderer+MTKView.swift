@@ -30,7 +30,7 @@ extension GIRRenderer: MTKViewDelegate {
         }
 
         shadowCommandEncoder.label = "shadow encoder"
-        shadowCommandEncoder.setCullMode(.back)
+        shadowCommandEncoder.setCullMode(.front)
         shadowCommandEncoder.setFrontFacing(.counterClockwise)
         shadowCommandEncoder.setRenderPipelineState(shadowPipelineState)
         shadowCommandEncoder.setDepthStencilState(depthStencilState)
@@ -127,7 +127,7 @@ extension GIRRenderer: MTKViewDelegate {
         let uniformDataLength = MemoryLayout<GIRShadowUniforms>.size
         let buffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
         let lightSpaceMatrix = calculateLightSpaceMatrix(node: node)
-        var shadowUniform = GIRShadowUniforms(modelMatrix: node.worldTransform, lightSpaceMatrix: lightSpaceMatrix)
+        var shadowUniform = GIRShadowUniforms(modelMatrix: node.transform, lightSpaceMatrix: lightSpaceMatrix)
         memcpy(buffer.contents(), &shadowUniform, uniformDataLength)
         return buffer
     }
@@ -136,8 +136,8 @@ extension GIRRenderer: MTKViewDelegate {
     func calculateLightSpaceMatrix(node: GIRNode) -> float4x4 {
         if let light = lightsInScene.first {
 //            let lightProjection = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0.1, farZ: 100.0)
-            let lightProjection = float4x4.orthoMatrix(left: -10, right: 10, bottom: -10, top: 10, nearZ: -10, farZ: 20)
-            let lookatMatrix = float4x4.lookatMatrix(eye: light.value.raw.position, center:-light.value.raw.position, up: float3(0, 1, 0))
+            let lightProjection = float4x4.orthoMatrix(left: -10, right: 10, bottom: -10, top: 10, nearZ: -40, farZ: 40)
+            let lookatMatrix = float4x4.lookatMatrix(eye: light.value.raw.position, center:float3(0, 0, -10), up: float3(0, 1, 0))
             let lightSpaceMatirx = lightProjection * lookatMatrix
             return lightSpaceMatirx
         }
