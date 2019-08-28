@@ -67,11 +67,13 @@ static float
 calculate_shadow(float4 frag_shadow_pos, texture2d<float> shadow_texture2D, float3 normal, float3 light_dir) {
     float3 proj_coords = frag_shadow_pos.xyz / frag_shadow_pos.w;
     proj_coords = proj_coords  * 0.5f + 0.5f;
+    proj_coords.y = 1.0f - proj_coords.y;
+
     constexpr sampler shadow_sampler(coord::normalized, filter::linear, address::clamp_to_edge, compare_func::less);
     float closest_depth = shadow_texture2D.sample(shadow_sampler, proj_coords.xy).r;
     float curr_depth = proj_coords.z;
     float bias = max(0.05 * (1.0 - dot(normal, light_dir)), 0.005);
-    float shadow = curr_depth - bias > closest_depth ? 1.0f : 0.0f;
+    float shadow = curr_depth - bias > closest_depth ? 1.0f : 0.5f;
     return shadow;
 }
 

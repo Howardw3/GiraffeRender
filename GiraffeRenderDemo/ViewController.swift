@@ -111,7 +111,8 @@ class ViewController: UIViewController {
         light.intensity = 4
 //        light.color = UIColor.white.cgColor
         light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
-        let lightNode = createCone()
+//        let lightNode = createCone()
+        let lightNode = GIRNode()
         lightNode.position = float3(0.0, 0.0, 8.0)
         lightNode.scale = 0.4
         lightNode.light = light
