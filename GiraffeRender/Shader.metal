@@ -16,15 +16,23 @@ constant int LIGHT_TYPE_OMNI = 2;
 constant int LIGHT_TYPE_SPOT = 3;
 
 // Basic material type
-enum BasicMaterial {
-    albedo, diffuse, ambient, specular, normal
-};
+constant int MAT_ALBEDO = 0;
+constant int MAT_DIFFUSE = 1;
+constant int MAT_AMBIENT = 2;
+constant int MAT_SPECULAR = 3;
+constant int MAT_NORMAL = 4;
+
+constant int MAT_MATERIAL_COUNT = 5;
 
 struct VertexUniforms {
     float4x4 view_proj_matrix;
     float4x4 model_matrix;
     float3x3 normal_matrix;
     float4x4 light_space_matrix;
+};
+
+struct MaterialColor {
+    float3 colors[5];
 };
 
 struct VertexIn {
@@ -47,10 +55,18 @@ struct VertexOut {
 
 struct FragmentUniforms {
     packed_float3 camera_pos;
-    packed_float3 mat_diffuse;
-    packed_float3 mat_specular;
-    packed_float3 mat_ambient;
     float mat_shininess;
+    float colorTypes[MAT_MATERIAL_COUNT];
+    packed_float3 colors[MAT_MATERIAL_COUNT];
+
+};
+
+struct MaterialColorTypes {
+    int2 albedo;
+    int2 diffuse;
+    int2 ambient;
+    int2 specular;
+    int2 normal;
 };
 
 struct Light {
@@ -64,7 +80,11 @@ struct Light {
 };
 
 static float
-calculate_shadow(float4 frag_shadow_pos, texture2d<float> shadow_texture2D, float3 normal, float3 light_dir) {
+calculate_shadow(float4 frag_shadow_pos,
+                 texture2d<float> shadow_texture2D,
+                 float3 normal,
+                 float3 light_dir)
+{
     float3 proj_coords = frag_shadow_pos.xyz / frag_shadow_pos.w;
     proj_coords = proj_coords  * 0.5f + 0.5f;
     proj_coords.y = 1.0f - proj_coords.y;
@@ -99,17 +119,45 @@ basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
     return vertex_out;
 }
 
+static MaterialColor
+get_material_colors(FragmentUniforms uniforms,
+               array<texture2d<float>, MAT_MATERIAL_COUNT> textures2D,
+               sampler sampler2D,
+               float2 tex_coord)
+{
+    int textureCounter = 0;
+    MaterialColor color;
+
+    for (int i = 0; i < MAT_MATERIAL_COUNT; i++) {
+        if (uniforms.colorTypes[i] > 0.0) {
+            color.colors[i] = uniforms.colors[i];
+        } else if (uniforms.colorTypes[i] < 0.0) {
+            if (i == MAT_NORMAL) {
+                constexpr sampler normalSampler(filter::nearest);
+                color.colors[i] = textures2D[textureCounter].sample(normalSampler, tex_coord).rgb * 2.0f - 1.0f;
+            } else {
+                color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb;
+            }
+
+            textureCounter += 1;
+        }
+    }
+
+    return color;
+}
+
 fragment float4
 basic_fragment(VertexOut frag_in [[ stage_in ]],
-               array<texture2d<float>, 2> texture2D [[ texture(1) ]],
                texture2d<float> shadow_texture2D [[ texture(0) ]],
+               array<texture2d<float>, 5> textures2D [[ texture(1) ]],
                sampler sampler2D [[ sampler(0) ]],
                constant FragmentUniforms &uniforms [[ buffer(0) ]],
-               constant Light &light [[ buffer(1) ]]) {
-    constexpr sampler normalSampler(filter::nearest);
-    float4 albedo_map = texture2D[0].sample(sampler2D, frag_in.tex_coord);
-//    float4 specular_map = texture2D[1].sample(sampler2D, frag_in.tex_coord);
-    float3 normal_map = texture2D[1].sample(normalSampler, frag_in.tex_coord).rgb * 2.0f - 1.0f;
+               constant Light &light [[ buffer(1) ]])
+{
+    MaterialColor mat_colors = get_material_colors(uniforms, textures2D, sampler2D, frag_in.tex_coord);
+
+    float3 normal_map = mat_colors.colors[MAT_NORMAL];
+    float3 albedo_map = mat_colors.colors[MAT_ALBEDO];
 
     float3x3 tbn_matrix(frag_in.tangent, frag_in.bitangent, frag_in.normal);
 
@@ -126,9 +174,9 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     float specular_intensity = 1.0f;
 
     // ambient
-    float3 ambient = ambient_intensity * light.color * uniforms.mat_ambient;
+    float3 ambient = ambient_intensity * light.color;
     if (light.type.x == LIGHT_TYPE_AMBIENT) {
-        return float4(ambient, 1.0f) * albedo_map;
+        return float4(ambient * albedo_map, 1.0f) ;
     }
 
     float3 light_direction_neg = normalize(-light.direction);
@@ -138,7 +186,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
 
     // diffuse
     float diffuse_factor = max(dot(frag_light_dir, normal), 0.0f);
-    float3 diffuse = diffuse_factor * diffuse_intensity * light.color * uniforms.mat_diffuse;
+    float3 diffuse = diffuse_factor * diffuse_intensity * light.color;
 
     // specular (Blinn - Phong)
     float3 view_dir = normalize(tangent_view_pos - tangent_frag_pos);
@@ -173,12 +221,12 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     float shadow = calculate_shadow(frag_in.frag_shadow_pos, shadow_texture2D, normal, frag_light_dir);
     float shadow_final = 1.0f - shadow;
 
-    float4 final_ambient = float4(ambient, 1.0f) * albedo_map;
-    float4 final_diffuse = float4(diffuse, 1.0f) * albedo_map * shadow_final;
-    float4 final_specular = float4(specular, 1.0f) * shadow_final;
+    float3 final_ambient = ambient * albedo_map;
+    float3 final_diffuse = diffuse * albedo_map * shadow_final;
+    float3 final_specular = specular * shadow_final;
 
-    float4 color = final_ambient + final_diffuse + final_specular;
-    float4 final_color = color * light.intensity;
+    float3 color = final_ambient + final_diffuse + final_specular;
+    float4 final_color = float4(color * light.intensity, 1.0f);
     return final_color;
 }
 

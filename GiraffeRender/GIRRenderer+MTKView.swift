@@ -29,7 +29,7 @@ extension GIRRenderer: MTKViewDelegate {
             return
         }
 
-        shadowCommandEncoder.label = "shadow encoder"
+        shadowCommandEncoder.label = "Shadow pass"
         shadowCommandEncoder.setCullMode(.front)
         shadowCommandEncoder.setFrontFacing(.counterClockwise)
         shadowCommandEncoder.setRenderPipelineState(shadowPipelineState)
@@ -48,6 +48,7 @@ extension GIRRenderer: MTKViewDelegate {
             return
         }
 
+        commandEncoder.label = "Main pass"
         commandEncoder.setCullMode(.back)
         commandEncoder.setFrontFacing(.counterClockwise)
         commandEncoder.setDepthStencilState(depthStencilState!)
@@ -173,23 +174,25 @@ extension GIRRenderer: MTKViewDelegate {
     func copyMaterialMemory(node: GIRNode, commandEncoder: MTLRenderCommandEncoder) {
         var fragmentUniforms = GIRFragmentUniforms()
         fragmentUniforms.cameraPosition = pointOfView.position
+
         if let material = node.geometry?.material {
             commandEncoder.setFragmentTextures(material.data.textures, range: 1..<material.data.textures.count + 1)
-            if let samplerState = samplerState {
-                commandEncoder.setFragmentSamplerState(samplerState, index: 0)
-            }
+            commandEncoder.setFragmentSamplerState(samplerState!, index: 0)
 
-//            fragmentUniforms.matAmbient = material.ambient
-//            fragmentUniforms.matDiffuse = material.diffuse
-//            fragmentUniforms.matSpecular = material.specular
             fragmentUniforms.matShininess = material.shininess
+            fragmentUniforms.colorTypes = material.data.colorTypes
+            fragmentUniforms.colors = material.data.colors
         }
 
-        let framgentUniformBuffer = (device?.makeBuffer(length: GIRFragmentUniforms.length, options: []))!
-        var fragmentUniformsRaw = fragmentUniforms.raw
-        commandEncoder.setFragmentBuffer(framgentUniformBuffer, offset: 0, index: 0)
-        let bufferPointer = framgentUniformBuffer.contents()
-        memcpy(bufferPointer, &fragmentUniformsRaw, GIRFragmentUniforms.length)
+        setFragmentBuffer(to: commandEncoder, rawData: fragmentUniforms.raw, length: GIRFragmentUniforms.length, index: 0)
+    }
+
+    func setFragmentBuffer<T>(to commandEncoder: MTLRenderCommandEncoder, rawData: [T], length: Int, index: Int) {
+        let buffer = (device?.makeBuffer(length: length, options: []))!
+        var rawData = rawData
+        commandEncoder.setFragmentBuffer(buffer, offset: 0, index: index)
+        let bufferPointer = buffer.contents()
+        memcpy(bufferPointer, &rawData, length)
     }
 
     func drawMesh(_ mesh: MTKMesh, commandEncoder: MTLRenderCommandEncoder, uniformBuffer: MTLBuffer) {

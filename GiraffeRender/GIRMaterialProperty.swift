@@ -11,6 +11,7 @@ import MetalKit
 
 public class GIRMaterialProperty {
     var _content: Content = Content()
+    
     public var content: Any? {
         get {
             return _content.val
@@ -74,5 +75,12 @@ public class GIRMaterialProperty {
 
             self.texture = texture
         }
+    }
+}
+
+extension GIRMaterialProperty {
+    enum ColorType: Int {
+        case color
+        case texture
     }
 }

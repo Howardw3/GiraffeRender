@@ -17,14 +17,22 @@ struct GIRVertexUniforms {
 
 struct GIRFragmentUniforms {
     var cameraPosition = float3(0, 0, 0)
-    var matDiffuse = float3(1, 1, 1)
-    var matSpecular = float3(1, 1, 1)
-    var matAmbient = float3(1, 1, 1)
     var matShininess = Float(3)
+    var colorTypes: [Float] = Array(repeating: 1.0, count: 5)
+    var colors: [float3] = Array(repeating: float3(1.0, 1.0, 1.0), count: 5)
 
-    static let length = MemoryLayout<Float>.stride * 13
+    static let length = MemoryLayout<Float>.stride * (9 + 5 * 3)
     var raw: [Float] {
-        let array = [cameraPosition.x, cameraPosition.y, cameraPosition.z, matDiffuse.x, matDiffuse.y, matDiffuse.z, matSpecular.x, matSpecular.y, matSpecular.z, matAmbient.x, matAmbient.y, matAmbient.z, matShininess]
+        var array = [cameraPosition.x, cameraPosition.y, cameraPosition.z, matShininess]
+        for item in colorTypes {
+            array.append(item)
+        }
+
+        for item in colors {
+            array.append(item.x)
+            array.append(item.y)
+            array.append(item.z)
+        }
         return array
     }
 }
