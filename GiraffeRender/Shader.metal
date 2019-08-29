@@ -81,7 +81,7 @@ struct Light {
 
 static float
 calculate_shadow(float4 frag_shadow_pos,
-                 texture2d<float> shadow_texture2D,
+                 depth2d<float> shadow_texture2D,
                  float3 normal,
                  float3 light_dir)
 {
@@ -90,10 +90,10 @@ calculate_shadow(float4 frag_shadow_pos,
     proj_coords.y = 1.0f - proj_coords.y;
 
     constexpr sampler shadow_sampler(coord::normalized, filter::linear, address::clamp_to_edge, compare_func::less);
-    float closest_depth = shadow_texture2D.sample(shadow_sampler, proj_coords.xy).r;
+    float closest_depth = shadow_texture2D.sample(shadow_sampler, proj_coords.xy);
     float curr_depth = proj_coords.z;
     float bias = max(0.05 * (1.0 - dot(normal, light_dir)), 0.005);
-    float shadow = curr_depth - bias > closest_depth ? 1.0f : 0.5f;
+    float shadow = curr_depth > closest_depth ? 1.0f : 0.1;
     return shadow;
 }
 
@@ -122,11 +122,12 @@ basic_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
 static MaterialColor
 get_material_colors(FragmentUniforms uniforms,
                array<texture2d<float>, MAT_MATERIAL_COUNT> textures2D,
-               sampler sampler2D,
                float2 tex_coord)
 {
     int textureCounter = 0;
     MaterialColor color;
+    tex_coord.y = 1.0f - tex_coord.y;
+    constexpr sampler sampler2D(filter::linear);
 
     for (int i = 0; i < MAT_MATERIAL_COUNT; i++) {
         if (uniforms.colorTypes[i] > 0.0) {
@@ -148,16 +149,18 @@ get_material_colors(FragmentUniforms uniforms,
 
 fragment float4
 basic_fragment(VertexOut frag_in [[ stage_in ]],
-               texture2d<float> shadow_texture2D [[ texture(0) ]],
+               depth2d<float> shadow_texture2D [[ texture(0) ]],
                array<texture2d<float>, 5> textures2D [[ texture(1) ]],
                sampler sampler2D [[ sampler(0) ]],
                constant FragmentUniforms &uniforms [[ buffer(0) ]],
                constant Light &light [[ buffer(1) ]])
 {
-    MaterialColor mat_colors = get_material_colors(uniforms, textures2D, sampler2D, frag_in.tex_coord);
+    MaterialColor mat_colors = get_material_colors(uniforms, textures2D, frag_in.tex_coord);
 
-    float3 normal_map = mat_colors.colors[MAT_NORMAL];
-    float3 albedo_map = mat_colors.colors[MAT_ALBEDO];
+    float3 normal_mat = mat_colors.colors[MAT_NORMAL];
+    float3 albedo_mat = mat_colors.colors[MAT_ALBEDO];
+    float3 diffuse_mat = mat_colors.colors[MAT_DIFFUSE];
+    float3 specular_mat = mat_colors.colors[MAT_SPECULAR];
 
     float3x3 tbn_matrix(frag_in.tangent, frag_in.bitangent, frag_in.normal);
 
@@ -165,7 +168,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     float3 tangent_view_pos  = tbn_matrix * float3(uniforms.camera_pos);
     float3 tangent_frag_pos  = tbn_matrix * frag_in.frag_world_pos;
 
-    float3 normal = normalize(tbn_matrix * normal_map);
+    float3 normal = normalize(tbn_matrix * normal_mat);
 //    float3 normal = normalize(frag_in.frag_world_normal);
     float3 frag_light_dir = normalize(tangent_light_pos - tangent_frag_pos);
 
@@ -176,7 +179,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     // ambient
     float3 ambient = ambient_intensity * light.color;
     if (light.type.x == LIGHT_TYPE_AMBIENT) {
-        return float4(ambient * albedo_map, 1.0f) ;
+        return float4(ambient * albedo_mat, 1.0f) ;
     }
 
     float3 light_direction_neg = normalize(-light.direction);
@@ -221,9 +224,9 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
     float shadow = calculate_shadow(frag_in.frag_shadow_pos, shadow_texture2D, normal, frag_light_dir);
     float shadow_final = 1.0f - shadow;
 
-    float3 final_ambient = ambient * albedo_map;
-    float3 final_diffuse = diffuse * albedo_map * shadow_final;
-    float3 final_specular = specular * shadow_final;
+    float3 final_ambient = ambient * albedo_mat;
+    float3 final_diffuse = diffuse * diffuse_mat * shadow_final;
+    float3 final_specular = specular * specular_mat * shadow_final;
 
     float3 color = final_ambient + final_diffuse + final_specular;
     float4 final_color = float4(color * light.intensity, 1.0f);
