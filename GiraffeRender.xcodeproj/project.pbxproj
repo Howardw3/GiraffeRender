@@ -31,6 +31,8 @@
 		23FA335D230E6BE1006BB484 /* Art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 23FA335C230E6BE1006BB484 /* Art.scnassets */; };
 		23FA335F2314FF26006BB484 /* Shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23FA335E2314FF26006BB484 /* Shadow.metal */; };
 		23FA3360231500E0006BB484 /* Shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23FA335E2314FF26006BB484 /* Shadow.metal */; };
+		23FA33622317A379006BB484 /* PBR.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23FA33612317A379006BB484 /* PBR.metal */; };
+		23FA33632317B498006BB484 /* PBR.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23FA33612317A379006BB484 /* PBR.metal */; };
 		8C2D53312308D68F0063F9BB /* GIRLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2D53302308D68F0063F9BB /* GIRLight.swift */; };
 		8CC468532317228800EEBF63 /* ViewController+Gestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC468522317228800EEBF63 /* ViewController+Gestures.swift */; };
 		8CC46855231722D000EEBF63 /* ViewController+Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC46854231722D000EEBF63 /* ViewController+Assets.swift */; };
@@ -86,6 +88,7 @@
 		23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterialProperty.swift; sourceTree = "<group>"; };
 		23FA335C230E6BE1006BB484 /* Art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Art.scnassets; sourceTree = "<group>"; };
 		23FA335E2314FF26006BB484 /* Shadow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shadow.metal; sourceTree = "<group>"; };
+		23FA33612317A379006BB484 /* PBR.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PBR.metal; sourceTree = "<group>"; };
 		8C2D53302308D68F0063F9BB /* GIRLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRLight.swift; sourceTree = "<group>"; };
 		8CC468522317228800EEBF63 /* ViewController+Gestures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Gestures.swift"; sourceTree = "<group>"; };
 		8CC46854231722D000EEBF63 /* ViewController+Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Assets.swift"; sourceTree = "<group>"; };
@@ -150,6 +153,7 @@
 				8C2D53302308D68F0063F9BB /* GIRLight.swift */,
 				230A1CA5230108EA0025825D /* Shader.metal */,
 				23FA335E2314FF26006BB484 /* Shadow.metal */,
+				23FA33612317A379006BB484 /* PBR.metal */,
 			);
 			path = GiraffeRender;
 			sourceTree = "<group>";
@@ -306,6 +310,7 @@
 				230A1CB8230108EB0025825D /* GIRCamera.swift in Sources */,
 				230A1CB0230108EB0025825D /* GIRExtension+float4x4.swift in Sources */,
 				230A1CB9230108EB0025825D /* GIRRenderer.swift in Sources */,
+				23FA33622317A379006BB484 /* PBR.metal in Sources */,
 				230A1CB3230108EB0025825D /* GIRUniform.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -320,6 +325,7 @@
 				230A1C8A230077D20025825D /* AppDelegate.swift in Sources */,
 				8CC468532317228800EEBF63 /* ViewController+Gestures.swift in Sources */,
 				238597A523010B6500585F46 /* Shader.metal in Sources */,
+				23FA33632317B498006BB484 /* PBR.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

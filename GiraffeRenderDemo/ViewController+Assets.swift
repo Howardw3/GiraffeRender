@@ -39,14 +39,14 @@ extension ViewController {
     }
 
     func createCone() -> GIRNode {
-        let cone = GIRGeometry(basic: .cone(size: float3(2, 5, 2), segments: [3, 3], cap: false))
+        let cone = GIRGeometry(basic: .cone(size: float3(2, 5, 2), segments: [1, 1], cap: false))
         let material = GIRMaterial()
         material.albedo.content = "cube_alb"
         cone.material = material
         return GIRNode(geometry: cone)
     }
 
-    func createSuitcase() -> GIRNode {
+    func createAvatar() -> GIRNode {
         let geo = GIRGeometry(name: "Art.scnassets/cyborg/cyborg", ext: "obj")
         let material = GIRMaterial()
         material.diffuse.content = UIImage(named: "Art.scnassets/cyborg/cyborg_diffuse.png")
@@ -54,6 +54,37 @@ extension ViewController {
         material.normal.content = UIImage(named: "Art.scnassets/cyborg/cyborg_normal.png")
         geo.material = material
         return GIRNode(geometry: geo)
+    }
+
+    func createPlaneNode() -> GIRNode {
+        let plane = GIRGeometry(basic: .plane(size: float3(4, 4, 1), segments: [1, 1]))
+        let material = GIRMaterial()
+        material.albedo.content = "brickwall_diffuse"
+        material.normal.content = "brickwall_normal"
+        plane.material = material
+        return GIRNode(geometry: plane)
+    }
+
+    func createRustedIronMaterial() -> GIRMaterial {
+        let material = GIRMaterial()
+        let folder = "rusted_iron"
+        material.albedo.content = UIImage(named: getArtResourcesPath(folder: folder, name: "albedo"))
+        material.ambientOcclusion.content = UIImage(named: getArtResourcesPath(folder: folder, name: "ao"))
+        material.metalness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "metallic"))
+        material.normal.content = UIImage(named: getArtResourcesPath(folder: folder, name: "normal"))
+        material.roughness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "roughness"))
+
+        return material
+    }
+
+    func createSphere() -> GIRNode {
+        let size: Float = 10
+        let geo = GIRGeometry(basic: .sphere(size: float3(size, size, size), segments: [100, 100]))
+        return GIRNode.init(geometry: geo)
+    }
+
+    func getArtResourcesPath(folder: String, name: String, ext: String = "png") -> String {
+        return "Art.scnassets/\(folder)/\(name).\(ext)"
     }
 
     func createCubes() {

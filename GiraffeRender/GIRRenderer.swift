@@ -51,8 +51,8 @@ class GIRRenderer: NSObject {
 
     func createRenderPipelineState() {
         let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
-        renderPipelineDescriptor.vertexFunction = defaultLibrary.makeFunction(name: "basic_vertex")
-        renderPipelineDescriptor.fragmentFunction = defaultLibrary.makeFunction(name: "basic_fragment")
+        renderPipelineDescriptor.vertexFunction = defaultLibrary.makeFunction(name: "pbr_vertex")
+        renderPipelineDescriptor.fragmentFunction = defaultLibrary.makeFunction(name: "pbr_fragment")
         renderPipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         renderPipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
 
