@@ -17,13 +17,11 @@ constant int LIGHT_TYPE_SPOT = 3;
 
 // Basic material type
 constant int MAT_ALBEDO = 0;
-constant int MAT_DIFFUSE = 1;
-constant int MAT_AMBIENT = 2;
-constant int MAT_SPECULAR = 3;
-constant int MAT_NORMAL = 4;
-constant int MAT_METALNESS = 5;
-constant int MAT_ROUGHNESS = 6;
-constant int MAT_AO = 7;
+constant int MAT_METALNESS = 1;
+constant int MAT_ROUGHNESS = 2;
+constant int MAT_NORMAL = 3;
+constant int MAT_AO = 4;
+constant int MAT_EMISSION = 5;
 
 constant int MAT_MATERIAL_COUNT = 5;
 
@@ -200,14 +198,14 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
 
     // reflectance equation
     float3 Lo = float3(0.0);
-    for(int i = 0; i < 4; ++i)
-    {
+//    for(int i = 0; i < 4; ++i)
+//    {
         // calculate per-light radiance
         float3 L = normalize(light.position - frag_in.frag_world_pos);
         float3 H = normalize(V + L);
         float distance = length(light.position - frag_in.frag_world_pos);
         float attenuation = 1.0 / (distance * distance);
-        float3 radiance = light.color * attenuation;
+        float3 radiance = light.color * attenuation  * light.intensity;
 
         // Cook-Torrance BRDF
         float NDF = distributionGGX(N, H, mat_roughness);
@@ -234,7 +232,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
 
         // add to outgoing radiance Lo
         Lo += (kD * mat_albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
-    }
+//    }
 
     // ambient lighting (note that the next IBL tutorial will replace
     // this ambient lighting with environment lighting).

@@ -49,14 +49,12 @@ class ViewController: UIViewController {
         scene = GIRScene()
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
-        createCubes()
-        let floorNode = createPlaneNode()
-        floorNode.eularAngles.y = 180.0
-        floorNode.eularAngles.z = 180.0
-        floorNode.position = float3(0, 0, -10)
-        floorNode.scale = 10.0
-        scene.rootNode.addChild(floorNode)
-        currNode = cubeNode
+//        createCubes()
+        let sphereNode = createSphere()
+        sphereNode.geometry?.material = createRustedIronMaterial()
+        scene.rootNode.addChild(sphereNode)
+
+        currNode = sphereNode
 
         currCameraNode = scene.pointOfView
         giraffeView.scene = scene
@@ -68,23 +66,23 @@ class ViewController: UIViewController {
 
     func createLightNode() -> GIRNode {
         let light = GIRLight(type: .omni)
-        light.intensity = 4
-        //        light.color = UIColor.white.cgColor
-        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
+        light.intensity = 100
+        light.color = UIColor.white.cgColor
+//        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
-        lightNode.position = float3(0.0, 0.0, 8.0)
-        lightNode.scale = 0.4
+        lightNode.position = float3(0.0, 0.0, 11.0)
+        lightNode.scale = 0.1
         lightNode.light = light
         return lightNode
     }
 
-    func createPlaneNode() -> GIRNode {
-        let plane = GIRGeometry(basic: .plane(size: float3(4, 4, 1), segments: [1, 1]))
-        let material = GIRMaterial()
-        material.albedo.content = "brickwall_diffuse"
-        material.normal.content = "brickwall_normal"
-        plane.material = material
-        return GIRNode(geometry: plane)
+    func addFloorNode() {
+        let floorNode = createPlaneNode()
+        floorNode.eularAngles.y = 180.0
+        floorNode.eularAngles.z = 180.0
+        floorNode.position = float3(0, 0, -10)
+        floorNode.scale = 10.0
+        scene.rootNode.addChild(floorNode)
     }
 
     @IBAction func didTapObjectButton(_ sender: UIButton) {

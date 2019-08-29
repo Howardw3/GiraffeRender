@@ -102,7 +102,6 @@ extension GIRMaterial {
         ret.fillMaterial(albedo, type: .albedo)
         ret.fillMaterial(metalness, type: .metalness)
         ret.fillMaterial(roughness, type: .roughness)
-
         ret.fillMaterial(normal, type: .normal, defaultColor: float3(0.0, 0.0, 1.0))
         ret.fillMaterial(ambientOcclusion, type: .ambientOcclusion)
         ret.fillMaterial(emission, type: .emission)
