@@ -15,6 +15,10 @@ public class GIRMaterial {
     public var ambient: GIRMaterialProperty
     public var specular: GIRMaterialProperty
     public var normal: GIRMaterialProperty
+    public var ambientOcclusion: GIRMaterialProperty
+    public var metalness: GIRMaterialProperty
+    public var roughness: GIRMaterialProperty
+    public var emission: GIRMaterialProperty
     public var shininess: Float
 
     public init() {
@@ -23,12 +27,16 @@ public class GIRMaterial {
         ambient = GIRMaterialProperty()
         specular = GIRMaterialProperty()
         normal = GIRMaterialProperty()
+        ambientOcclusion = GIRMaterialProperty()
+        metalness = GIRMaterialProperty()
+        roughness = GIRMaterialProperty()
+        emission = GIRMaterialProperty()
         shininess = 1.0
     }
 }
 
 extension GIRMaterial {
-    enum PropertyType {
+    enum BasicPropertyType {
         case albedo
         case diffuse
         case ambient
@@ -36,7 +44,16 @@ extension GIRMaterial {
         case normal
     }
 
-    struct Data {
+    enum PBRPropertyType {
+        case albedo
+        case metalness
+        case roughness
+        case normal
+        case ambientOcclusion
+        case emission
+    }
+
+    struct Data<T> {
         var textures = [MTLTexture]()
         var colors = [float3]()
         var colorTypes = [Float]()
@@ -48,7 +65,7 @@ extension GIRMaterial {
         }
 
         mutating func fillMaterial(_ property: GIRMaterialProperty,
-                                   type: PropertyType,
+                                   type: T,
                                    defaultColor: float3 = float3(1.0, 1.0, 1.0)) {
 
             if let color = property._content.color {
@@ -69,14 +86,26 @@ extension GIRMaterial {
         }
     }
 
-    var data: Data {
-        var ret = Data()
+    var basicData: Data<BasicPropertyType> {
+        var ret = Data<BasicPropertyType>()
         ret.fillMaterial(albedo, type: .albedo)
         ret.fillMaterial(diffuse, type: .diffuse)
         ret.fillMaterial(ambient, type: .ambient)
         ret.fillMaterial(specular, type: .specular)
         ret.fillMaterial(normal, type: .normal, defaultColor: float3(0.0, 0.0, 1.0))
 
+        return ret
+    }
+
+    var pbrData: Data<PBRPropertyType> {
+        var ret = Data<PBRPropertyType>()
+        ret.fillMaterial(albedo, type: .albedo)
+        ret.fillMaterial(metalness, type: .metalness)
+        ret.fillMaterial(roughness, type: .roughness)
+
+        ret.fillMaterial(normal, type: .normal, defaultColor: float3(0.0, 0.0, 1.0))
+        ret.fillMaterial(ambientOcclusion, type: .ambientOcclusion)
+        ret.fillMaterial(emission, type: .emission)
         return ret
     }
 }
