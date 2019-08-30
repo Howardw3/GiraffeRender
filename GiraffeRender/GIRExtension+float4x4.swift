@@ -107,11 +107,10 @@ extension float4x4 {
         let colz = float4(0.0, 0.0, -2.0 / fsn, 0.0)
         let colw = float4(-ral / rsl, -tab / tsb, -fan / fsn, 1.0)
 
-
         return float4x4(colx, coly, colz, colw)
     }
 
-    static func lookatMatrix(eye: float3, center: float3, up: float3) ->float4x4 {
+    static func lookatMatrix(eye: float3, center: float3, up: float3) -> float4x4 {
 
         let n = normalize(eye - center)
         let u = normalize(cross(up, n))
@@ -129,6 +128,10 @@ extension float4x4 {
 extension float4 {
     var xyz: float3 {
         return float3(x, y, z)
+    }
+
+    init(_ lhs: float3, _ rhs: Float) {
+        self.init(lhs.x, lhs.y, lhs.z, rhs)
     }
 }
 

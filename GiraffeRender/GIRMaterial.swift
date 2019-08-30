@@ -108,4 +108,3 @@ extension GIRMaterial {
         return ret
     }
 }
-

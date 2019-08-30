@@ -89,7 +89,7 @@ public class GIRNode {
     public var transform: float4x4 {
         get {
             if shouldUpdateTransform {
-                if let _ = camera  {
+                if let _ = camera {
                     pivot = float3()
                 }
                 let translationMatrix = float4x4.translationMatrix(_position)
@@ -178,7 +178,7 @@ extension GIRNode {
 
         _localFront = normalize(front)
         _localRight = normalize(cross(_localFront, worldUp))
-        _localUp = normalize(cross(_localRight, _localFront));
+        _localUp = normalize(cross(_localRight, _localFront))
     }
 
     public func debugPrintLocalAxis() {

@@ -41,3 +41,8 @@ struct GIRShadowUniforms {
     var modelMatrix: float4x4
     var lightSpaceMatrix: float4x4
 }
+
+struct GIRCubemapUniforms {
+    var projectionMatrix: float4x4
+    var viewMatrix: float4x4
+}

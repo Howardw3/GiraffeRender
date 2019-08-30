@@ -24,6 +24,12 @@ extension GIRRenderer: MTKViewDelegate {
             return
         }
 
+        guard let passDescriptor = view.currentRenderPassDescriptor, let drawable = view.currentDrawable else {
+            debugPrint("currentRenderPassDescriptor, drawable error")
+            return
+        }
+//        passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0)
+
         guard let shadowCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadowPassDescriptor) else {
             debugPrint("shadow pass failed")
             return
@@ -37,13 +43,6 @@ extension GIRRenderer: MTKViewDelegate {
         drawScene(commandEncoder: shadowCommandEncoder, isShadowMode: true)
         shadowCommandEncoder.endEncoding()
 
-        guard let passDescriptor = view.currentRenderPassDescriptor, let drawable = view.currentDrawable else {
-            debugPrint("currentRenderPassDescriptor, drawable error")
-            return
-        }
-
-        passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0)
-
         guard let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: passDescriptor) else {
             return
         }
@@ -51,6 +50,19 @@ extension GIRRenderer: MTKViewDelegate {
         commandEncoder.label = "Main pass"
         commandEncoder.setCullMode(.back)
         commandEncoder.setFrontFacing(.counterClockwise)
+
+        if let backgrouandTexture = scene?.background._content.texture {
+            let depthDescriptor = MTLDepthStencilDescriptor()
+            depthDescriptor.depthCompareFunction = .less
+            depthDescriptor.isDepthWriteEnabled = false
+            let depthState = device?.makeDepthStencilState(descriptor: depthDescriptor)
+
+            commandEncoder.label = "Cubemap pass"
+            commandEncoder.setDepthStencilState(depthState!)
+            commandEncoder.setRenderPipelineState(skyboxPipelineState!)
+            drawSkybox(commandEncoder: commandEncoder, node: self.cubmapNode, texture: backgrouandTexture)
+        }
+
         commandEncoder.setDepthStencilState(depthStencilState!)
         commandEncoder.setRenderPipelineState(renderPipelineState!)
         drawScene(commandEncoder: commandEncoder)
@@ -60,11 +72,28 @@ extension GIRRenderer: MTKViewDelegate {
         commandBuffer.commit()
     }
 
+    func drawSkybox(commandEncoder: MTLRenderCommandEncoder, node: GIRNode, texture: MTLTexture) {
+
+        let uniformDataLength = MemoryLayout<GIRCubemapUniforms>.size
+        let uniformBuffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
+
+        var viewMatrix = pointOfView.transform.inverse
+        viewMatrix.columns.3.x = 0
+        viewMatrix.columns.3.y = 0
+        viewMatrix.columns.3.z = 0
+
+        var uniforms = GIRCubemapUniforms(projectionMatrix: getProjectionMatrix(), viewMatrix: viewMatrix)
+        memcpy(uniformBuffer.contents(), &uniforms, uniformDataLength)
+        commandEncoder.setFragmentTexture(texture, index: 0)
+        commandEncoder.setFragmentSamplerState(samplerState!, index: 0)
+        drawMesh(node.geometry!.mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
+    }
+
     func drawScene(commandEncoder: MTLRenderCommandEncoder, isShadowMode: Bool = false) {
         drawNode(scene?.rootNode, commandEncoder: commandEncoder, parent: nil, isShadowMode: isShadowMode)
         shouldUpdateCamera = true
     }
-    
+
     func updateModelViewProj(_ node: GIRNode, parent: GIRNode?, uniformBuffer: MTLBuffer) {
         let viewMatrix = pointOfView.transform.inverse
 
@@ -73,7 +102,16 @@ extension GIRRenderer: MTKViewDelegate {
             modelMatrix = parent.transform * modelMatrix
         }
 
-        var projectionMatrix: float4x4 = float4x4()
+        let projectionMatrix = getProjectionMatrix()
+        let viewProjectionMatrix = projectionMatrix * viewMatrix
+
+        let normalMatirx = float3x3(modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz).transpose.inverse
+        var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform, normalMatrix: normalMatirx, lightSpaceMatrix: calculateLightSpaceMatrix(node: node))
+        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.size)
+    }
+
+    func getProjectionMatrix() -> float4x4 {
+        var projectionMatrix: float4x4!
 
         if let camera = pointOfView.camera {
             // only recalculate when camera spec changed
@@ -88,10 +126,7 @@ extension GIRRenderer: MTKViewDelegate {
             projectionMatrix = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 1, farZ: 200)
         }
 
-        let viewProjectionMatrix = projectionMatrix * viewMatrix
-        let normalMatirx = float3x3(modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz).transpose.inverse
-        var uniforms = GIRVertexUniforms(viewProjectionMatrix: viewProjectionMatrix, modelMatrix: node.transform, normalMatrix: normalMatirx, lightSpaceMatrix: calculateLightSpaceMatrix(node: node))
-        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GIRVertexUniforms>.size)
+        return projectionMatrix
     }
 
     func drawNode(_ node: GIRNode?, commandEncoder: MTLRenderCommandEncoder, parent: GIRNode?, isShadowMode: Bool = false) {
@@ -99,7 +134,7 @@ extension GIRRenderer: MTKViewDelegate {
             return
         }
         updateLightsInScene(node: node)
-        
+
         var uniformBuffer: MTLBuffer!
         if !isShadowMode {
             uniformBuffer = createUniformBuffer()

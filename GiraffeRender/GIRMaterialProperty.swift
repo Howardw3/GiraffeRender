@@ -11,10 +11,6 @@ import MetalKit
 
 public class GIRMaterialProperty {
     var _content: Content = Content()
-    let device: MTLDevice? = MTLCreateSystemDefaultDevice()
-    lazy var textureLoader: MTKTextureLoader = {
-        return MTKTextureLoader(device: device!)
-    }()
 
     public var content: Any? {
         get {
@@ -24,49 +20,44 @@ public class GIRMaterialProperty {
             if let val = newVal as? float3 {
                 _content = Content(color: val)
             } else if let val = newVal as? String {
-                _content = Content(texturePath: val, textureLoader: textureLoader)
+                _content = Content(texturePath: val)
             } else if let val = newVal as? UIImage {
-                _content = Content(image: val, textureLoader: textureLoader)
+                _content = Content(image: val)
+            } else if let val = newVal as? [String] {
+                _content = Content(images: val)
             }
         }
     }
 
     struct Content {
-        let options: [MTKTextureLoader.Option: Any] = [.generateMipmaps: true, .SRGB: true]
-        var texture: MTLTexture?
-        var textureLoader: MTKTextureLoader?
-
-        var color: float3? {
-            didSet {
-                self.texturePath = nil
-                self.texture = nil
-            }
-        }
-
-        var texturePath: String? {
+        var texture: MTLTexture? {
             didSet {
                 self.color = nil
             }
         }
 
+        var color: float3? {
+            didSet {
+                self.texture = nil
+            }
+        }
+
         init(color: float3) {
             self.color = color
-            self.texturePath = nil
             self.texture = nil
         }
 
-        init(texturePath: String, textureLoader: MTKTextureLoader) {
+        init(texturePath: String) {
             self.color = nil
-            self.texturePath = texturePath
-            self.textureLoader = textureLoader
-            loadTexture(path: texturePath)
+            self.texture = GIRTextureLoader.shared.load(path: texturePath)
         }
 
-        init(image: UIImage, textureLoader: MTKTextureLoader) {
-            self.color = nil
-            self.texturePath = nil
-            self.textureLoader = textureLoader
-            loadTexture(image: image)
+        init(image: UIImage) {
+            self.texture = GIRTextureLoader.shared.load(image: image)
+        }
+
+        init(images: [String]) {
+            self.texture = GIRTextureLoader.shared.load(images: images)
         }
 
         init() {
@@ -74,25 +65,6 @@ public class GIRMaterialProperty {
 
         var val: Any? {
             return color != nil ? color : texture
-        }
-
-        mutating func loadTexture(image: UIImage) {
-            do {
-                try texture = textureLoader?.newTexture(cgImage: image.cgImage!, options: options)
-            } catch let error {
-                debugPrint(error.localizedDescription)
-            }
-        }
-
-        mutating func loadTexture(path: String) {
-            do {
-                try texture = textureLoader?.newTexture(name: path,
-                                                       scaleFactor: 1.0,
-                                                       bundle: Bundle.main,
-                                                       options: options)
-            } catch let error {
-                debugPrint(error.localizedDescription)
-            }
         }
     }
 }

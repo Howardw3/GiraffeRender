@@ -31,7 +31,7 @@ extension ViewController {
     }
 
     func createCube() -> GIRNode {
-        let cube = GIRGeometry(basic: .box(size: float3(1, 1, 1), segments: [10, 10, 10]))
+        let cube = GIRGeometry(basic: .box(size: float3(1, 1, 1), segments: [10, 10, 10], inward: false))
         let material = GIRMaterial()
         material.albedo.content = "cube_alb"
         cube.material = material

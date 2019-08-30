@@ -16,6 +16,7 @@ class GIRRenderer: NSObject {
     var nextFrameTime: CFTimeInterval
     var renderPipelineState: MTLRenderPipelineState!
     var shadowPipelineState: MTLRenderPipelineState!
+    var skyboxPipelineState: MTLRenderPipelineState!
     var shadowTexture: MTLTexture!
     var shadowPassDescriptor: MTLRenderPassDescriptor!
     var defaultLibrary: MTLLibrary!
@@ -24,6 +25,7 @@ class GIRRenderer: NSObject {
     let commandQueue: MTLCommandQueue!
     var aspectRatio: Float = 1
     var pointOfView: GIRNode
+    var cubmapNode: GIRNode
     var shouldUpdateCamera = false
     var lightsInScene: [String: LightInfo] = [:]
 
@@ -33,6 +35,9 @@ class GIRRenderer: NSObject {
         self.commandQueue = device?.makeCommandQueue()
         self.pointOfView = GIRNode()
         self.pointOfView.camera = GIRCamera()
+
+        let cube = GIRGeometry(basic: .box(size: float3(50, 50, 50), segments: [1, 1, 1], inward: true))
+        self.cubmapNode = GIRNode(geometry: cube)
         super.init()
 
         self.defaultLibrary = device?.makeDefaultLibrary()
@@ -42,6 +47,21 @@ class GIRRenderer: NSObject {
         createShadowTexture(width: 1330, height: 700)
         createShadowPipelineState()
         createShadowPassDescriptor()
+        createSkyboxPipelineState()
+    }
+
+    func createSkyboxPipelineState() {
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.vertexFunction = defaultLibrary.makeFunction(name: "cubemap_vertex")
+        renderPipelineDescriptor.fragmentFunction = defaultLibrary.makeFunction(name: "cubemap_fragment")
+        renderPipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+        renderPipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+
+        do {
+            try skyboxPipelineState = device?.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+        } catch let error {
+            debugPrint(error)
+        }
     }
 
     func createUniformBuffer() -> MTLBuffer {

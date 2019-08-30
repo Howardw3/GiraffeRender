@@ -46,7 +46,6 @@ open class GIRGeometry {
         let device = MTLCreateSystemDefaultDevice()
         let bufferAllocator = MTKMeshBufferAllocator(device: device!)
 
-
         let url = Bundle.main.url(forResource: name, withExtension: ext)
         let asset = MDLAsset(url: url, vertexDescriptor: GIRGeometry.vertexDescriptor, bufferAllocator: bufferAllocator)
         asset.loadTextures()
@@ -63,10 +62,10 @@ open class GIRGeometry {
 
 extension GIRGeometry {
     public enum Basic {
-        case box(size: float3, segments: vector_uint3)
+        case box(size: float3, segments: vector_uint3, inward: Bool)
         case sphere(size: float3, segments: vector_uint2)
         case hemisphere(size: float3, segments: vector_uint2, cap: Bool)
-        case cylinder(size: float3, segments: vector_uint2,topCap: Bool, bottomCap: Bool)
+        case cylinder(size: float3, segments: vector_uint2, topCap: Bool, bottomCap: Bool)
         case capsule(size: float3, cylinderSegments: vector_uint2, hemisphereSegments: Int32)
         case cone(size: float3, segments: vector_uint2, cap: Bool)
         case plane(size: float3, segments: vector_uint2)
@@ -80,8 +79,8 @@ extension GIRGeometry {
             var mdlMesh: MDLMesh!
 
             switch self {
-            case .box(let size, let segments):
-                mdlMesh = MDLMesh(boxWithExtent: size, segments: segments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator)
+            case .box(let size, let segments, let inward):
+                mdlMesh = MDLMesh(boxWithExtent: size, segments: segments, inwardNormals: inward, geometryType: .triangles, allocator: bufferAllocator)
 
             case .sphere(let size, let segments):
                 mdlMesh = MDLMesh(sphereWithExtent: size, segments: segments, inwardNormals: false, geometryType: .triangles, allocator: bufferAllocator)

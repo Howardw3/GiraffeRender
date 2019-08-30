@@ -70,7 +70,7 @@ extension GIRLight {
         var front: float3 {
             return float3(directionX, directionY, directionZ)
         }
-        
+
         init(type: Int, position: float3, direction: float3, color: float3,
              intensity: Float = 1.0,
              spotInnerRadian: Float = cos(Float(10).radian),

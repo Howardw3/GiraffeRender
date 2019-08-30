@@ -47,6 +47,15 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         scene = GIRScene()
+        scene.background.content = [
+            getArtResourcesPath(folder: "skybox", name: "right", ext: "jpg"),
+            getArtResourcesPath(folder: "skybox", name: "left", ext: "jpg"),
+            getArtResourcesPath(folder: "skybox", name: "top", ext: "jpg"),
+            getArtResourcesPath(folder: "skybox", name: "bottom", ext: "jpg"),
+            getArtResourcesPath(folder: "skybox", name: "front", ext: "jpg"),
+            getArtResourcesPath(folder: "skybox", name: "back", ext: "jpg")
+        ]
+
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
 //        createCubes()
@@ -109,4 +118,3 @@ class ViewController: UIViewController {
         objectButton.backgroundColor = .clear
     }
 }
-
