@@ -56,12 +56,13 @@ class ViewController: UIViewController {
             getArtResourcesPath(folder: "skybox", name: "back", ext: "jpg")
         ]
 
+        scene.lightingEnvironment.content = getArtResourcesPath(folder: "HDR", name: "newport_loft", ext: "hdr")
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
 //        createCubes()
         let sphereNode = createSphere()
         sphereNode.geometry?.material = createRustedIronMaterial()
-        scene.rootNode.addChild(sphereNode)
+//        scene.rootNode.addChild(sphereNode)
 
         currNode = sphereNode
 

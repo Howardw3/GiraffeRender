@@ -17,6 +17,7 @@ class GIRRenderer: NSObject {
     var renderPipelineState: MTLRenderPipelineState!
     var shadowPipelineState: MTLRenderPipelineState!
     var skyboxPipelineState: MTLRenderPipelineState!
+    var hdrPipelineState: MTLRenderPipelineState!
     var shadowTexture: MTLTexture!
     var shadowPassDescriptor: MTLRenderPassDescriptor!
     var defaultLibrary: MTLLibrary!
@@ -26,6 +27,7 @@ class GIRRenderer: NSObject {
     var aspectRatio: Float = 1
     var pointOfView: GIRNode
     var cubmapNode: GIRNode
+    var hdrCubeNode: GIRNode
     var shouldUpdateCamera = false
     var lightsInScene: [String: LightInfo] = [:]
 
@@ -38,6 +40,9 @@ class GIRRenderer: NSObject {
 
         let cube = GIRGeometry(basic: .box(size: float3(50, 50, 50), segments: [1, 1, 1], inward: true))
         self.cubmapNode = GIRNode(geometry: cube)
+
+        let smallCube = GIRGeometry(basic: .box(size: float3(6, 6, 6), segments: [1, 1, 1], inward: false))
+        self.hdrCubeNode = GIRNode(geometry: smallCube)
         super.init()
 
         self.defaultLibrary = device?.makeDefaultLibrary()
@@ -48,6 +53,7 @@ class GIRRenderer: NSObject {
         createShadowPipelineState()
         createShadowPassDescriptor()
         createSkyboxPipelineState()
+        createHDRPipelineState()
     }
 
     func createSkyboxPipelineState() {
@@ -59,6 +65,20 @@ class GIRRenderer: NSObject {
 
         do {
             try skyboxPipelineState = device?.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+        } catch let error {
+            debugPrint(error)
+        }
+    }
+
+    func createHDRPipelineState() {
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.vertexFunction = defaultLibrary.makeFunction(name: "hdr_vertex")
+        renderPipelineDescriptor.fragmentFunction = defaultLibrary.makeFunction(name: "hdr_fragment")
+        renderPipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+        renderPipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+
+        do {
+            try hdrPipelineState = device?.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
         } catch let error {
             debugPrint(error)
         }

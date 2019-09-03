@@ -66,21 +66,32 @@ extension GIRRenderer: MTKViewDelegate {
         commandEncoder.setDepthStencilState(depthStencilState!)
         commandEncoder.setRenderPipelineState(renderPipelineState!)
         drawScene(commandEncoder: commandEncoder)
+
+        if let lightmapTexture = scene?.lightingEnvironment._content.texture {
+            commandEncoder.label = "HDR pass"
+            commandEncoder.setDepthStencilState(depthStencilState!)
+            commandEncoder.setRenderPipelineState(hdrPipelineState!)
+            drawSkybox(commandEncoder: commandEncoder, node: self.hdrCubeNode, texture: lightmapTexture, ignorePosition: false)
+        }
+
         commandEncoder.endEncoding()
 
         commandBuffer.present(drawable)
         commandBuffer.commit()
     }
 
-    func drawSkybox(commandEncoder: MTLRenderCommandEncoder, node: GIRNode, texture: MTLTexture) {
+    func drawSkybox(commandEncoder: MTLRenderCommandEncoder, node: GIRNode, texture: MTLTexture, ignorePosition: Bool = true) {
 
         let uniformDataLength = MemoryLayout<GIRCubemapUniforms>.size
         let uniformBuffer = (device?.makeBuffer(length: uniformDataLength, options: []))!
 
         var viewMatrix = pointOfView.transform.inverse
-        viewMatrix.columns.3.x = 0
-        viewMatrix.columns.3.y = 0
-        viewMatrix.columns.3.z = 0
+
+        if ignorePosition {
+            viewMatrix.columns.3.x = 0
+            viewMatrix.columns.3.y = 0
+            viewMatrix.columns.3.z = 0
+        }
 
         var uniforms = GIRCubemapUniforms(projectionMatrix: getProjectionMatrix(), viewMatrix: viewMatrix)
         memcpy(uniformBuffer.contents(), &uniforms, uniformDataLength)

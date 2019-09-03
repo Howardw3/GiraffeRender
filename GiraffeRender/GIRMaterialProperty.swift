@@ -49,7 +49,11 @@ public class GIRMaterialProperty {
 
         init(texturePath: String) {
             self.color = nil
-            self.texture = GIRTextureLoader.shared.load(path: texturePath)
+            if texturePath.split(separator: ".").last == "hdr" {
+                self.texture = GIRTextureLoader.shared.load(hdrPath: texturePath)
+            } else {
+                self.texture = GIRTextureLoader.shared.load(path: texturePath)
+            }
         }
 
         init(image: UIImage) {

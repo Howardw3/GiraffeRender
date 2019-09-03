@@ -80,6 +80,26 @@ class GIRTextureLoader {
         return texture
     }
 
+    func load(hdrPath: String) -> MTLTexture? {
+        var width = 0
+        var height = 0
+        var numsOfComponent = 0
+
+        let data = GIRHDRLoader.loadHDR(hdrPath, width: &width, height: &height, numComponents: &numsOfComponent)
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: width, height: height, mipmapped: false)
+
+        guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
+            return nil
+        }
+
+        let region = MTLRegionMake2D(0, 0, width, height)
+        let bytesPerPixel = 4
+        let bytesPerRow = bytesPerPixel * width * MemoryLayout<Float>.size
+//        let bytesPerImage = bytesPerRow * size
+        texture.replace(region: region, mipmapLevel: 0, withBytes: data!, bytesPerRow: bytesPerRow)
+        return texture
+    }
+
     private func getData(from image: UIImage) -> UnsafeMutableRawPointer? {
         guard let imageRef = image.cgImage else {
             return nil
@@ -100,5 +120,16 @@ class GIRTextureLoader {
         context.draw(imageRef, in: CGRect(x: 0, y: 0, width: width, height: height))
 
         return rawData!
+    }
+
+    private func fillData(data: UnsafeMutableRawPointer?, width: Int, height: Int, numOfComponent: Int) {
+        var output: [Float]
+        for i in 0..<height {
+            for j in 0..<width {
+                let index = (i * width + j) * numOfComponent
+
+
+            }
+        }
     }
 }

@@ -18,4 +18,4 @@ FOUNDATION_EXPORT const unsigned char GiraffeRenderVersionString[];
 
 
 #include <stdint.h>
-static inline void storeAsF16(float value, uint16_t *pointer) { *(__fp16 *)pointer = value; }
+#import <GiraffeRender/GIRTextureLoader+HDR.h>
