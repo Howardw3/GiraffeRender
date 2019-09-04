@@ -188,7 +188,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
     float3 tangent_frag_pos  = tbn_matrix * frag_in.frag_world_pos;
 
     float3 N = normalize(tbn_matrix * mat_normal);
-    float3 V = normalize(uniforms.camera_pos - frag_in.frag_world_pos);
+    float3 V = normalize(tangent_view_pos - tangent_frag_pos);
     //    float3 normal = normalize(frag_in.frag_world_normal);
     float3 frag_light_dir = normalize(tangent_light_pos - tangent_frag_pos);
 
@@ -202,7 +202,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
 //    for(int i = 0; i < 4; ++i)
 //    {
         // calculate per-light radiance
-        float3 L = normalize(light.position - frag_in.frag_world_pos);
+        float3 L = frag_light_dir;
         float3 H = normalize(V + L);
         float distance = length(light.position - frag_in.frag_world_pos);
         float attenuation = 1.0 / (distance * distance);
@@ -235,9 +235,12 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
         Lo += (kD * mat_albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 //    }
 
-    float3 irradiance = irradianceMap.sample(sampler2D, reflect(-V, N)).rgb;
+    float3 kS1 = fresnel_schlick(max(dot(N, V), 0.0), F0);
+    float3 kD1 = 1.0 - kS1;
+    kD1 *= 1.0 - mat_metalness + 0.6;
+    float3 irradiance = irradianceMap.sample(sampler2D, N).rgb;
     float3 diffuse = irradiance * mat_albedo;
-    float3 ambient = (kD * diffuse) * mat_ao;
+    float3 ambient = (kD1 * diffuse) * mat_ao;
 //    float3 ambient = float3(0.03) * mat_albedo * mat_ao;
     float3 color = ambient + Lo;
 

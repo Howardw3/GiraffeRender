@@ -48,27 +48,27 @@ class ViewController: UIViewController {
 
         scene = GIRScene()
         scene.background.content = [
-            getArtResourcesPath(folder: "environment", name: "px"),
-            getArtResourcesPath(folder: "environment", name: "nx"),
-            getArtResourcesPath(folder: "environment", name: "py"),
-            getArtResourcesPath(folder: "environment", name: "ny"),
-            getArtResourcesPath(folder: "environment", name: "pz"),
-            getArtResourcesPath(folder: "environment", name: "nz")
+            getArtResourcesPath(folder: "skybox", name: "px"),
+            getArtResourcesPath(folder: "skybox", name: "nx"),
+            getArtResourcesPath(folder: "skybox", name: "py"),
+            getArtResourcesPath(folder: "skybox", name: "ny"),
+            getArtResourcesPath(folder: "skybox", name: "pz"),
+            getArtResourcesPath(folder: "skybox", name: "nz")
         ]
 
         scene.lightingEnvironment.content = [
-            getArtResourcesPath(folder: "environment", name: "px"),
-             getArtResourcesPath(folder: "environment", name: "nx"),
-             getArtResourcesPath(folder: "environment", name: "py"),
-             getArtResourcesPath(folder: "environment", name: "ny"),
-             getArtResourcesPath(folder: "environment", name: "pz"),
-             getArtResourcesPath(folder: "environment", name: "nz")
+            getArtResourcesPath(folder: "skybox", name: "px"),
+             getArtResourcesPath(folder: "skybox", name: "nx"),
+             getArtResourcesPath(folder: "skybox", name: "py"),
+             getArtResourcesPath(folder: "skybox", name: "ny"),
+             getArtResourcesPath(folder: "skybox", name: "pz"),
+             getArtResourcesPath(folder: "skybox", name: "nz")
         ]
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
 //        createCubes()
         let sphereNode = createSphere()
-        sphereNode.geometry?.material = createRustedIronMaterial()
+        sphereNode.geometry?.material = createTestMaterial()
         scene.rootNode.addChild(sphereNode)
 
         currNode = sphereNode
@@ -83,11 +83,11 @@ class ViewController: UIViewController {
 
     func createLightNode() -> GIRNode {
         let light = GIRLight(type: .omni)
-        light.intensity = 10
+        light.intensity = 1000
         light.color = UIColor.white.cgColor
 //        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
-        lightNode.position = float3(0.0, 0.0, 11.0)
+        lightNode.position = float3(0.0, 0.0, 50.0)
         lightNode.scale = 0.1
         lightNode.light = light
         return lightNode

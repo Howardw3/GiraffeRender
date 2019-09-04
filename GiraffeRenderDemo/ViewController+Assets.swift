@@ -80,11 +80,11 @@ extension ViewController {
     func createTestMaterial() -> GIRMaterial {
         let material = GIRMaterial()
         let folder = "test"
-        material.albedo.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_basecolor"))
+        material.albedo.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Titanium-Scuffed_basecolor"))
 //        material.ambientOcclusion.content = UIImage(named: getArtResourcesPath(folder: folder, name: "ao"))
-        material.metalness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_metallic"))
-        material.normal.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_normal"))
-        material.roughness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_roughness"))
+        material.metalness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Titanium-Scuffed_metallic"))
+        material.normal.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Titanium-Scuffed_normal"))
+        material.roughness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Titanium-Scuffed_roughness"))
 //        let t = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_roughness"))
         return material
     }
