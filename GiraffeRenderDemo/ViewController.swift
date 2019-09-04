@@ -48,21 +48,28 @@ class ViewController: UIViewController {
 
         scene = GIRScene()
         scene.background.content = [
-            getArtResourcesPath(folder: "skybox", name: "right", ext: "jpg"),
-            getArtResourcesPath(folder: "skybox", name: "left", ext: "jpg"),
-            getArtResourcesPath(folder: "skybox", name: "top", ext: "jpg"),
-            getArtResourcesPath(folder: "skybox", name: "bottom", ext: "jpg"),
-            getArtResourcesPath(folder: "skybox", name: "front", ext: "jpg"),
-            getArtResourcesPath(folder: "skybox", name: "back", ext: "jpg")
+            getArtResourcesPath(folder: "environment", name: "px"),
+            getArtResourcesPath(folder: "environment", name: "nx"),
+            getArtResourcesPath(folder: "environment", name: "py"),
+            getArtResourcesPath(folder: "environment", name: "ny"),
+            getArtResourcesPath(folder: "environment", name: "pz"),
+            getArtResourcesPath(folder: "environment", name: "nz")
         ]
 
-        scene.lightingEnvironment.content = getArtResourcesPath(folder: "HDR", name: "newport_loft", ext: "hdr")
+        scene.lightingEnvironment.content = [
+            getArtResourcesPath(folder: "environment", name: "px"),
+             getArtResourcesPath(folder: "environment", name: "nx"),
+             getArtResourcesPath(folder: "environment", name: "py"),
+             getArtResourcesPath(folder: "environment", name: "ny"),
+             getArtResourcesPath(folder: "environment", name: "pz"),
+             getArtResourcesPath(folder: "environment", name: "nz")
+        ]
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
 //        createCubes()
         let sphereNode = createSphere()
         sphereNode.geometry?.material = createRustedIronMaterial()
-//        scene.rootNode.addChild(sphereNode)
+        scene.rootNode.addChild(sphereNode)
 
         currNode = sphereNode
 
@@ -76,7 +83,7 @@ class ViewController: UIViewController {
 
     func createLightNode() -> GIRNode {
         let light = GIRLight(type: .omni)
-        light.intensity = 100
+        light.intensity = 10
         light.color = UIColor.white.cgColor
 //        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()

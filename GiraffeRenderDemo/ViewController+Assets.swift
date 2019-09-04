@@ -42,7 +42,7 @@ extension ViewController {
         let cone = GIRGeometry(basic: .cone(size: float3(2, 5, 2), segments: [1, 1], cap: false))
         let material = GIRMaterial()
         material.albedo.content = "cube_alb"
-        cone.material = material
+//        cone.material = material
         return GIRNode(geometry: cone)
     }
 
@@ -74,6 +74,18 @@ extension ViewController {
         material.normal.content = UIImage(named: getArtResourcesPath(folder: folder, name: "normal"))
         material.roughness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "roughness"))
 
+        return material
+    }
+
+    func createTestMaterial() -> GIRMaterial {
+        let material = GIRMaterial()
+        let folder = "test"
+        material.albedo.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_basecolor"))
+//        material.ambientOcclusion.content = UIImage(named: getArtResourcesPath(folder: folder, name: "ao"))
+        material.metalness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_metallic"))
+        material.normal.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_normal"))
+        material.roughness.content = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_roughness"))
+//        let t = UIImage(named: getArtResourcesPath(folder: folder, name: "Iron-Scuffed_roughness"))
         return material
     }
 

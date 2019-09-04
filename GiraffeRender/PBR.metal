@@ -35,7 +35,7 @@ struct VertexUniforms {
 };
 
 struct MaterialColor {
-    float3 colors[5];
+    float3 colors[MAT_MATERIAL_COUNT];
 };
 
 struct VertexIn {
@@ -166,11 +166,12 @@ pbr_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
 
 fragment float4
 pbr_fragment(VertexOut frag_in [[ stage_in ]],
-               depth2d<float> shadow_texture2D [[ texture(0) ]],
-               array<texture2d<float>, 5> textures2D [[ texture(1) ]],
-               sampler sampler2D [[ sampler(0) ]],
-               constant FragmentUniforms &uniforms [[ buffer(0) ]],
-               constant Light &light [[ buffer(1) ]])
+             depth2d<float> shadow_texture2D [[ texture(0) ]],
+             texturecube<float> irradianceMap [[ texture(1) ]],
+             array<texture2d<float>, 5> textures2D [[ texture(2) ]],
+             sampler sampler2D [[ sampler(0) ]],
+             constant FragmentUniforms &uniforms [[ buffer(0) ]],
+             constant Light &light [[ buffer(1) ]])
 {
     MaterialColor mat_colors = get_material_colors(uniforms, textures2D, frag_in.tex_coord);
 
@@ -234,10 +235,10 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
         Lo += (kD * mat_albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 //    }
 
-    // ambient lighting (note that the next IBL tutorial will replace
-    // this ambient lighting with environment lighting).
-    float3 ambient = float3(0.03) * mat_albedo * mat_ao;
-
+    float3 irradiance = irradianceMap.sample(sampler2D, reflect(-V, N)).rgb;
+    float3 diffuse = irradiance * mat_albedo;
+    float3 ambient = (kD * diffuse) * mat_ao;
+//    float3 ambient = float3(0.03) * mat_albedo * mat_ao;
     float3 color = ambient + Lo;
 
     // HDR tonemapping

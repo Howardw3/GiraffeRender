@@ -50,7 +50,7 @@ extension GIRMaterial {
         case roughness
         case normal
         case ambientOcclusion
-        case emission
+//        case emission
     }
 
     struct Data<T> {
@@ -104,7 +104,7 @@ extension GIRMaterial {
         ret.fillMaterial(roughness, type: .roughness)
         ret.fillMaterial(normal, type: .normal, defaultColor: float3(0.0, 0.0, 1.0))
         ret.fillMaterial(ambientOcclusion, type: .ambientOcclusion)
-        ret.fillMaterial(emission, type: .emission)
+//        ret.fillMaterial(emission, type: .emission)
         return ret
     }
 }

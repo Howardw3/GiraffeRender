@@ -12,39 +12,37 @@ class GIRTextureLoader {
     static let shared = GIRTextureLoader()
 
     let device: MTLDevice
-    let textureLoader: MTKTextureLoader
-    let options: [MTKTextureLoader.Option: Any] = [.generateMipmaps: true, .SRGB: true]
 
     private init() {
         device = MTLCreateSystemDefaultDevice()!
-        textureLoader = MTKTextureLoader(device: device)
     }
 
     func load(image: UIImage) -> MTLTexture? {
-        var texture: MTLTexture?
+        let width = Int(image.size.width)
+        let height = Int(image.size.height)
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: width, height: height, mipmapped: false)
 
-        do {
-            try texture = textureLoader.newTexture(cgImage: image.cgImage!, options: options)
-        } catch let error {
-            debugPrint(error.localizedDescription)
+        guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
+            return nil
         }
+
+        let region = MTLRegionMake2D(0, 0, width, height)
+        let bytesPerPixel = 4
+        let bytesPerRow = bytesPerPixel * width
+
+        var data = getData(from: image)
+        texture.replace(region: region, mipmapLevel: 0, withBytes: data!, bytesPerRow: bytesPerRow)
+        data = nil
 
         return texture
     }
 
     func load(path: String) -> MTLTexture? {
-        var texture: MTLTexture?
-
-        do {
-            try texture = textureLoader.newTexture(name: path,
-                                                    scaleFactor: 1.0,
-                                                    bundle: Bundle.main,
-                                                    options: options)
-        } catch let error {
-            debugPrint(error.localizedDescription)
+        guard let image = UIImage(named: path) else {
+            return nil
         }
 
-        return texture
+        return load(image: image)
     }
 
     func load(images: [String]) -> MTLTexture? {
@@ -95,7 +93,7 @@ class GIRTextureLoader {
         let region = MTLRegionMake2D(0, 0, width, height)
         let bytesPerPixel = 4
         let bytesPerRow = bytesPerPixel * width * MemoryLayout<Float>.size
-//        let bytesPerImage = bytesPerRow * size
+
         texture.replace(region: region, mipmapLevel: 0, withBytes: data!, bytesPerRow: bytesPerRow)
         return texture
     }
@@ -122,14 +120,14 @@ class GIRTextureLoader {
         return rawData!
     }
 
-    private func fillData(data: UnsafeMutableRawPointer?, width: Int, height: Int, numOfComponent: Int) {
-        var output: [Float]
-        for i in 0..<height {
-            for j in 0..<width {
-                let index = (i * width + j) * numOfComponent
-
-
-            }
-        }
-    }
+//    private func fillData(data: UnsafeMutableRawPointer?, width: Int, height: Int, numOfComponent: Int) {
+//        var output: [Float]
+//        for i in 0..<height {
+//            for j in 0..<width {
+//                let index = (i * width + j) * numOfComponent
+//
+//
+//            }
+//        }
+//    }
 }

@@ -63,16 +63,18 @@ extension GIRRenderer: MTKViewDelegate {
             drawSkybox(commandEncoder: commandEncoder, node: self.cubmapNode, texture: backgrouandTexture)
         }
 
+
         commandEncoder.setDepthStencilState(depthStencilState!)
         commandEncoder.setRenderPipelineState(renderPipelineState!)
         drawScene(commandEncoder: commandEncoder)
 
-        if let lightmapTexture = scene?.lightingEnvironment._content.texture {
-            commandEncoder.label = "HDR pass"
-            commandEncoder.setDepthStencilState(depthStencilState!)
-            commandEncoder.setRenderPipelineState(hdrPipelineState!)
-            drawSkybox(commandEncoder: commandEncoder, node: self.hdrCubeNode, texture: lightmapTexture, ignorePosition: false)
-        }
+//        if let lightmapTexture = scene?.lightingEnvironment._content.texture {
+////            commandEncoder.label = "HDR pass"
+////            commandEncoder.setDepthStencilState(depthStencilState!)
+////            commandEncoder.setRenderPipelineState(hdrPipelineState!)
+////            drawSkybox(commandEncoder: commandEncoder, node: self.hdrCubeNode, texture: lightmapTexture, ignorePosition: false)
+//            commandEncoder.setFragmentTexture(lightmapTexture, index: 1)
+//        }
 
         commandEncoder.endEncoding()
 
@@ -153,6 +155,7 @@ extension GIRRenderer: MTKViewDelegate {
             copyMaterialMemory(node: node, commandEncoder: commandEncoder)
             copyLightMemory(node: node, commandEncoder: commandEncoder)
             setShadowTexture(commandEncoder: commandEncoder)
+            setHDRTexture(commandEncoder: commandEncoder)
         } else {
             uniformBuffer = createShadowUniformsBuffer(node: node)
         }
@@ -163,6 +166,12 @@ extension GIRRenderer: MTKViewDelegate {
 
         for child in node.children {
             drawNode(child, commandEncoder: commandEncoder, parent: node, isShadowMode: isShadowMode)
+        }
+    }
+
+    func setHDRTexture(commandEncoder: MTLRenderCommandEncoder) {
+        if let lightmapTexture = scene?.lightingEnvironment._content.texture {
+            commandEncoder.setFragmentTexture(lightmapTexture, index: 1)
         }
     }
 
@@ -223,7 +232,7 @@ extension GIRRenderer: MTKViewDelegate {
 
         if let material = node.geometry?.material {
             let data = material.pbrData
-            commandEncoder.setFragmentTextures(data.textures, range: 1..<data.textures.count + 1)
+            commandEncoder.setFragmentTextures(data.textures, range: 2..<data.textures.count + 2)
             commandEncoder.setFragmentSamplerState(samplerState!, index: 0)
 
             fragmentUniforms.matShininess = material.shininess
