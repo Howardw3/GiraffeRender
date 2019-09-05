@@ -57,18 +57,18 @@ class ViewController: UIViewController {
         ]
 
         scene.lightingEnvironment.content = [
-            getArtResourcesPath(folder: "skybox", name: "px"),
-             getArtResourcesPath(folder: "skybox", name: "nx"),
-             getArtResourcesPath(folder: "skybox", name: "py"),
-             getArtResourcesPath(folder: "skybox", name: "ny"),
-             getArtResourcesPath(folder: "skybox", name: "pz"),
-             getArtResourcesPath(folder: "skybox", name: "nz")
+            getArtResourcesPath(folder: "environment", name: "px"),
+             getArtResourcesPath(folder: "environment", name: "nx"),
+             getArtResourcesPath(folder: "environment", name: "py"),
+             getArtResourcesPath(folder: "environment", name: "ny"),
+             getArtResourcesPath(folder: "environment", name: "pz"),
+             getArtResourcesPath(folder: "environment", name: "nz")
         ]
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
 //        createCubes()
         let sphereNode = createSphere()
-        sphereNode.geometry?.material = createTestMaterial()
+        sphereNode.geometry?.material = createGoldMaterial()
         scene.rootNode.addChild(sphereNode)
 
         currNode = sphereNode

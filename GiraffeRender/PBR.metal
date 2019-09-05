@@ -114,23 +114,28 @@ float3 fresnel_schlick(float cosTheta, float3 F0)
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
+float3 fresnel_schlick_roughness(float cosTheta, float3 F0, float roughness)
+{
+    return F0 + (max(float3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
 static MaterialColor
 get_material_colors(FragmentUniforms uniforms,
                     array<texture2d<float>, MAT_MATERIAL_COUNT> textures2D,
-                    float2 tex_coord)
+                    float2 tex_coord, sampler sampler2D)
 {
     int textureCounter = 0;
     MaterialColor color;
     tex_coord.y = 1.0f - tex_coord.y;
-    constexpr sampler sampler2D(filter::linear);
+//    constexpr sampler sampler2D(filter::linear);
 
     for (int i = 0; i < MAT_MATERIAL_COUNT; i++) {
-        if (uniforms.colorTypes[i] > 0.0) {
+        if (uniforms.colorTypes[i] >= 0.0) {
             color.colors[i] = uniforms.colors[i];
         } else if (uniforms.colorTypes[i] < 0.0) {
             if (i == MAT_NORMAL) {
-                constexpr sampler normalSampler(filter::nearest);
-                color.colors[i] = textures2D[textureCounter].sample(normalSampler, tex_coord).rgb * 2.0f - 1.0f;
+//                constexpr sampler normalSampler(filter::nearest);
+                color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb * 2.0f - 1.0f;
             } else {
                 color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb;
             }
@@ -173,7 +178,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
              constant FragmentUniforms &uniforms [[ buffer(0) ]],
              constant Light &light [[ buffer(1) ]])
 {
-    MaterialColor mat_colors = get_material_colors(uniforms, textures2D, frag_in.tex_coord);
+    MaterialColor mat_colors = get_material_colors(uniforms, textures2D, frag_in.tex_coord, sampler2D);
 
     float3 mat_normal = mat_colors.colors[MAT_NORMAL];
     float3 mat_albedo = mat_colors.colors[MAT_ALBEDO];
@@ -235,9 +240,8 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
         Lo += (kD * mat_albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 //    }
 
-    float3 kS1 = fresnel_schlick(max(dot(N, V), 0.0), F0);
+    float3 kS1 = fresnel_schlick_roughness(max(dot(N, V), 0.0), F0, mat_roughness);
     float3 kD1 = 1.0 - kS1;
-    kD1 *= 1.0 - mat_metalness + 0.6;
     float3 irradiance = irradianceMap.sample(sampler2D, N).rgb;
     float3 diffuse = irradiance * mat_albedo;
     float3 ambient = (kD1 * diffuse) * mat_ao;
