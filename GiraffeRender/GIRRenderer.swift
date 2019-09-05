@@ -22,6 +22,7 @@ class GIRRenderer: NSObject {
     var shadowPassDescriptor: MTLRenderPassDescriptor!
     var defaultLibrary: MTLLibrary!
     var samplerState: MTLSamplerState!
+    var envSamplerState: MTLSamplerState!
     var depthStencilState: MTLDepthStencilState!
     let commandQueue: MTLCommandQueue!
     var aspectRatio: Float = 1
@@ -47,6 +48,7 @@ class GIRRenderer: NSObject {
 
         self.defaultLibrary = device?.makeDefaultLibrary()
         createSamplerState()
+        createEnvSamplerState()
         createDepthStencilState()
         createRenderPipelineState()
         createShadowTexture(width: 1330, height: 700)
@@ -142,6 +144,17 @@ class GIRRenderer: NSObject {
         samplerDescriptor.magFilter = .linear
         samplerDescriptor.mipFilter = .linear
         samplerState = device?.makeSamplerState(descriptor: samplerDescriptor)!
+    }
+
+    func createEnvSamplerState() {
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.minFilter = .linear
+        samplerDescriptor.magFilter = .linear
+        samplerDescriptor.sAddressMode = .clampToEdge
+        samplerDescriptor.tAddressMode = .clampToEdge
+        samplerDescriptor.rAddressMode = .clampToEdge
+        envSamplerState = device?.makeSamplerState(descriptor: samplerDescriptor)!
     }
 
     func createDepthStencilState() {

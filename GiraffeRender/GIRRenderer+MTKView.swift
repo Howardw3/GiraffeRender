@@ -68,14 +68,6 @@ extension GIRRenderer: MTKViewDelegate {
         commandEncoder.setRenderPipelineState(renderPipelineState!)
         drawScene(commandEncoder: commandEncoder)
 
-//        if let lightmapTexture = scene?.lightingEnvironment._content.texture {
-////            commandEncoder.label = "HDR pass"
-////            commandEncoder.setDepthStencilState(depthStencilState!)
-////            commandEncoder.setRenderPipelineState(hdrPipelineState!)
-////            drawSkybox(commandEncoder: commandEncoder, node: self.hdrCubeNode, texture: lightmapTexture, ignorePosition: false)
-//            commandEncoder.setFragmentTexture(lightmapTexture, index: 1)
-//        }
-
         commandEncoder.endEncoding()
 
         commandBuffer.present(drawable)
@@ -98,7 +90,7 @@ extension GIRRenderer: MTKViewDelegate {
         var uniforms = GIRCubemapUniforms(projectionMatrix: getProjectionMatrix(), viewMatrix: viewMatrix)
         memcpy(uniformBuffer.contents(), &uniforms, uniformDataLength)
         commandEncoder.setFragmentTexture(texture, index: 0)
-        commandEncoder.setFragmentSamplerState(samplerState!, index: 0)
+        commandEncoder.setFragmentSamplerState(envSamplerState!, index: 0)
         drawMesh(node.geometry!.mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
     }
 
@@ -172,6 +164,7 @@ extension GIRRenderer: MTKViewDelegate {
     func setHDRTexture(commandEncoder: MTLRenderCommandEncoder) {
         if let lightmapTexture = scene?.lightingEnvironment._content.texture {
             commandEncoder.setFragmentTexture(lightmapTexture, index: 1)
+            commandEncoder.setFragmentSamplerState(envSamplerState, index: 1)
         }
     }
 

@@ -20,7 +20,7 @@ class GIRTextureLoader {
     func load(image: UIImage) -> MTLTexture? {
         let width = Int(image.size.width)
         let height = Int(image.size.height)
-        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: width, height: height, mipmapped: false)
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: width, height: height, mipmapped: true)
 
         guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
             return nil
@@ -51,7 +51,7 @@ class GIRTextureLoader {
         }
 
         let size = Int(image.size.width * image.scale)
-        let textureDescriptor = MTLTextureDescriptor.textureCubeDescriptor(pixelFormat: .rgba8Unorm, size: size, mipmapped: false)
+        let textureDescriptor = MTLTextureDescriptor.textureCubeDescriptor(pixelFormat: .rgba8Unorm, size: size, mipmapped: true)
 
         guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
             return nil
@@ -84,7 +84,7 @@ class GIRTextureLoader {
         var numsOfComponent = 0
 
         let data = GIRHDRLoader.loadHDR(hdrPath, width: &width, height: &height, numComponents: &numsOfComponent)
-        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: width, height: height, mipmapped: false)
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: width, height: height, mipmapped: true)
 
         guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
             return nil

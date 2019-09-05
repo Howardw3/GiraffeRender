@@ -134,8 +134,8 @@ get_material_colors(FragmentUniforms uniforms,
             color.colors[i] = uniforms.colors[i];
         } else if (uniforms.colorTypes[i] < 0.0) {
             if (i == MAT_NORMAL) {
-//                constexpr sampler normalSampler(filter::nearest);
-                color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb * 2.0f - 1.0f;
+                constexpr sampler normalSampler(filter::nearest);
+                color.colors[i] = textures2D[textureCounter].sample(normalSampler, tex_coord).rgb * 2.0f - 1.0f;
             } else {
                 color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb;
             }
@@ -175,6 +175,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
              texturecube<float> irradianceMap [[ texture(1) ]],
              array<texture2d<float>, 5> textures2D [[ texture(2) ]],
              sampler sampler2D [[ sampler(0) ]],
+             sampler envSampler2D [[ sampler(1) ]],
              constant FragmentUniforms &uniforms [[ buffer(0) ]],
              constant Light &light [[ buffer(1) ]])
 {
@@ -242,7 +243,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
 
     float3 kS1 = fresnel_schlick_roughness(max(dot(N, V), 0.0), F0, mat_roughness);
     float3 kD1 = 1.0 - kS1;
-    float3 irradiance = irradianceMap.sample(sampler2D, N).rgb;
+    float3 irradiance = irradianceMap.sample(envSampler2D, N).rgb;
     float3 diffuse = irradiance * mat_albedo;
     float3 ambient = (kD1 * diffuse) * mat_ao;
 //    float3 ambient = float3(0.03) * mat_albedo * mat_ao;
