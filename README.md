@@ -28,17 +28,17 @@ A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
   + Diffuse :heavy_check_mark:
   + Normal :heavy_check_mark:
   + Albedo :heavy_check_mark:
-  + Roughness
+  + Roughness :heavy_check_mark:
 + Multiple lights
 + Advanced
-  + Gamma correction
-  + Shadows
-  + HDR
+  + Gamma correction :heavy_check_mark:
+  + Shadows :heavy_check_mark:
+  + HDR :heavy_check_mark:
   + SSAO
   + Deferred shading
   + Bloom
   + Parallax mapping
-+ PBR
++ PBR :heavy_check_mark:
 ### Camera
 + Perspective :heavy_check_mark:
 + Orthographic
