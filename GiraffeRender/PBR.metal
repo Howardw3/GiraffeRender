@@ -9,6 +9,9 @@
 #include <metal_stdlib>
 using namespace metal;
 
+#include "PBRLib.h"
+constant float PI = 3.14159265359;
+
 // Light const
 constant int LIGHT_TYPE_AMBIENT = 0;
 constant int LIGHT_TYPE_DIRECTIONAL = 1;
@@ -24,8 +27,6 @@ constant int MAT_AO = 4;
 constant int MAT_EMISSION = 5;
 
 constant int MAT_MATERIAL_COUNT = 5;
-
-constant float PI = 3.14159265359;
 
 struct VertexUniforms {
     float4x4 view_proj_matrix;
@@ -73,51 +74,6 @@ struct Light {
     float spot_inner_radian;
     float spot_outer_radian;
 };
-
-float distributionGGX(float3 N, float3 H, float roughness)
-{
-    float a = roughness*roughness;
-    float a2 = a*a;
-    float NdotH = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH*NdotH;
-
-    float nom   = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = PI * denom * denom;
-
-    return nom / max(denom, 0.001); // prevent divide by zero for roughness=0.0 and NdotH=1.0
-}
-
-float geometry_schlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
-
-    float nom   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / denom;
-}
-
-float geometry_smith(float3 N, float3 V, float3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = geometry_schlickGGX(NdotV, roughness);
-    float ggx1 = geometry_schlickGGX(NdotL, roughness);
-
-    return ggx1 * ggx2;
-}
-
-float3 fresnel_schlick(float cosTheta, float3 F0)
-{
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-float3 fresnel_schlick_roughness(float cosTheta, float3 F0, float roughness)
-{
-    return F0 + (max(float3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
-}
 
 static MaterialColor
 get_material_colors(FragmentUniforms uniforms,
@@ -167,16 +123,6 @@ pbr_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
     vertex_out.tangent = normalize(vertex_out.tangent - dot(vertex_out.tangent, vertex_out.normal) * vertex_out.normal);
     vertex_out.bitangent = cross(vertex_out.normal, vertex_out.tangent);
     return vertex_out;
-}
-
-static float TrowbridgeReitzNDF(float NdotH, float roughness) {
-    if (roughness >= 1.0)
-        return 1.0 / M_PI_F;
-
-    float roughnessSqr = roughness * roughness;
-
-    float d = (NdotH * roughnessSqr - NdotH) * NdotH + 1;
-    return roughnessSqr / (M_PI_F * d * d);
 }
 
 fragment float4
@@ -259,6 +205,8 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
 
     float mipLevel = mat_roughness * irradianceMap.get_num_mip_levels();
     float3 irradiance_mip = irradianceMap.sample(envSampler2D, R, level(mipLevel)).rgb;
+    float2 brdf = integrate_BRDF(max(dot(N, V), 0.0), mat_roughness);
+//    float3 specular_final = irradiance_mip * (kS1 * brdf.x + brdf.y);
     float3 specular_final = (nominator * irradiance_mip) * ((1.0 - mat_metalness) * mat_albedo) + irradiance_mip * mat_metalness * mat_albedo;
 
     float3 ambient = (kD1 * diffuse_final + specular_final) * mat_ao;

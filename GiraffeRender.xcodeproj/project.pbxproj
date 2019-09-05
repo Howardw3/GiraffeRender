@@ -29,6 +29,8 @@
 		23804487231E126200949094 /* GIRTextureLoader+HDR.h in Headers */ = {isa = PBXBuildFile; fileRef = 23804486231E126200949094 /* GIRTextureLoader+HDR.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23804492231E3AD600949094 /* HDR.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23804491231E3AD600949094 /* HDR.metal */; };
 		23804493231E409300949094 /* HDR.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23804491231E3AD600949094 /* HDR.metal */; };
+		238044952320E1F300949094 /* PBRLib.metal in Sources */ = {isa = PBXBuildFile; fileRef = 238044942320E1F300949094 /* PBRLib.metal */; };
+		238044962320E4F800949094 /* PBRLib.metal in Sources */ = {isa = PBXBuildFile; fileRef = 238044942320E1F300949094 /* PBRLib.metal */; };
 		238597A523010B6500585F46 /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
 		238597A72302754400585F46 /* GIRMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238597A62302754400585F46 /* GIRMaterial.swift */; };
 		23FA335B230E6784006BB484 /* GIRMaterialProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */; };
@@ -94,6 +96,8 @@
 		23804481231DF69A00949094 /* GIRTextureLoader+HDR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "GIRTextureLoader+HDR.m"; sourceTree = "<group>"; };
 		23804486231E126200949094 /* GIRTextureLoader+HDR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GIRTextureLoader+HDR.h"; sourceTree = "<group>"; };
 		23804491231E3AD600949094 /* HDR.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HDR.metal; sourceTree = "<group>"; };
+		238044942320E1F300949094 /* PBRLib.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PBRLib.metal; sourceTree = "<group>"; };
+		238044972320E53E00949094 /* PBRLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBRLib.h; sourceTree = "<group>"; };
 		238597A62302754400585F46 /* GIRMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterial.swift; sourceTree = "<group>"; };
 		23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterialProperty.swift; sourceTree = "<group>"; };
 		23FA335C230E6BE1006BB484 /* Art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Art.scnassets; sourceTree = "<group>"; };
@@ -168,9 +172,11 @@
 				8C2D53302308D68F0063F9BB /* GIRLight.swift */,
 				230A1CA5230108EA0025825D /* Shader.metal */,
 				23FA335E2314FF26006BB484 /* Shadow.metal */,
-				23FA33612317A379006BB484 /* PBR.metal */,
 				23FA33642318C349006BB484 /* Cubemap.metal */,
 				23804491231E3AD600949094 /* HDR.metal */,
+				23FA33612317A379006BB484 /* PBR.metal */,
+				238044942320E1F300949094 /* PBRLib.metal */,
+				238044972320E53E00949094 /* PBRLib.h */,
 			);
 			path = GiraffeRender;
 			sourceTree = "<group>";
@@ -332,6 +338,7 @@
 				230A1CB9230108EB0025825D /* GIRRenderer.swift in Sources */,
 				23FA33622317A379006BB484 /* PBR.metal in Sources */,
 				230A1CB3230108EB0025825D /* GIRUniform.swift in Sources */,
+				238044952320E1F300949094 /* PBRLib.metal in Sources */,
 				23FA33652318C349006BB484 /* Cubemap.metal in Sources */,
 				23804492231E3AD600949094 /* HDR.metal in Sources */,
 			);
@@ -350,6 +357,7 @@
 				23FA33632317B498006BB484 /* PBR.metal in Sources */,
 				23FA3368231900A3006BB484 /* Cubemap.metal in Sources */,
 				23804493231E409300949094 /* HDR.metal in Sources */,
+				238044962320E4F800949094 /* PBRLib.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
