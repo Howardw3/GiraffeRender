@@ -48,21 +48,21 @@ class ViewController: UIViewController {
 
         scene = GIRScene()
         scene.background.content = [
-            getArtResourcesPath(folder: "skybox", name: "px"),
-            getArtResourcesPath(folder: "skybox", name: "nx"),
-            getArtResourcesPath(folder: "skybox", name: "py"),
-            getArtResourcesPath(folder: "skybox", name: "ny"),
-            getArtResourcesPath(folder: "skybox", name: "pz"),
-            getArtResourcesPath(folder: "skybox", name: "nz")
+            getArtResourcesPath(folder: "skybox1", name: "px"),
+            getArtResourcesPath(folder: "skybox1", name: "nx"),
+            getArtResourcesPath(folder: "skybox1", name: "py"),
+            getArtResourcesPath(folder: "skybox1", name: "ny"),
+            getArtResourcesPath(folder: "skybox1", name: "pz"),
+            getArtResourcesPath(folder: "skybox1", name: "nz")
         ]
 
         scene.lightingEnvironment.content = [
-            getArtResourcesPath(folder: "environment", name: "px"),
-             getArtResourcesPath(folder: "environment", name: "nx"),
-             getArtResourcesPath(folder: "environment", name: "py"),
-             getArtResourcesPath(folder: "environment", name: "ny"),
-             getArtResourcesPath(folder: "environment", name: "pz"),
-             getArtResourcesPath(folder: "environment", name: "nz")
+            getArtResourcesPath(folder: "environment1", name: "px"),
+             getArtResourcesPath(folder: "environment1", name: "nx"),
+             getArtResourcesPath(folder: "environment1", name: "py"),
+             getArtResourcesPath(folder: "environment1", name: "ny"),
+             getArtResourcesPath(folder: "environment1", name: "pz"),
+             getArtResourcesPath(folder: "environment1", name: "nz")
         ]
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)

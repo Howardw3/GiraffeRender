@@ -20,7 +20,7 @@ class GIRTextureLoader {
     func load(image: UIImage) -> MTLTexture? {
         let width = Int(image.size.width)
         let height = Int(image.size.height)
-        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: width, height: height, mipmapped: true)
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: width, height: height, mipmapped: false)
 
         guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
             return nil

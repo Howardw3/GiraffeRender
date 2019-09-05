@@ -169,6 +169,16 @@ pbr_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
     return vertex_out;
 }
 
+static float TrowbridgeReitzNDF(float NdotH, float roughness) {
+    if (roughness >= 1.0)
+        return 1.0 / M_PI_F;
+
+    float roughnessSqr = roughness * roughness;
+
+    float d = (NdotH * roughnessSqr - NdotH) * NdotH + 1;
+    return roughnessSqr / (M_PI_F * d * d);
+}
+
 fragment float4
 pbr_fragment(VertexOut frag_in [[ stage_in ]],
              depth2d<float> shadow_texture2D [[ texture(0) ]],
@@ -195,6 +205,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
 
     float3 N = normalize(tbn_matrix * mat_normal);
     float3 V = normalize(tangent_view_pos - tangent_frag_pos);
+    float3 R = reflect(-V, N);
     //    float3 normal = normalize(frag_in.frag_world_normal);
     float3 frag_light_dir = normalize(tangent_light_pos - tangent_frag_pos);
 
@@ -244,8 +255,13 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
     float3 kS1 = fresnel_schlick_roughness(max(dot(N, V), 0.0), F0, mat_roughness);
     float3 kD1 = 1.0 - kS1;
     float3 irradiance = irradianceMap.sample(envSampler2D, N).rgb;
-    float3 diffuse = irradiance * mat_albedo;
-    float3 ambient = (kD1 * diffuse) * mat_ao;
+    float3 diffuse_final = irradiance * mat_albedo;
+
+    float mipLevel = mat_roughness * irradianceMap.get_num_mip_levels();
+    float3 irradiance_mip = irradianceMap.sample(envSampler2D, R, level(mipLevel)).rgb;
+    float3 specular_final = (nominator * irradiance_mip) * ((1.0 - mat_metalness) * mat_albedo) + irradiance_mip * mat_metalness * mat_albedo;
+
+    float3 ambient = (kD1 * diffuse_final + specular_final) * mat_ao;
 //    float3 ambient = float3(0.03) * mat_albedo * mat_ao;
     float3 color = ambient + Lo;
 
