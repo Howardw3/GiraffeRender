@@ -31,6 +31,8 @@
 		23804493231E409300949094 /* HDR.metal in Sources */ = {isa = PBXBuildFile; fileRef = 23804491231E3AD600949094 /* HDR.metal */; };
 		238044952320E1F300949094 /* PBRLib.metal in Sources */ = {isa = PBXBuildFile; fileRef = 238044942320E1F300949094 /* PBRLib.metal */; };
 		238044962320E4F800949094 /* PBRLib.metal in Sources */ = {isa = PBXBuildFile; fileRef = 238044942320E1F300949094 /* PBRLib.metal */; };
+		23804499232231C300949094 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 23804498232231C300949094 /* README.md */; };
+		2380449B232231CA00949094 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 2380449A232231CA00949094 /* LICENSE */; };
 		238597A523010B6500585F46 /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 230A1CA5230108EA0025825D /* Shader.metal */; };
 		238597A72302754400585F46 /* GIRMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238597A62302754400585F46 /* GIRMaterial.swift */; };
 		23FA335B230E6784006BB484 /* GIRMaterialProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */; };
@@ -98,6 +100,8 @@
 		23804491231E3AD600949094 /* HDR.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HDR.metal; sourceTree = "<group>"; };
 		238044942320E1F300949094 /* PBRLib.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PBRLib.metal; sourceTree = "<group>"; };
 		238044972320E53E00949094 /* PBRLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBRLib.h; sourceTree = "<group>"; };
+		23804498232231C300949094 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		2380449A232231CA00949094 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		238597A62302754400585F46 /* GIRMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterial.swift; sourceTree = "<group>"; };
 		23FA335A230E6784006BB484 /* GIRMaterialProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIRMaterialProperty.swift; sourceTree = "<group>"; };
 		23FA335C230E6BE1006BB484 /* Art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Art.scnassets; sourceTree = "<group>"; };
@@ -133,6 +137,8 @@
 		230A1C3922FFED6A0025825D = {
 			isa = PBXGroup;
 			children = (
+				2380449A232231CA00949094 /* LICENSE */,
+				23804498232231C300949094 /* README.md */,
 				230A1C4522FFED6A0025825D /* GiraffeRender */,
 				230A1C88230077D20025825D /* GiraffeRenderDemo */,
 				230A1C4422FFED6A0025825D /* Products */,
@@ -299,6 +305,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2380449B232231CA00949094 /* LICENSE in Resources */,
+				23804499232231C300949094 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

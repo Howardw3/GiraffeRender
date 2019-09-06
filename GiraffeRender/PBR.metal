@@ -90,8 +90,8 @@ get_material_colors(FragmentUniforms uniforms,
             color.colors[i] = uniforms.colors[i];
         } else if (uniforms.colorTypes[i] < 0.0) {
             if (i == MAT_NORMAL) {
-                constexpr sampler normalSampler(filter::nearest);
-                color.colors[i] = textures2D[textureCounter].sample(normalSampler, tex_coord).rgb * 2.0f - 1.0f;
+//                constexpr sampler normalSampler(filter::nearest);
+                color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb * 2.0f - 1.0f;
             } else {
                 color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb;
             }
@@ -129,7 +129,8 @@ fragment float4
 pbr_fragment(VertexOut frag_in [[ stage_in ]],
              depth2d<float> shadow_texture2D [[ texture(0) ]],
              texturecube<float> irradianceMap [[ texture(1) ]],
-             array<texture2d<float>, 5> textures2D [[ texture(2) ]],
+             texturecube<float> environmentMap [[ texture(2) ]],
+             array<texture2d<float>, 5> textures2D [[ texture(3) ]],
              sampler sampler2D [[ sampler(0) ]],
              sampler envSampler2D [[ sampler(1) ]],
              constant FragmentUniforms &uniforms [[ buffer(0) ]],
@@ -200,12 +201,13 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
 
     float3 kS1 = fresnel_schlick_roughness(max(dot(N, V), 0.0), F0, mat_roughness);
     float3 kD1 = 1.0 - kS1;
+    kD1 *= 1.0 - mat_metalness;
     float3 irradiance = irradianceMap.sample(envSampler2D, N).rgb;
     float3 diffuse_final = irradiance * mat_albedo;
 
     float mipLevel = mat_roughness * irradianceMap.get_num_mip_levels();
-    float3 irradiance_mip = irradianceMap.sample(envSampler2D, R, level(mipLevel)).rgb;
-    float2 brdf = integrate_BRDF(max(dot(N, V), 0.0), mat_roughness);
+    float3 irradiance_mip = environmentMap.sample(envSampler2D, R, level(mipLevel)).rgb;
+//    float2 brdf = integrate_BRDF(max(dot(N, V), 0.0), mat_roughness);
 //    float3 specular_final = irradiance_mip * (kS1 * brdf.x + brdf.y);
     float3 specular_final = (nominator * irradiance_mip) * ((1.0 - mat_metalness) * mat_albedo) + irradiance_mip * mat_metalness * mat_albedo;
 
@@ -214,9 +216,9 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
     float3 color = ambient + Lo;
 
     // HDR tonemapping
-    color = color / (color + float3(1.0));
+//    color = color / (color + float3(1.0));
     // gamma correct
-    color = pow(color, float3(1.0/2.2));
+//    color = pow(color, float3(1.0/2.2));
 
     return float4(color, 1.0);
 }

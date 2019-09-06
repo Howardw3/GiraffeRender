@@ -166,6 +166,9 @@ extension GIRRenderer: MTKViewDelegate {
             commandEncoder.setFragmentTexture(lightmapTexture, index: 1)
             commandEncoder.setFragmentSamplerState(envSamplerState, index: 1)
         }
+        if let backgrouandTexture = scene?.background._content.texture {
+            commandEncoder.setFragmentTexture(backgrouandTexture, index: 2)
+        }
     }
 
     func setShadowTexture(commandEncoder: MTLRenderCommandEncoder) {
@@ -222,10 +225,11 @@ extension GIRRenderer: MTKViewDelegate {
     func copyMaterialMemory(node: GIRNode, commandEncoder: MTLRenderCommandEncoder) {
         var fragmentUniforms = GIRFragmentUniforms()
         fragmentUniforms.cameraPosition = pointOfView.position
+        let offset = 3
 
         if let material = node.geometry?.material {
             let data = material.pbrData
-            commandEncoder.setFragmentTextures(data.textures, range: 2..<data.textures.count + 2)
+            commandEncoder.setFragmentTextures(data.textures, range: offset..<data.textures.count + offset)
             commandEncoder.setFragmentSamplerState(samplerState!, index: 0)
 
             fragmentUniforms.matShininess = material.shininess

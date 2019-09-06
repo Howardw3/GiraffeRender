@@ -1,7 +1,7 @@
 # GiraffeRender -- A Metal Render
 A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
 
-![pbr](https://github.com/Howardw3/GiraffeRender/blob/master/Snapshot/pbj.png)
+![pbr](https://github.com/Howardw3/GiraffeRender/blob/master/Snapshot/pbr.png)
 ## Goal
 ### View
 + Scene ref :heavy_check_mark:

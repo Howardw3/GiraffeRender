@@ -83,7 +83,7 @@ class ViewController: UIViewController {
 
     func createLightNode() -> GIRNode {
         let light = GIRLight(type: .omni)
-        light.intensity = 1000
+        light.intensity = 10
         light.color = UIColor.white.cgColor
 //        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
