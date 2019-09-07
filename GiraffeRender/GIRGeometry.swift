@@ -11,7 +11,7 @@ import MetalKit
 
 open class GIRGeometry {
     public var mesh: MTKMesh
-    public var material: GIRMaterial?
+    public var materials: [GIRMaterial]
     static var vertexDescriptor: MDLVertexDescriptor {
         let vertexDescriptor = MDLVertexDescriptor()
         vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
@@ -36,6 +36,7 @@ open class GIRGeometry {
 
     public init(mesh: MTKMesh) {
         self.mesh = mesh
+        self.materials = [GIRMaterial]()
     }
 
     convenience public init(basic: Basic) {
@@ -57,6 +58,14 @@ open class GIRGeometry {
 
         let mesh = try! MTKMesh.newMeshes(asset: asset, device: device!).metalKitMeshes.first!
         self.init(mesh: mesh)
+    }
+
+    public func addMaterial(_ material: GIRMaterial) {
+        materials.append(material)
+    }
+
+    public var firstMaterial: GIRMaterial? {
+        return materials.first
     }
 }
 

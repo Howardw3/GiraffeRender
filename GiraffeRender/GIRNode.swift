@@ -29,6 +29,7 @@ public class GIRNode {
     var parent: GIRNode?
     let identifier = UUID()
 
+    public var name: String
     public var geometry: GIRGeometry?
     public var camera: GIRCamera?
     public var light: GIRLight?
@@ -125,6 +126,7 @@ public class GIRNode {
         self._localUp = float3(0.0, 1.0, 0.0)
         self._localFront = float3(0.0, 0.0, -1.0)
         self._localRight = float3(1.0, 0.0, 0.0)
+        self.name = "Node_" + identifier.uuidString
 //        updateLocalAxis()
     }
 

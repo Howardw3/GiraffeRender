@@ -24,6 +24,7 @@ class GIRRenderer: NSObject {
     var samplerState: MTLSamplerState!
     var envSamplerState: MTLSamplerState!
     var depthStencilState: MTLDepthStencilState!
+    var cubemapDepthStencilState: MTLDepthStencilState!
     let commandQueue: MTLCommandQueue!
     var aspectRatio: Float = 1
     var pointOfView: GIRNode
@@ -50,6 +51,7 @@ class GIRRenderer: NSObject {
         createSamplerState()
         createEnvSamplerState()
         createDepthStencilState()
+        createCubemapDepthStencilState()
         createRenderPipelineState()
         createShadowTexture(width: 1330, height: 700)
         createShadowPipelineState()
@@ -162,6 +164,13 @@ class GIRRenderer: NSObject {
         depthStencilDescriptor.isDepthWriteEnabled = true
         depthStencilDescriptor.depthCompareFunction = .less
         depthStencilState = device?.makeDepthStencilState(descriptor: depthStencilDescriptor)
+    }
+
+    func createCubemapDepthStencilState() {
+        let depthDescriptor = MTLDepthStencilDescriptor()
+        depthDescriptor.depthCompareFunction = .less
+        depthDescriptor.isDepthWriteEnabled = false
+        cubemapDepthStencilState = device?.makeDepthStencilState(descriptor: depthDescriptor)
     }
 }
 

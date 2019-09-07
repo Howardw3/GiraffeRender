@@ -9,6 +9,12 @@
 import simd
 import MetalKit
 extension GIRRenderer: MTKViewDelegate {
+    enum DrawMode {
+        case geometry
+        case shadow
+        case cubemap
+    }
+
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         aspectRatio = Float(size.width / size.height)
 
@@ -47,23 +53,16 @@ extension GIRRenderer: MTKViewDelegate {
             return
         }
 
-        commandEncoder.label = "Main pass"
-        commandEncoder.setCullMode(.back)
-        commandEncoder.setFrontFacing(.counterClockwise)
-
         if let backgrouandTexture = scene?.background._content.texture {
-            let depthDescriptor = MTLDepthStencilDescriptor()
-            depthDescriptor.depthCompareFunction = .less
-            depthDescriptor.isDepthWriteEnabled = false
-            let depthState = device?.makeDepthStencilState(descriptor: depthDescriptor)
-
             commandEncoder.label = "Cubemap pass"
-            commandEncoder.setDepthStencilState(depthState!)
+            commandEncoder.setCullMode(.back)
+            commandEncoder.setFrontFacing(.counterClockwise)
+            commandEncoder.setDepthStencilState(cubemapDepthStencilState!)
             commandEncoder.setRenderPipelineState(skyboxPipelineState!)
             drawSkybox(commandEncoder: commandEncoder, node: self.cubmapNode, texture: backgrouandTexture)
         }
 
-
+        commandEncoder.label = "Main pass"
         commandEncoder.setDepthStencilState(depthStencilState!)
         commandEncoder.setRenderPipelineState(renderPipelineState!)
         drawScene(commandEncoder: commandEncoder)
@@ -91,7 +90,12 @@ extension GIRRenderer: MTKViewDelegate {
         memcpy(uniformBuffer.contents(), &uniforms, uniformDataLength)
         commandEncoder.setFragmentTexture(texture, index: 0)
         commandEncoder.setFragmentSamplerState(envSamplerState!, index: 0)
-        drawMesh(node.geometry!.mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
+
+        guard let cubemapMesh = node.geometry?.mesh, let submesh = cubemapMesh.submeshes.first, let vertexBuffer = cubemapMesh.vertexBuffers.first?.buffer else {
+            return
+        }
+
+        drawSubmesh(submesh, commandEncoder: commandEncoder, vertexBuffer: vertexBuffer, vertexUniformBuffer: uniformBuffer)
     }
 
     func drawScene(commandEncoder: MTLRenderCommandEncoder, isShadowMode: Bool = false) {
@@ -140,21 +144,7 @@ extension GIRRenderer: MTKViewDelegate {
         }
         updateLightsInScene(node: node)
 
-        var uniformBuffer: MTLBuffer!
-        if !isShadowMode {
-            uniformBuffer = createUniformBuffer()
-            updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
-            copyMaterialMemory(node: node, commandEncoder: commandEncoder)
-            copyLightMemory(node: node, commandEncoder: commandEncoder)
-            setShadowTexture(commandEncoder: commandEncoder)
-            setHDRTexture(commandEncoder: commandEncoder)
-        } else {
-            uniformBuffer = createShadowUniformsBuffer(node: node)
-        }
-
-        if let mesh = node.geometry?.mesh {
-            drawMesh(mesh, commandEncoder: commandEncoder, uniformBuffer: uniformBuffer)
-        }
+        drawGeometry(node, parent: parent, commandEncoder: commandEncoder, shouldDrawTexture: !isShadowMode)
 
         for child in node.children {
             drawNode(child, commandEncoder: commandEncoder, parent: node, isShadowMode: isShadowMode)
@@ -222,20 +212,18 @@ extension GIRRenderer: MTKViewDelegate {
         }
     }
 
-    func copyMaterialMemory(node: GIRNode, commandEncoder: MTLRenderCommandEncoder) {
+    func copyMaterialMemory(material: GIRMaterial, commandEncoder: MTLRenderCommandEncoder) {
         var fragmentUniforms = GIRFragmentUniforms()
         fragmentUniforms.cameraPosition = pointOfView.position
         let offset = 3
 
-        if let material = node.geometry?.material {
-            let data = material.pbrData
-            commandEncoder.setFragmentTextures(data.textures, range: offset..<data.textures.count + offset)
-            commandEncoder.setFragmentSamplerState(samplerState!, index: 0)
+        let data = material.pbrData
+        commandEncoder.setFragmentTextures(data.textures, range: offset..<data.textures.count + offset)
+        commandEncoder.setFragmentSamplerState(samplerState!, index: 0)
 
-            fragmentUniforms.matShininess = material.shininess
-            fragmentUniforms.colorTypes = data.colorTypes
-            fragmentUniforms.colors = data.colors
-        }
+        fragmentUniforms.matShininess = material.shininess
+        fragmentUniforms.colorTypes = data.colorTypes
+        fragmentUniforms.colors = data.colors
 
         setFragmentBuffer(to: commandEncoder, rawData: fragmentUniforms.raw, length: GIRFragmentUniforms.length, index: 0)
     }
@@ -248,20 +236,41 @@ extension GIRRenderer: MTKViewDelegate {
         memcpy(bufferPointer, &rawData, length)
     }
 
-    func drawMesh(_ mesh: MTKMesh, commandEncoder: MTLRenderCommandEncoder, uniformBuffer: MTLBuffer) {
-        guard let vertexBuffer = mesh.vertexBuffers.first else {
+    func drawGeometry(_ node: GIRNode, parent: GIRNode?, commandEncoder: MTLRenderCommandEncoder, shouldDrawTexture: Bool = true) {
+        guard let mesh = node.geometry?.mesh, let vertexBuffer = mesh.vertexBuffers.first else {
             return
         }
 
-        commandEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: 0)
-        commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, index: 1)
+        for i in 0..<mesh.submeshes.count {
+            let submesh = mesh.submeshes[i]
+            var uniformBuffer: MTLBuffer!
 
-        for submesh in mesh.submeshes {
-            commandEncoder.drawIndexedPrimitives(type: submesh.primitiveType,
-                                                 indexCount: submesh.indexCount,
-                                                 indexType: submesh.indexType,
-                                                 indexBuffer: submesh.indexBuffer.buffer,
-                                                 indexBufferOffset: submesh.indexBuffer.offset)
+            if shouldDrawTexture {
+                let material = node.geometry!.materials[i]
+                uniformBuffer = createUniformBuffer()
+                updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
+                copyMaterialMemory(material: material, commandEncoder: commandEncoder)
+                copyLightMemory(node: node, commandEncoder: commandEncoder)
+                setShadowTexture(commandEncoder: commandEncoder)
+                setHDRTexture(commandEncoder: commandEncoder)
+
+            } else {
+                uniformBuffer = createShadowUniformsBuffer(node: node)
+            }
+
+            drawSubmesh(submesh, commandEncoder: commandEncoder, vertexBuffer: vertexBuffer.buffer, vertexUniformBuffer: uniformBuffer)
         }
+    }
+
+    func drawSubmesh(_ submesh: MTKSubmesh, commandEncoder: MTLRenderCommandEncoder, vertexBuffer: MTLBuffer, vertexUniformBuffer: MTLBuffer) {
+
+        commandEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        commandEncoder.setVertexBuffer(vertexUniformBuffer, offset: 0, index: 1)
+
+        commandEncoder.drawIndexedPrimitives(type: submesh.primitiveType,
+                                             indexCount: submesh.indexCount,
+                                             indexType: submesh.indexType,
+                                             indexBuffer: submesh.indexBuffer.buffer,
+                                             indexBufferOffset: submesh.indexBuffer.offset)
     }
 }

@@ -67,16 +67,19 @@ class ViewController: UIViewController {
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
 //        createCubes()
-        let sphereNode = createSphere()
-        sphereNode.geometry?.material = createGoldMaterial()
-        scene.rootNode.addChild(sphereNode)
+//        let sphereNode = createSphere()
+//        sphereNode.geometry?.addMaterial(createGoldMaterial())
+//        scene.rootNode.addChild(sphereNode)
 
-        currNode = sphereNode
+        let dreddNode = createDreddNode()
+        scene.rootNode.addChild(dreddNode)
+        currNode = dreddNode
 
         currCameraNode = scene.pointOfView
         giraffeView.scene = scene
         scene.pointOfView.position = cameraPos
         scene.pointOfView.camera?.fieldOfView = 29
+        scene.pointOfView.camera?.zFar = 200
 
         setupGestrues()
     }
