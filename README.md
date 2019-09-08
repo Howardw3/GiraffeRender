@@ -17,7 +17,7 @@ A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
 + Update projection matrix :heavy_check_mark:
 + Draw mesh :heavy_check_mark:
 + Basic texture :heavy_check_mark:
-+ Triple buffer
++ Triple buffering :heavy_check_mark:
 
 ### Lighting
 + Ambient :heavy_check_mark:
