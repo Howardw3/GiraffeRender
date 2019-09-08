@@ -12,11 +12,10 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "utility/stb_image.h"
-//#define __cplusplus
 
 @implementation GIRHDRLoader
 
-+ (float*)loadHDR:(NSString *)hdrPath width:(NSInteger *)width height:(NSInteger *)height numComponents:(NSInteger *)numOfConmonents
++ (float*)loadHDR:(NSString * _Nonnull)hdrPath width:(NSInteger * _Nonnull)width height:(NSInteger * _Nonnull)height numComponents:(NSInteger * _Nonnull)numOfConmonents
 {
     NSString *path = [[NSBundle mainBundle] pathForResource:@"Art.scnassets/HDR/newport_loft" ofType:@"hdr"];
     float *data = stbi_loadf([path UTF8String], width, height, numOfConmonents, 4); // TODO: need to free resource

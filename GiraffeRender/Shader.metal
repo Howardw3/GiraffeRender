@@ -8,12 +8,7 @@
 
 #include <metal_stdlib>
 using namespace metal;
-
-// Light const
-constant int LIGHT_TYPE_AMBIENT = 0;
-constant int LIGHT_TYPE_DIRECTIONAL = 1;
-constant int LIGHT_TYPE_OMNI = 2;
-constant int LIGHT_TYPE_SPOT = 3;
+#include "GIRShaderTypes.h"
 
 // Basic material type
 constant int MAT_ALBEDO = 0;
@@ -61,14 +56,6 @@ struct FragmentUniforms {
 
 };
 
-struct MaterialColorTypes {
-    int2 albedo;
-    int2 diffuse;
-    int2 ambient;
-    int2 specular;
-    int2 normal;
-};
-
 struct Light {
     int2 type;
     packed_float3 position;
@@ -92,7 +79,7 @@ calculate_shadow(float4 frag_shadow_pos,
     constexpr sampler shadow_sampler(coord::normalized, filter::linear, address::clamp_to_edge, compare_func::less);
     float closest_depth = shadow_texture2D.sample(shadow_sampler, proj_coords.xy);
     float curr_depth = proj_coords.z;
-    float bias = max(0.05 * (1.0 - dot(normal, light_dir)), 0.005);
+//    float bias = max(0.05 * (1.0 - dot(normal, light_dir)), 0.005);
     float shadow = curr_depth > closest_depth ? 1.0f : 0.1;
     return shadow;
 }
@@ -178,7 +165,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
 
     // ambient
     float3 ambient = ambient_intensity * light.color;
-    if (light.type.x == LIGHT_TYPE_AMBIENT) {
+    if (light.type.x == LightTypeAmbient) {
         return float4(ambient * albedo_mat, 1.0f) ;
     }
 
@@ -200,7 +187,7 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
 //    float specular_factor = pow(max(dot(view_dir, reflect_dir), 0.0f), uniforms.mat_shininess);
     float3 specular = specular_factor * specular_intensity * light.color;
 
-    if (light.type.x == LIGHT_TYPE_OMNI) {
+    if (light.type.x == LightTypeOmni) {
         float light_dist = length(light.position - frag_in.frag_world_pos);
         float light_const = 1.0f;
         float light_liner = 0.09f;
@@ -210,7 +197,8 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
         ambient *= attenuation;
         diffuse *= attenuation;
         specular *= attenuation;
-    } else if (light.type.x == LIGHT_TYPE_SPOT) {
+        
+    } else if (light.type.x == LightTypeSpot) {
 
         float theta = dot(frag_light_dir, light_direction_neg);
         float epsilon = light.spot_inner_radian - light.spot_outer_radian;

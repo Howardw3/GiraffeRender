@@ -10,23 +10,20 @@
 using namespace metal;
 
 #include "PBRLib.h"
+#include "GIRShaderTypes.h"
 constant float PI = 3.14159265359;
-
-// Light const
-constant int LIGHT_TYPE_AMBIENT = 0;
-constant int LIGHT_TYPE_DIRECTIONAL = 1;
-constant int LIGHT_TYPE_OMNI = 2;
-constant int LIGHT_TYPE_SPOT = 3;
-
-// Basic material type
-constant int MAT_ALBEDO = 0;
-constant int MAT_METALNESS = 1;
-constant int MAT_ROUGHNESS = 2;
-constant int MAT_NORMAL = 3;
-constant int MAT_AO = 4;
-constant int MAT_EMISSION = 5;
-
 constant int MAT_MATERIAL_COUNT = 5;
+
+// PBR material type
+typedef enum MaterialType
+{
+    MatAlbedo       = 0,
+    MatMetalness    = 1,
+    MatRoughness    = 2,
+    MatNormal       = 3,
+    MatAO           = 4,
+    MatEmission     = 5,
+} MaterialType;
 
 struct VertexUniforms {
     float4x4 view_proj_matrix;
@@ -89,7 +86,7 @@ get_material_colors(FragmentUniforms uniforms,
         if (uniforms.colorTypes[i] >= 0.0) {
             color.colors[i] = uniforms.colors[i];
         } else if (uniforms.colorTypes[i] < 0.0) {
-            if (i == MAT_NORMAL) {
+            if (i == MatNormal) {
 //                constexpr sampler normalSampler(filter::nearest);
                 color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb * 2.0f - 1.0f;
             } else {
@@ -130,7 +127,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
              depth2d<float> shadow_texture2D [[ texture(0) ]],
              texturecube<float> irradianceMap [[ texture(1) ]],
              texturecube<float> environmentMap [[ texture(2) ]],
-             array<texture2d<float>, 5> textures2D [[ texture(3) ]],
+             array<texture2d<float>, MAT_MATERIAL_COUNT> textures2D [[ texture(3) ]],
              sampler sampler2D [[ sampler(0) ]],
              sampler envSampler2D [[ sampler(1) ]],
              constant FragmentUniforms &uniforms [[ buffer(0) ]],
@@ -138,11 +135,11 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
 {
     MaterialColor mat_colors = get_material_colors(uniforms, textures2D, frag_in.tex_coord, sampler2D);
 
-    float3 mat_normal = mat_colors.colors[MAT_NORMAL];
-    float3 mat_albedo = mat_colors.colors[MAT_ALBEDO];
-    float mat_metalness = mat_colors.colors[MAT_METALNESS].r;
-    float mat_ao = mat_colors.colors[MAT_AO].r;
-    float mat_roughness = mat_colors.colors[MAT_ROUGHNESS].r;
+    float3 mat_normal = mat_colors.colors[MatNormal];
+    float3 mat_albedo = mat_colors.colors[MatAlbedo];
+    float mat_metalness = mat_colors.colors[MatMetalness].r;
+    float mat_ao = mat_colors.colors[MatAO].r;
+    float mat_roughness = mat_colors.colors[MatRoughness].r;
 
     float3x3 tbn_matrix(frag_in.tangent, frag_in.bitangent, frag_in.normal);
 

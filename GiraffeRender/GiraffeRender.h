@@ -19,3 +19,4 @@ FOUNDATION_EXPORT const unsigned char GiraffeRenderVersionString[];
 
 #include <stdint.h>
 #import <GiraffeRender/GIRTextureLoader+HDR.h>
+#import <GiraffeRender/GIRShaderTypes.h>
