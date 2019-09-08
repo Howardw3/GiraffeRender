@@ -11,7 +11,7 @@
 
 @interface GIRHDRLoader : NSObject
 
-+ (float*)loadHDR:(NSString *)hdrPath width:(NSInteger *)width height:(NSInteger *)height numComponents:(NSInteger *)numOfConmonents;
++ (float*)loadHDR:(NSString *)hdrPath width:(int32_t *)width height:(int32_t *)height numComponents:(int32_t *)numOfConmonents;
 
 @end
 

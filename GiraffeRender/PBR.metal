@@ -7,10 +7,10 @@
 //
 
 #include <metal_stdlib>
-using namespace metal;
-
 #include "PBRLib.h"
 #include "GIRShaderTypes.h"
+using namespace metal;
+
 constant float PI = 3.14159265359;
 constant int MAT_MATERIAL_COUNT = 5;
 
@@ -75,22 +75,22 @@ struct Light {
 static MaterialColor
 get_material_colors(FragmentUniforms uniforms,
                     array<texture2d<float>, MAT_MATERIAL_COUNT> textures2D,
-                    float2 tex_coord, sampler sampler2D)
+                    float2 tex_coord,
+                    sampler linearSampler2D,
+                    sampler nearestSampler2D)
 {
     int textureCounter = 0;
     MaterialColor color;
     tex_coord.y = 1.0f - tex_coord.y;
-//    constexpr sampler sampler2D(filter::linear);
 
     for (int i = 0; i < MAT_MATERIAL_COUNT; i++) {
         if (uniforms.colorTypes[i] >= 0.0) {
             color.colors[i] = uniforms.colors[i];
         } else if (uniforms.colorTypes[i] < 0.0) {
             if (i == MatNormal) {
-//                constexpr sampler normalSampler(filter::nearest);
-                color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb * 2.0f - 1.0f;
+                color.colors[i] = textures2D[textureCounter].sample(nearestSampler2D, tex_coord).rgb * 2.0f - 1.0f;
             } else {
-                color.colors[i] = textures2D[textureCounter].sample(sampler2D, tex_coord).rgb;
+                color.colors[i] = textures2D[textureCounter].sample(linearSampler2D, tex_coord).rgb;
             }
 
             textureCounter += 1;
@@ -124,16 +124,17 @@ pbr_vertex(constant VertexIn* vertex_array [[ buffer(0) ]],
 
 fragment float4
 pbr_fragment(VertexOut frag_in [[ stage_in ]],
-             depth2d<float> shadow_texture2D [[ texture(0) ]],
-             texturecube<float> irradianceMap [[ texture(1) ]],
-             texturecube<float> environmentMap [[ texture(2) ]],
-             array<texture2d<float>, MAT_MATERIAL_COUNT> textures2D [[ texture(3) ]],
-             sampler sampler2D [[ sampler(0) ]],
-             sampler envSampler2D [[ sampler(1) ]],
-             constant FragmentUniforms &uniforms [[ buffer(0) ]],
-             constant Light &light [[ buffer(1) ]])
+             depth2d<float> shadow_texture2D [[ texture(PBRTexIndexShadow) ]],
+             texturecube<float> irradianceMap [[ texture(PBRTexIndexIrradiance) ]],
+             texturecube<float> environmentMap [[ texture(PBRTexIndexEnvironment) ]],
+             array<texture2d<float>, MAT_MATERIAL_COUNT> textures2D [[ texture(PBRTexIndexTextures) ]],
+             sampler nearestSampler2D [[ sampler(PRBSamplerStateIndexNearest) ]],
+             sampler linearSampler2D [[ sampler(PRBSamplerStateIndexLinear) ]],
+             sampler envSampler2D [[ sampler(PRBSamplerStateIndexEnv) ]],
+             constant FragmentUniforms &uniforms [[ buffer(PBRFragBufIndexFragment) ]],
+             constant Light &light [[ buffer(PBRFragBufIndexLight) ]])
 {
-    MaterialColor mat_colors = get_material_colors(uniforms, textures2D, frag_in.tex_coord, sampler2D);
+    MaterialColor mat_colors = get_material_colors(uniforms, textures2D, frag_in.tex_coord, linearSampler2D, nearestSampler2D);
 
     float3 mat_normal = mat_colors.colors[MatNormal];
     float3 mat_albedo = mat_colors.colors[MatAlbedo];
@@ -150,7 +151,7 @@ pbr_fragment(VertexOut frag_in [[ stage_in ]],
     float3 N = normalize(tbn_matrix * mat_normal);
     float3 V = normalize(tangent_view_pos - tangent_frag_pos);
     float3 R = reflect(-V, N);
-    //    float3 normal = normalize(frag_in.frag_world_normal);
+
     float3 frag_light_dir = normalize(tangent_light_pos - tangent_frag_pos);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0

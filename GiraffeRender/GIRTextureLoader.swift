@@ -79,20 +79,20 @@ class GIRTextureLoader {
     }
 
     func load(hdrPath: String) -> MTLTexture? {
-        var width = 0
-        var height = 0
-        var numsOfComponent = 0
+        var width: Int32 = 0
+        var height: Int32 = 0
+        var numsOfComponent: Int32 = 0
 
         let data = GIRHDRLoader.loadHDR(hdrPath, width: &width, height: &height, numComponents: &numsOfComponent)
-        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: width, height: height, mipmapped: true)
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: Int(width), height: Int(height), mipmapped: true)
 
         guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
             return nil
         }
 
-        let region = MTLRegionMake2D(0, 0, width, height)
+        let region = MTLRegionMake2D(0, 0, Int(width), Int(height))
         let bytesPerPixel = 4
-        let bytesPerRow = bytesPerPixel * width * MemoryLayout<Float>.size
+        let bytesPerRow = bytesPerPixel * Int(width) * MemoryLayout<Float>.size
 
         texture.replace(region: region, mipmapLevel: 0, withBytes: data!, bytesPerRow: bytesPerRow)
         return texture

@@ -21,17 +21,25 @@ class GIRRenderer: NSObject {
     var shadowTexture: MTLTexture!
     var shadowPassDescriptor: MTLRenderPassDescriptor!
     var defaultLibrary: MTLLibrary!
-    var samplerState: MTLSamplerState!
+    var linearSamplerState: MTLSamplerState!
+    var nearestSamplerState: MTLSamplerState!
     var envSamplerState: MTLSamplerState!
     var depthStencilState: MTLDepthStencilState!
     var cubemapDepthStencilState: MTLDepthStencilState!
     let commandQueue: MTLCommandQueue!
     var aspectRatio: Float = 1
+
     var pointOfView: GIRNode
     var cubmapNode: GIRNode
     var hdrCubeNode: GIRNode
     var shouldUpdateCamera = false
     var lightsInScene: [String: LightInfo] = [:]
+
+    var lightBufferContainer: GIRUniformBufferContainer!
+    var materialBufferContainer: GIRUniformBufferContainer!
+    var vertexBufferContainer: GIRUniformBufferContainer!
+    var cubemapBufferContainer: GIRUniformBufferContainer!
+    var shadowBufferContainer: GIRUniformBufferContainer!
 
     init(device: MTLDevice?) {
         self.device = device
@@ -48,7 +56,8 @@ class GIRRenderer: NSObject {
         super.init()
 
         self.defaultLibrary = device?.makeDefaultLibrary()
-        createSamplerState()
+        createLinearSamplerState()
+        createNearestSamplerState()
         createEnvSamplerState()
         createDepthStencilState()
         createCubemapDepthStencilState()
@@ -58,6 +67,16 @@ class GIRRenderer: NSObject {
         createShadowPassDescriptor()
         createSkyboxPipelineState()
         createHDRPipelineState()
+
+        createUniformBuffers()
+    }
+
+    func createUniformBuffers() {
+        lightBufferContainer = GIRUniformBufferContainer(device: device!, length: GIRLight.LightRaw.length)
+        materialBufferContainer = GIRUniformBufferContainer(device: device!, length: GIRFragmentUniforms.length)
+        vertexBufferContainer = GIRUniformBufferContainer(device: device!, length: MemoryLayout<GIRVertexUniforms>.size)
+        cubemapBufferContainer = GIRUniformBufferContainer(device: device!, length: MemoryLayout<GIRCubemapUniforms>.size)
+        shadowBufferContainer = GIRUniformBufferContainer(device: device!, length: MemoryLayout<GIRShadowUniforms>.size)
     }
 
     func createSkyboxPipelineState() {
@@ -86,11 +105,6 @@ class GIRRenderer: NSObject {
         } catch let error {
             debugPrint(error)
         }
-    }
-
-    func createUniformBuffer() -> MTLBuffer {
-        let uniformDataLength = MemoryLayout<GIRVertexUniforms>.size
-        return (device?.makeBuffer(length: uniformDataLength, options: []))!
     }
 
     func createRenderPipelineState() {
@@ -139,13 +153,22 @@ class GIRRenderer: NSObject {
         shadowPassDescriptor.depthAttachment.clearDepth = 1.0
     }
 
-    func createSamplerState() {
+    func createLinearSamplerState() {
         let samplerDescriptor = MTLSamplerDescriptor()
         samplerDescriptor.normalizedCoordinates = true
         samplerDescriptor.minFilter = .linear
         samplerDescriptor.magFilter = .linear
         samplerDescriptor.mipFilter = .linear
-        samplerState = device?.makeSamplerState(descriptor: samplerDescriptor)!
+        linearSamplerState = device?.makeSamplerState(descriptor: samplerDescriptor)!
+    }
+
+    func createNearestSamplerState() {
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.minFilter = .nearest
+        samplerDescriptor.magFilter = .nearest
+        samplerDescriptor.mipFilter = .nearest
+        nearestSamplerState = device?.makeSamplerState(descriptor: samplerDescriptor)!
     }
 
     func createEnvSamplerState() {

@@ -11,11 +11,14 @@ using namespace metal;
 #include "GIRShaderTypes.h"
 
 // Basic material type
-constant int MAT_ALBEDO = 0;
-constant int MAT_DIFFUSE = 1;
-constant int MAT_AMBIENT = 2;
-constant int MAT_SPECULAR = 3;
-constant int MAT_NORMAL = 4;
+typedef enum MaterialType
+{
+    MatAlbedo       = 0,
+    MatDiffuse      = 1,
+    MatAmbient      = 2,
+    MatSpecular     = 3,
+    MatNormal       = 4,
+    } MaterialType;
 
 constant int MAT_MATERIAL_COUNT = 5;
 
@@ -27,7 +30,7 @@ struct VertexUniforms {
 };
 
 struct MaterialColor {
-    float3 colors[5];
+    float3 colors[MAT_MATERIAL_COUNT];
 };
 
 struct VertexIn {
@@ -120,7 +123,7 @@ get_material_colors(FragmentUniforms uniforms,
         if (uniforms.colorTypes[i] > 0.0) {
             color.colors[i] = uniforms.colors[i];
         } else if (uniforms.colorTypes[i] < 0.0) {
-            if (i == MAT_NORMAL) {
+            if (i == MatNormal) {
                 constexpr sampler normalSampler(filter::nearest);
                 color.colors[i] = textures2D[textureCounter].sample(normalSampler, tex_coord).rgb * 2.0f - 1.0f;
             } else {
@@ -144,10 +147,10 @@ basic_fragment(VertexOut frag_in [[ stage_in ]],
 {
     MaterialColor mat_colors = get_material_colors(uniforms, textures2D, frag_in.tex_coord);
 
-    float3 normal_mat = mat_colors.colors[MAT_NORMAL];
-    float3 albedo_mat = mat_colors.colors[MAT_ALBEDO];
-    float3 diffuse_mat = mat_colors.colors[MAT_DIFFUSE];
-    float3 specular_mat = mat_colors.colors[MAT_SPECULAR];
+    float3 normal_mat = mat_colors.colors[MatNormal];
+    float3 albedo_mat = mat_colors.colors[MatAlbedo];
+    float3 diffuse_mat = mat_colors.colors[MatDiffuse];
+    float3 specular_mat = mat_colors.colors[MatSpecular];
 
     float3x3 tbn_matrix(frag_in.tangent, frag_in.bitangent, frag_in.normal);
 

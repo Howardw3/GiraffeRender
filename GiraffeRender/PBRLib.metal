@@ -7,9 +7,9 @@
 //
 
 #include <metal_stdlib>
+#include "PBRLib.h"
 
 using namespace metal;
-#include "PBRLib.h"
 
 constant float PI = 3.14159265359;
 
