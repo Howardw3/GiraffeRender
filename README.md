@@ -68,6 +68,8 @@ A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
   + Capsule
   + Cone
   + Plane
++ Obj :heavy_check_mark:
++ Multi-submeshes :heavy_check_mark:
 
 ## References
 + OpenGL Tutorial: https://learnopengl.com
