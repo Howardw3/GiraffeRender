@@ -12,3 +12,27 @@ public extension Float {
         return self * .pi / 180
     }
 }
+
+extension PBRTextureIndex {
+    var raw: Int {
+        return Int(self.rawValue)
+    }
+}
+
+extension PBRSamplerStateIndex {
+    var raw: Int {
+        return Int(self.rawValue)
+    }
+}
+
+extension PBRFragBuferIndex {
+    var raw: Int {
+        return Int(self.rawValue)
+    }
+}
+
+extension QualityLevel {
+    var raw: Int {
+        return Int(self.rawValue)
+    }
+}

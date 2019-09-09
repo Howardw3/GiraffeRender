@@ -17,9 +17,13 @@ class GIRTextureLoader {
         device = MTLCreateSystemDefaultDevice()!
     }
 
-    func load(image: UIImage) -> MTLTexture? {
-        let width = Int(image.size.width)
-        let height = Int(image.size.height)
+    func load(image: CGImage?) -> MTLTexture? {
+        guard let image = image else {
+            return nil
+        }
+
+        let width = image.width
+        let height = image.height
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: width, height: height, mipmapped: false)
 
         guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
@@ -30,10 +34,12 @@ class GIRTextureLoader {
         let bytesPerPixel = 4
         let bytesPerRow = bytesPerPixel * width
 
-        var data = getData(from: image)
-        texture.replace(region: region, mipmapLevel: 0, withBytes: data!, bytesPerRow: bytesPerRow)
-        data = nil
+        var outImage: CGImage?
+        let data = getData(from: image, width: width, height: height, outImage: &outImage)
+        texture.replace(region: region, mipmapLevel: 0, withBytes: data!.bytes, bytesPerRow: bytesPerRow)
 
+//        generateMipmaps(texture: texture, device: device)
+//        generateMipmaps(texture: texture, image: image, width: width, height: height)
         return texture
     }
 
@@ -42,7 +48,7 @@ class GIRTextureLoader {
             return nil
         }
 
-        return load(image: image)
+        return load(image: image.cgImage)
     }
 
     func load(images: [String]) -> MTLTexture? {
@@ -63,16 +69,15 @@ class GIRTextureLoader {
         let bytesPerImage = bytesPerRow * size
 
         for i in 0..<6 {
-            guard let image = UIImage(named: images[i]) else {
+            guard let image = UIImage(named: images[i]), let imageRef = image.cgImage else {
                 return nil
             }
 
-            var data = getData(from: image)
-            if data != nil {
-                texture.replace(region: region, mipmapLevel: 0, slice: i, withBytes: data!, bytesPerRow: bytesPerRow, bytesPerImage: bytesPerImage)
+            var outImage: CGImage?
+            let data = getData(from: imageRef, width: Int(image.size.width), height: Int(image.size.width), outImage: &outImage)
+            if let data = data {
+                texture.replace(region: region, mipmapLevel: 0, slice: i, withBytes: data.bytes, bytesPerRow: bytesPerRow, bytesPerImage: bytesPerImage)
             }
-
-            data = nil
         }
 
         return texture
@@ -98,36 +103,55 @@ class GIRTextureLoader {
         return texture
     }
 
-    private func getData(from image: UIImage) -> UnsafeMutableRawPointer? {
-        guard let imageRef = image.cgImage else {
-            return nil
-        }
-
+    private func getData(from imageRef: CGImage, width: Int, height: Int, outImage: inout CGImage?) -> NSData? {
         let bytesPerPixel = 4
         let bitsPerComponent = 8
 
-        let width = imageRef.width
-        let height = imageRef.height
         let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let rawData = calloc(height * width * 4, MemoryLayout<UInt8>.size)
+        let dataLength = height * width * 4
+        let rawData = calloc(dataLength, MemoryLayout<UInt8>.size)
 
-        guard let context = CGContext(data: rawData, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: width * bytesPerPixel, space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue).rawValue) else {
+        guard let context = CGContext(data: rawData, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: width * bytesPerPixel, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
             return nil
         }
 
         context.draw(imageRef, in: CGRect(x: 0, y: 0, width: width, height: height))
 
-        return rawData!
+        if outImage != nil {
+            outImage = context.makeImage()
+        }
+
+        return NSData(bytesNoCopy: rawData!, length: dataLength, freeWhenDone: true)
     }
 
-//    private func fillData(data: UnsafeMutableRawPointer?, width: Int, height: Int, numOfComponent: Int) {
-//        var output: [Float]
-//        for i in 0..<height {
-//            for j in 0..<width {
-//                let index = (i * width + j) * numOfComponent
-//
-//
-//            }
-//        }
-//    }
+    private func generateMipmaps(texture: MTLTexture, device: MTLDevice) {
+        let commandQueue = device.makeCommandQueue()
+        let commandBuffer = commandQueue?.makeCommandBuffer()
+        let commandEncoder = commandBuffer?.makeBlitCommandEncoder()
+        commandEncoder?.generateMipmaps(for: texture)
+        commandEncoder?.endEncoding()
+        commandBuffer?.commit()
+        commandBuffer?.waitUntilCompleted()
+    }
+
+    private func generateMipmaps(texture: MTLTexture, image: CGImage, width: Int, height: Int) {
+        var level = 1
+        var mipWidth = width / 2
+        var mipHeight = height / 2
+        var scaledImage: CGImage? = image
+        var image = image
+
+        while mipWidth >= 16 && mipHeight >= 16 {
+            let mipBytesPerRow = 4 * mipWidth
+            let mipData = getData(from: image, width: width, height: height, outImage: &scaledImage)
+            image = scaledImage!
+
+            let region = MTLRegionMake2D(0, 0, mipWidth, mipHeight)
+            texture.replace(region: region, mipmapLevel: level, withBytes: mipData!.bytes, bytesPerRow: mipBytesPerRow)
+
+            mipWidth /= 2
+            mipHeight /= 2
+            level += 1
+        }
+    }
 }

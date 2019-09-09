@@ -40,4 +40,11 @@ typedef enum PBRSamplerStateIndex
     PRBSamplerStateIndexEnv     = 2,
 } PBRSamplerStateIndex;
 
+typedef enum QualityLevel
+{
+    QualityLevelLow     = 0,
+    QualityLevelMedium  = 1,
+    QualityLevelHigh    = 2,
+};
+
 #endif /* GIRShaderTypes_h */

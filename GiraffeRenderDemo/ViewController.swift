@@ -39,7 +39,7 @@ class ViewController: UIViewController {
 //        float3( 2.4, -2.4, -4.5),
         float3( 2.0, 1.0, 0.0)
     ]
-    var cameraPos = float3(0, 0, 50)
+    var cameraPos = float3(0, 0, 33)
     var currGestureControl: GestureControl = .object
     let feedbackGenerator = UIImpactFeedbackGenerator()
     var prevPos = CGPoint.zero
@@ -47,22 +47,25 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         scene = GIRScene()
+
+        let backgroundFolder = "skybox1"
         scene.background.content = [
-            getArtResourcesPath(folder: "skybox1", name: "px"),
-            getArtResourcesPath(folder: "skybox1", name: "nx"),
-            getArtResourcesPath(folder: "skybox1", name: "py"),
-            getArtResourcesPath(folder: "skybox1", name: "ny"),
-            getArtResourcesPath(folder: "skybox1", name: "pz"),
-            getArtResourcesPath(folder: "skybox1", name: "nz")
+            getArtResourcesPath(folder: backgroundFolder, name: "px"),
+            getArtResourcesPath(folder: backgroundFolder, name: "nx"),
+            getArtResourcesPath(folder: backgroundFolder, name: "py"),
+            getArtResourcesPath(folder: backgroundFolder, name: "ny"),
+            getArtResourcesPath(folder: backgroundFolder, name: "pz"),
+            getArtResourcesPath(folder: backgroundFolder, name: "nz")
         ]
 
+        let lightingmapFolder = "environment1"
         scene.lightingEnvironment.content = [
-            getArtResourcesPath(folder: "environment1", name: "px"),
-             getArtResourcesPath(folder: "environment1", name: "nx"),
-             getArtResourcesPath(folder: "environment1", name: "py"),
-             getArtResourcesPath(folder: "environment1", name: "ny"),
-             getArtResourcesPath(folder: "environment1", name: "pz"),
-             getArtResourcesPath(folder: "environment1", name: "nz")
+            getArtResourcesPath(folder: lightingmapFolder, name: "px"),
+             getArtResourcesPath(folder: lightingmapFolder, name: "nx"),
+             getArtResourcesPath(folder: lightingmapFolder, name: "py"),
+             getArtResourcesPath(folder: lightingmapFolder, name: "ny"),
+             getArtResourcesPath(folder: lightingmapFolder, name: "pz"),
+             getArtResourcesPath(folder: lightingmapFolder, name: "nz")
         ]
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
@@ -90,7 +93,7 @@ class ViewController: UIViewController {
         light.color = UIColor.white.cgColor
 //        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
-        lightNode.position = float3(0.0, 0.0, 50.0)
+        lightNode.position = float3(0.0, 0.0, 10.0)
         lightNode.scale = 0.1
         lightNode.light = light
         return lightNode

@@ -267,21 +267,3 @@ extension GIRRenderer {
         return projectionMatrix
     }
 }
-
-extension PBRTextureIndex {
-    var raw: Int {
-        return Int(self.rawValue)
-    }
-}
-
-extension PBRSamplerStateIndex {
-    var raw: Int {
-        return Int(self.rawValue)
-    }
-}
-
-extension PBRFragBuferIndex {
-    var raw: Int {
-        return Int(self.rawValue)
-    }
-}

@@ -2,6 +2,8 @@
 A 3D scene render using MetalKit, Model I/O, SIMD and Swift5.0
 
 ![pbr](https://github.com/Howardw3/GiraffeRender/blob/master/Snapshot/pbr.png)
+![pbr_dredd1](https://github.com/Howardw3/GiraffeRender/blob/master/Snapshot/PBR_Dredd1.PNG)
+![pbr_dredd2](https://github.com/Howardw3/GiraffeRender/blob/master/Snapshot/PBR_Dredd2.PNG)
 ## Goal
 ### View
 + Scene ref :heavy_check_mark:

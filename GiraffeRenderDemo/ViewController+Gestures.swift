@@ -62,9 +62,10 @@ extension ViewController: UIGestureRecognizerDelegate {
         switch currGestureControl {
         case .camera:
             currCameraNode.position.z += scale
-        //            print(currCameraNode.position)
+//                    print(currCameraNode.position)
         case .light:
             currLightNode.position.z += scale
+//            print(currLightNode.position.z)
         case .object:
             currNode.position.z += scale
         }

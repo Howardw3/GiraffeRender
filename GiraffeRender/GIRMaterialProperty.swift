@@ -57,7 +57,7 @@ public class GIRMaterialProperty {
         }
 
         init(image: UIImage) {
-            self.texture = GIRTextureLoader.shared.load(image: image)
+            self.texture = GIRTextureLoader.shared.load(image: image.cgImage)
         }
 
         init(images: [String]) {
