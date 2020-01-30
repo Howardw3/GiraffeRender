@@ -35,23 +35,23 @@ extension ViewController: UIGestureRecognizerDelegate {
             switch currGestureControl {
             case .camera:
                 if recognizer.numberOfTouches == 1 {
-                    //                currCameraNode.pivot = float3(0, 0, 0)
-                    currCameraNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+                    //                currCameraNode.pivot = SIMD3<Float>(0, 0, 0)
+                    currCameraNode.eularAngles += SIMD3<Float>(Float(diff.y), Float(diff.x), 0)
                 } else if recognizer.numberOfTouches == 2 {
-                    currCameraNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+                    currCameraNode.position += SIMD3<Float>(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
                 }
             case .light:
                 if recognizer.numberOfTouches == 1 {
-                    currLightNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+                    currLightNode.eularAngles += SIMD3<Float>(Float(diff.y), Float(diff.x), 0)
                     //                    currLightNode.debugPrintLocalAxis()
                 } else if recognizer.numberOfTouches == 2 {
-                    currLightNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+                    currLightNode.position += SIMD3<Float>(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
                 }
             case .object:
                 if recognizer.numberOfTouches == 1 {
-                    currNode.eularAngles += float3(Float(diff.y), Float(diff.x), 0)
+                    currNode.eularAngles += SIMD3<Float>(Float(diff.y), Float(diff.x), 0)
                 } else if recognizer.numberOfTouches == 2 {
-                    currNode.position += float3(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
+                    currNode.position += SIMD3<Float>(Float(diff.x) / 100, Float(diff.y) * -1 / 100, 0)
                 }
             }
         }
@@ -72,7 +72,7 @@ extension ViewController: UIGestureRecognizerDelegate {
     }
 
     @objc func recognizeLongPress(_ recognizer: UILongPressGestureRecognizer) {
-        let touch = recognizer.location(in: recognizer.view)
+//        let touch = recognizer.location(in: recognizer.view)
     }
 
     @objc func recognizeDoubleTap() {

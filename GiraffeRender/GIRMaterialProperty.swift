@@ -17,7 +17,7 @@ public class GIRMaterialProperty {
             return _content.val
         }
         set(newVal) {
-            if let val = newVal as? float3 {
+            if let val = newVal as? SIMD3<Float> {
                 _content = Content(color: val)
             } else if let val = newVal as? String {
                 _content = Content(texturePath: val)
@@ -36,13 +36,13 @@ public class GIRMaterialProperty {
             }
         }
 
-        var color: float3? {
+        var color: SIMD3<Float>? {
             didSet {
                 self.texture = nil
             }
         }
 
-        init(color: float3) {
+        init(color: SIMD3<Float>) {
             self.color = color
             self.texture = nil
         }

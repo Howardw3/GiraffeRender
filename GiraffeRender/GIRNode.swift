@@ -9,21 +9,21 @@
 import simd
 
 public class GIRNode {
-    private var _position: float3
+    private var _position: SIMD3<Float>
     private var _scale: Float
-    private var _rotation: float4
-    private var _eularAngles: float3
+    private var _rotation: SIMD4<Float>
+    private var _eularAngles: SIMD3<Float>
     private var _transform: float4x4
     private var _worldTransform: float4x4
     private var shouldUpdateTransform: Bool
     private var shouldUpdateWorldTransform: Bool
 
-    private var _localRight: float3
-    private var _localUp: float3
-    private var _localFront: float3
-//    private var _worldRight: float3
-//    private var _worldUp: float3
-//    private var _worldFront: float3
+    private var _localRight: SIMD3<Float>
+    private var _localUp: SIMD3<Float>
+    private var _localFront: SIMD3<Float>
+//    private var _worldRight: SIMD3<Float>
+//    private var _worldUp: SIMD3<Float>
+//    private var _worldFront: SIMD3<Float>
 
     var children: [GIRNode]
     var parent: GIRNode?
@@ -34,7 +34,7 @@ public class GIRNode {
     public var camera: GIRCamera?
     public var light: GIRLight?
 
-    public var position: float3 {
+    public var position: SIMD3<Float> {
         get {
             return _position
         }
@@ -45,7 +45,7 @@ public class GIRNode {
         }
     }
 
-    public var rotation: float4 {
+    public var rotation: SIMD4<Float> {
         get {
             return _rotation
         }
@@ -65,18 +65,18 @@ public class GIRNode {
         }
     }
 
-    public var eularAngles: float3 {
+    public var eularAngles: SIMD3<Float> {
         get {
             return _eularAngles
         }
         set(newVal) {
-            _rotation = float4(newVal.x, newVal.y, newVal.z, 0.0)
+            _rotation = SIMD4<Float>(newVal.x, newVal.y, newVal.z, 0.0)
             _eularAngles = newVal
             shouldUpdateTransform = true
         }
     }
 
-    public var pivot = float3()
+    public var pivot = SIMD3<Float>()
 
     // TODO: need to optimize only update only parent change.
     public var worldTransform: float4x4 {
@@ -91,7 +91,7 @@ public class GIRNode {
         get {
             if shouldUpdateTransform {
                 if let _ = camera {
-                    pivot = float3()
+                    pivot = SIMD3<Float>()
                 }
                 let translationMatrix = float4x4.translationMatrix(_position)
                 let scaleMatrix = float4x4.scaleMatrix(_scale)
@@ -115,17 +115,17 @@ public class GIRNode {
         self.geometry = geometry
         self._transform = matrix_identity_float4x4
         self._worldTransform = matrix_identity_float4x4
-        self._position = float3()
-        self._rotation = float4()
+        self._position = SIMD3<Float>()
+        self._rotation = SIMD4<Float>()
         self._scale = 1.0
         self.children = []
-        self._eularAngles = float3()
+        self._eularAngles = SIMD3<Float>()
         self.shouldUpdateTransform = false
         self.shouldUpdateWorldTransform = false
 
-        self._localUp = float3(0.0, 1.0, 0.0)
-        self._localFront = float3(0.0, 0.0, -1.0)
-        self._localRight = float3(1.0, 0.0, 0.0)
+        self._localUp = SIMD3<Float>(0.0, 1.0, 0.0)
+        self._localFront = SIMD3<Float>(0.0, 0.0, -1.0)
+        self._localRight = SIMD3<Float>(1.0, 0.0, 0.0)
         self.name = "Node_" + identifier.uuidString
 //        updateLocalAxis()
     }
@@ -136,19 +136,19 @@ public class GIRNode {
 }
 
 extension GIRNode {
-    var localRight: float3 {
+    var localRight: SIMD3<Float> {
         return _localRight
     }
 
-    var localUp: float3 {
+    var localUp: SIMD3<Float> {
         return _localUp
     }
 
-    var localFront: float3 {
+    var localFront: SIMD3<Float> {
         return _localFront
     }
 
-    var worldRight: float3 {
+    var worldRight: SIMD3<Float> {
         if let parent = parent {
             return parent.worldRight * _localRight
         }
@@ -156,7 +156,7 @@ extension GIRNode {
         return _localRight
     }
 
-    var worldUp: float3 {
+    var worldUp: SIMD3<Float> {
         if let parent = parent {
             return parent.worldUp * _localUp
         }
@@ -164,7 +164,7 @@ extension GIRNode {
         return _localUp
     }
 
-    var worldFront: float3 {
+    var worldFront: SIMD3<Float> {
         if let parent = parent {
             return parent.worldFront * _localFront
         }
@@ -173,7 +173,7 @@ extension GIRNode {
     }
 
     func updateLocalAxis() {
-        var front = float3()
+        var front = SIMD3<Float>()
         front.x = cos(_rotation.x.radian) * cos(_rotation.y.radian)
         front.y = sin((_rotation.x).radian)
         front.z = cos(_rotation.x.radian) * sin(_rotation.y.radian)

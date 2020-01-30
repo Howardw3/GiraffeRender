@@ -16,10 +16,10 @@ struct GIRVertexUniforms {
 }
 
 struct GIRFragmentUniforms {
-    var cameraPosition = float3(0, 0, 0)
+    var cameraPosition = SIMD3<Float>(0, 0, 0)
     var matShininess = Float(3)
     var colorTypes: [Float] = Array(repeating: 1.0, count: 5)
-    var colors: [float3] = Array(repeating: float3(1.0, 1.0, 1.0), count: 5)
+    var colors: [SIMD3<Float>] = Array(repeating: SIMD3<Float>(1.0, 1.0, 1.0), count: 5)
 
     static let length = MemoryLayout<Float>.stride * (9 + 5 * 3)
     var raw: [Float] {

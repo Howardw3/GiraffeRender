@@ -16,10 +16,10 @@ public class GIRLight {
     public var spotInnerAngle: Float
     public var spotOuterAngle: Float
 
-    var convertedColor: float3 {
-        var ret = float3(1.0, 1.0, 1.0)
+    var convertedColor: SIMD3<Float> {
+        var ret = SIMD3<Float>(1.0, 1.0, 1.0)
         if let arr = color.components, arr.count > 2 {
-            ret = float3(Float(arr[0]), Float(arr[1]), Float(arr[2]))
+            ret = SIMD3<Float>(Float(arr[0]), Float(arr[1]), Float(arr[2]))
         }
         return ret
     }
@@ -63,15 +63,15 @@ extension GIRLight {
 
         static let length = MemoryLayout<LightRaw>.size
 
-        var position: float3 {
-            return float3(positionX, positionY, positionZ)
+        var position: SIMD3<Float> {
+            return SIMD3<Float>(positionX, positionY, positionZ)
         }
 
-        var front: float3 {
-            return float3(directionX, directionY, directionZ)
+        var front: SIMD3<Float> {
+            return SIMD3<Float>(directionX, directionY, directionZ)
         }
 
-        init(type: Int, position: float3, direction: float3, color: float3,
+        init(type: Int, position: SIMD3<Float>, direction: SIMD3<Float>, color: SIMD3<Float>,
              intensity: Float = 1.0,
              spotInnerRadian: Float = cos(Float(10).radian),
              spotOuterRadian: Float = cos(Float(17).radian)) {

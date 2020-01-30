@@ -71,13 +71,13 @@ open class GIRGeometry {
 
 extension GIRGeometry {
     public enum Basic {
-        case box(size: float3, segments: vector_uint3, inward: Bool)
-        case sphere(size: float3, segments: vector_uint2)
-        case hemisphere(size: float3, segments: vector_uint2, cap: Bool)
-        case cylinder(size: float3, segments: vector_uint2, topCap: Bool, bottomCap: Bool)
-        case capsule(size: float3, cylinderSegments: vector_uint2, hemisphereSegments: Int32)
-        case cone(size: float3, segments: vector_uint2, cap: Bool)
-        case plane(size: float3, segments: vector_uint2)
+        case box(size: SIMD3<Float>, segments: vector_uint3, inward: Bool)
+        case sphere(size: SIMD3<Float>, segments: vector_uint2)
+        case hemisphere(size: SIMD3<Float>, segments: vector_uint2, cap: Bool)
+        case cylinder(size: SIMD3<Float>, segments: vector_uint2, topCap: Bool, bottomCap: Bool)
+        case capsule(size: SIMD3<Float>, cylinderSegments: vector_uint2, hemisphereSegments: Int32)
+        case cone(size: SIMD3<Float>, segments: vector_uint2, cap: Bool)
+        case plane(size: SIMD3<Float>, segments: vector_uint2)
 
         var mesh: MTKMesh? {
             guard let device = MTLCreateSystemDefaultDevice() else {

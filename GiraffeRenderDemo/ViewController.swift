@@ -31,15 +31,15 @@ class ViewController: UIViewController {
     var currLightNode: GIRNode!
     var sphereNode: GIRNode!
     var scene: GIRScene!
-    let cubePositions: [float3] = [
-        float3( 2.0, 5.0, -9.7),
-        float3(-1.5, -4.2, -6.5),
-//        float3(0.8, 2.0, -4.3),
-        float3(-1.0, 0.0, 0),
-//        float3( 2.4, -2.4, -4.5),
-        float3( 2.0, 1.0, 0.0)
+    let cubePositions: [SIMD3<Float>] = [
+        SIMD3<Float>( 2.0, 5.0, -9.7),
+        SIMD3<Float>(-1.5, -4.2, -6.5),
+//        SIMD3<Float>(0.8, 2.0, -4.3),
+        SIMD3<Float>(-1.0, 0.0, 0),
+//        SIMD3<Float>( 2.4, -2.4, -4.5),
+        SIMD3<Float>( 2.0, 1.0, 0.0)
     ]
-    var cameraPos = float3(0, 0, 33)
+    var cameraPos = SIMD3<Float>(0, 0, 33)
     var currGestureControl: GestureControl = .object
     let feedbackGenerator = UIImpactFeedbackGenerator()
     var prevPos = CGPoint.zero
@@ -70,11 +70,14 @@ class ViewController: UIViewController {
         currLightNode = createLightNode()
         scene.rootNode.addChild(currLightNode)
 //        createCubes()
-//        let sphereNode = createSphere()
-//        sphereNode.geometry?.addMaterial(createGoldMaterial())
+        let sphereNode = createSphere()
+        sphereNode.name = "sphere"
+        sphereNode.geometry?.addMaterial(createGoldMaterial())
+        sphereNode.position = SIMD3<Float>(3, 0, 0)
 //        scene.rootNode.addChild(sphereNode)
 
         let dreddNode = createDreddNode()
+//        scene.rootNode.addChild(sphereNode)
         scene.rootNode.addChild(dreddNode)
         currNode = dreddNode
 
@@ -93,7 +96,7 @@ class ViewController: UIViewController {
         light.color = UIColor.white.cgColor
 //        light.color = UIColor(red: 238/255, green: 220/255, blue: 165/255, alpha: 1.0).cgColor
         let lightNode = createCone()
-        lightNode.position = float3(0.0, 0.0, 10.0)
+        lightNode.position = SIMD3<Float>(0.0, 0.0, 10.0)
         lightNode.scale = 0.1
         lightNode.light = light
         return lightNode
@@ -103,7 +106,7 @@ class ViewController: UIViewController {
         let floorNode = createPlaneNode()
         floorNode.eularAngles.y = 180.0
         floorNode.eularAngles.z = 180.0
-        floorNode.position = float3(0, 0, -10)
+        floorNode.position = SIMD3<Float>(0, 0, -10)
         floorNode.scale = 10.0
         scene.rootNode.addChild(floorNode)
     }

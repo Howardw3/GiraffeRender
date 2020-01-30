@@ -24,7 +24,7 @@ extension ViewController {
     }
 
     func createCube() -> GIRNode {
-        let cube = GIRGeometry(basic: .box(size: float3(1, 1, 1), segments: [10, 10, 10], inward: false))
+        let cube = GIRGeometry(basic: .box(size: SIMD3<Float>(1, 1, 1), segments: [10, 10, 10], inward: false))
         let material = GIRMaterial()
         material.albedo.content = "cube_alb"
         cube.addMaterial(material)
@@ -32,7 +32,7 @@ extension ViewController {
     }
 
     func createCone() -> GIRNode {
-        let cone = GIRGeometry(basic: .cone(size: float3(2, 5, 2), segments: [1, 1], cap: false))
+        let cone = GIRGeometry(basic: .cone(size: SIMD3<Float>(2, 5, 2), segments: [1, 1], cap: false))
         let material = GIRMaterial()
         material.albedo.content = "cube_alb"
         cone.addMaterial(material)
@@ -40,7 +40,7 @@ extension ViewController {
     }
 
     func createPlaneNode() -> GIRNode {
-        let plane = GIRGeometry(basic: .plane(size: float3(4, 4, 1), segments: [1, 1]))
+        let plane = GIRGeometry(basic: .plane(size: SIMD3<Float>(4, 4, 1), segments: [1, 1]))
         let material = GIRMaterial()
         material.albedo.content = "brickwall_diffuse"
         material.normal.content = "brickwall_normal"
@@ -82,7 +82,7 @@ extension ViewController {
         faceMaterial.normal.content = UIImage(named: getArtResourcesPath(folder: faceFolder, name: "Tete-NM_u0_v0"))
         faceMaterial.ambientOcclusion.content = UIImage(named: getArtResourcesPath(folder: faceFolder, name: "Face_AO"))
         faceMaterial.roughness.content = UIImage(named: getArtResourcesPath(folder: faceFolder, name: "Tetel2_gloss"))
-        faceMaterial.metalness.content = float3(0, 0, 0)
+        faceMaterial.metalness.content = SIMD3<Float>(0, 0, 0)
 
         let torseForder = folder + "Torse/Dredd_Torse_"
         let torseMaterial = GIRMaterial()
@@ -111,14 +111,18 @@ extension ViewController {
         let dreddNode = GIRNode(geometry: dredd)
         dreddNode.geometry?.materials = [helmetMaterial, faceMaterial, dummyMaterial, torseMaterial]
         dreddNode.name = "dredd"
+#if !targetEnvironment(macCatalyst)
         dreddNode.position.y = -6
+#else
+        dreddNode.position = SIMD3<Float>(dreddNode.position.x, dreddNode.position.y - 6, dreddNode.position.z)
+#endif
         dreddNode.scale = 0.3
         return dreddNode
     }
 
     func createSphere() -> GIRNode {
-        let size: Float = 10
-        let geo = GIRGeometry(basic: .sphere(size: float3(size, size, size), segments: [100, 100]))
+        let size: Float = 3
+        let geo = GIRGeometry(basic: .sphere(size: SIMD3<Float>(size, size, size), segments: [20, 20]))
         return GIRNode.init(geometry: geo)
     }
 
@@ -136,7 +140,7 @@ extension ViewController {
             //            cubeNode = createCube()
             cubeNode.position = cubePositions[i]
             cubeNode.scale = 1.0
-            cubeNode.eularAngles = float3(1, 1, 1) * Float(i * 20)
+            cubeNode.eularAngles = SIMD3<Float>(1, 1, 1) * Float(i * 20)
             scene.rootNode.addChild(cubeNode)
         }
     }

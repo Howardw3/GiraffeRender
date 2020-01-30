@@ -48,10 +48,10 @@ class GIRRenderer: NSObject {
         self.pointOfView = GIRNode()
         self.pointOfView.camera = GIRCamera()
 
-        let cube = GIRGeometry(basic: .box(size: float3(50, 50, 50), segments: [1, 1, 1], inward: true))
+        let cube = GIRGeometry(basic: .box(size: SIMD3<Float>(50, 50, 50), segments: [1, 1, 1], inward: true))
         self.cubmapNode = GIRNode(geometry: cube)
 
-        let smallCube = GIRGeometry(basic: .box(size: float3(6, 6, 6), segments: [1, 1, 1], inward: false))
+        let smallCube = GIRGeometry(basic: .box(size: SIMD3<Float>(6, 6, 6), segments: [1, 1, 1], inward: false))
         self.hdrCubeNode = GIRNode(geometry: smallCube)
         super.init()
 
@@ -138,6 +138,9 @@ class GIRRenderer: NSObject {
     func createShadowTexture(width: Int, height: Int) {
         let shadowTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float, width: width, height: height, mipmapped: false)
         shadowTextureDescriptor.usage = [.shaderRead, .renderTarget]
+#if targetEnvironment(macCatalyst)
+        shadowTextureDescriptor.storageMode = .private
+#endif
         shadowTexture = device?.makeTexture(descriptor: shadowTextureDescriptor)
     }
 
@@ -200,6 +203,6 @@ class GIRRenderer: NSObject {
 extension GIRRenderer {
     struct LightInfo {
         let raw: GIRLight.LightRaw
-        let up: float3
+        let up: SIMD3<Float>
     }
 }

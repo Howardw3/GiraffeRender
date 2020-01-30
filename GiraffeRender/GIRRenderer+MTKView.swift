@@ -122,11 +122,15 @@ extension GIRRenderer: MTKViewDelegate {
             var uniformBuffer: MTLBuffer!
 
             if shouldDrawTexture {
-                let material = node.geometry!.materials[i]
                 uniformBuffer = vertexBufferContainer.getNextAvailable()
-
                 updateModelViewProj(node, parent: parent, uniformBuffer: uniformBuffer)
-                setMaterialTextureAndUniforms(material: material, commandEncoder: commandEncoder)
+
+                if let geometry = node.geometry, !geometry.materials.isEmpty {
+                    setMaterialTextureAndUniforms(material: geometry.materials[i], commandEncoder: commandEncoder)
+                } else {
+                    print(node.name)
+                }
+
                 copyLightMemory(node: node, commandEncoder: commandEncoder)
                 setShadowTexture(commandEncoder: commandEncoder)
                 setCubeMapTexture(commandEncoder: commandEncoder)
@@ -184,7 +188,7 @@ extension GIRRenderer {
         if let light = lightsInScene.first {
 //            let lightProjection = float4x4.perspective(fovy: Float(29).radian, aspect: aspectRatio, nearZ: 0.1, farZ: 100.0)
             let lightProjection = float4x4.orthoMatrix(left: -10, right: 10, bottom: -10, top: 10, nearZ: -40, farZ: 40)
-            let lookatMatrix = float4x4.lookatMatrix(eye: light.value.raw.position, center: -light.value.raw.position, up: float3(0, 1, 0))
+            let lookatMatrix = float4x4.lookatMatrix(eye: light.value.raw.position, center: -light.value.raw.position, up: SIMD3<Float>(0, 1, 0))
             let lightSpaceMatirx = lightProjection * lookatMatrix
             return lightSpaceMatirx
         }

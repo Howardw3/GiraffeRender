@@ -97,6 +97,7 @@
 		230A1CAB230108EB0025825D /* GIRGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRGeometry.swift; sourceTree = "<group>"; };
 		230A1CAC230108EB0025825D /* GIRCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRCamera.swift; sourceTree = "<group>"; };
 		230A1CAD230108EB0025825D /* GIRRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIRRenderer.swift; sourceTree = "<group>"; };
+		231A0D9923E163270052A36D /* GiraffeRenderDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GiraffeRenderDemo.entitlements; sourceTree = "<group>"; };
 		23804481231DF69A00949094 /* GIRTextureLoader+HDR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "GIRTextureLoader+HDR.m"; sourceTree = "<group>"; };
 		23804486231E126200949094 /* GIRTextureLoader+HDR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GIRTextureLoader+HDR.h"; sourceTree = "<group>"; };
 		23804491231E3AD600949094 /* HDR.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HDR.metal; sourceTree = "<group>"; };
@@ -203,6 +204,7 @@
 		230A1C88230077D20025825D /* GiraffeRenderDemo */ = {
 			isa = PBXGroup;
 			children = (
+				231A0D9923E163270052A36D /* GiraffeRenderDemo.entitlements */,
 				230A1C89230077D20025825D /* AppDelegate.swift */,
 				230A1C8B230077D20025825D /* ViewController.swift */,
 				8CC46854231722D000EEBF63 /* ViewController+Assets.swift */,
@@ -534,6 +536,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 8G6FV828BP;
@@ -565,6 +568,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 8G6FV828BP;
@@ -595,7 +599,10 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GiraffeRenderDemo/GiraffeRenderDemo.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 8G6FV828BP;
 				INFOPLIST_FILE = GiraffeRenderDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -604,6 +611,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiongzhi.GiraffeRenderDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -614,7 +622,10 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GiraffeRenderDemo/GiraffeRenderDemo.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 8G6FV828BP;
 				INFOPLIST_FILE = GiraffeRenderDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -623,6 +634,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiongzhi.GiraffeRenderDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

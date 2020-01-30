@@ -55,7 +55,7 @@ extension GIRMaterial {
 
     struct Data<T> {
         var textures = [MTLTexture]()
-        var colors = [float3]()
+        var colors = [SIMD3<Float>]()
         var colorTypes = [Float]()
 
         enum ColorType: Int {
@@ -66,7 +66,7 @@ extension GIRMaterial {
 
         mutating func fillMaterial(_ property: GIRMaterialProperty,
                                    type: T,
-                                   defaultColor: float3 = float3(1.0, 1.0, 1.0)) {
+                                   defaultColor: SIMD3<Float> = SIMD3<Float>(1.0, 1.0, 1.0)) {
 
             if let color = property._content.color {
                 colors.append(color)
@@ -92,7 +92,7 @@ extension GIRMaterial {
         ret.fillMaterial(diffuse, type: .diffuse)
         ret.fillMaterial(ambient, type: .ambient)
         ret.fillMaterial(specular, type: .specular)
-        ret.fillMaterial(normal, type: .normal, defaultColor: float3(0.0, 0.0, 1.0))
+        ret.fillMaterial(normal, type: .normal, defaultColor: SIMD3<Float>(0.0, 0.0, 1.0))
 
         return ret
     }
@@ -102,7 +102,7 @@ extension GIRMaterial {
         ret.fillMaterial(albedo, type: .albedo)
         ret.fillMaterial(metalness, type: .metalness)
         ret.fillMaterial(roughness, type: .roughness)
-        ret.fillMaterial(normal, type: .normal, defaultColor: float3(0.0, 0.0, 1.0))
+        ret.fillMaterial(normal, type: .normal, defaultColor: SIMD3<Float>(0.0, 0.0, 1.0))
         ret.fillMaterial(ambientOcclusion, type: .ambientOcclusion)
 //        ret.fillMaterial(emission, type: .emission)
         return ret
